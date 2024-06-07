@@ -1,8 +1,12 @@
+
+import HomeIcon from "../Shared/HomeIcon";
+import { setBodyColor } from "../Shared/utility";
+
 function PaletteMakerApp() {
-  
-    document.body.setAttribute("class", "bg-gray-800");
+    setBodyColor("bg-gray-800");
     return (
       <>
+        <HomeIcon/>
         <div>
             Make Palette
         </div>

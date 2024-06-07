@@ -1,25 +1,22 @@
+import ProjectCard from "./ProjectCard";
 
-const appBoxClass = "w-48 h-48 bg-emerald-600 rounded-xl border-2 border-b-4 border-t-0 border-emerald-900";
 export default function ProjectsPage(){
-
-    const testclass = <div className='rounded-xl border- border-b-emerald-800 w-48'></div>
-    let asdf = {a:1,b:2};
-
+    //instead of manually defining rows, will read name, url, image data to map to ProjectCard
     return (
         <>
           <div className='flex flex-col items-center gap-6 p-10 pt-2 m-10 mt-4'>
-            <h2 className='text-center text-slate-300 text-2xl font-extrabold font-mono'>Projects</h2>
+            <a  href="https://github.com/nickprinz/NickPortfolio/tree/main" target="_blank" rel="noreferrer noopener" className='text-center text-slate-300 text-lg font-extrabold font-mono'> Click here for full github repo for all projects</a>
             <div className='flex gap-x-6 items-center flex-row'>
-              <div className={appBoxClass} > Red Black Tree</div>
-              <div className={appBoxClass} ></div>
+                <ProjectCard url="/redblack">Red Black Tree</ProjectCard>
+                <ProjectCard url="/palette">Palette</ProjectCard>
             </div>
             <div className='flex gap-x-6'>
-              <div className={appBoxClass} ></div>
-              <div className={appBoxClass} ></div>
+                <ProjectCard >Some stock thing</ProjectCard>
+                <ProjectCard >Ai stuff</ProjectCard>
             </div>
             <div className='flex gap-x-6'>
-              <div className={appBoxClass} ></div>
-              <div className={appBoxClass} ></div>
+                <ProjectCard ></ProjectCard>
+                <ProjectCard ></ProjectCard>
             </div>
           </div>
         </>

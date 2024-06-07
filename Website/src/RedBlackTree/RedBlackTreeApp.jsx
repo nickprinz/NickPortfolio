@@ -1,8 +1,14 @@
+
+
+import HomeIcon from "../Shared/HomeIcon";
+import { setBodyColor } from "../Shared/utility";
+
 function RedBlackTreeApp() {
-  
-    document.body.setAttribute("class", "bg-gray-700");
+    setBodyColor("bg-gray-700");
+    
     return (
       <>
+        <HomeIcon/>
         <div>
             Learn how these red black tree work
         </div>

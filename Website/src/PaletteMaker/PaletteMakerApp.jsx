@@ -1,6 +1,6 @@
 function PaletteMakerApp() {
-    const [count, setCount] = useState(0)
   
+    document.body.setAttribute("class", "bg-gray-800");
     return (
       <>
         <div>

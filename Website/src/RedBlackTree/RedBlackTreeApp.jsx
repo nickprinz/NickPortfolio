@@ -1,6 +1,6 @@
 function RedBlackTreeApp() {
-    const [count, setCount] = useState(0)
   
+    document.body.setAttribute("class", "bg-gray-700");
     return (
       <>
         <div>

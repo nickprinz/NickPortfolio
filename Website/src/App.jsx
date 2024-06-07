@@ -3,8 +3,11 @@ import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import {createBrowserRouter, RouterProvider} from "react-router-dom";
 import HomeLayout from './Home/HomeLayout';
+import ErrorPage from './Home/ErrorPage';
+import HomePage from './Home/HomePage';
+import RedBlackTreeApp from './RedBlackTree/RedBlackTreeApp';
+import PaletteMakerApp from './PaletteMaker/PaletteMakerApp';
 
-const appBoxClass = "w-48 h-48 bg-emerald-600 rounded-xl border-2 border-b-4 border-t-0 border-emerald-900";
 
 //home
 //  about
@@ -37,11 +40,20 @@ const router = createBrowserRouter([{
     //   ]
     // },
   ],
-}]);
+},
+{
+  path:"/redblack",
+  element:<RedBlackTreeApp></RedBlackTreeApp>,//will change these to be layout pages with redblack home index
+},
+{
+  path:"/palette",
+  element:<PaletteMakerApp></PaletteMakerApp>,
+},
+]);
 
 function App() {
   const [count, setCount] = useState(0)
-  document.body.setAttribute("class", "bg-gray-900")
+  //document.body.setAttribute("class", "bg-gray-900")
   const testclass = <div className='rounded-xl border- border-b-emerald-800 w-48'></div>
 
   return <RouterProvider router={router}></RouterProvider>;

@@ -1,10 +1,11 @@
 import { Outlet } from "react-router-dom";
 import CategoryTab from "./CategoryTab";
 import HomeIcon from "../Shared/HomeIcon";
-import { setBodyColor } from "../Shared/utility";
+import { setBodyColor, setPageTitle } from "../Shared/utility";
 
 export default function HomeLayout(){
     setBodyColor("bg-gray-900");
+    setPageTitle("Nick Prinz Developer Portfolio");
     return <>
         <main className="w-full h-full">
           <div className='p-4 pt-10 '>

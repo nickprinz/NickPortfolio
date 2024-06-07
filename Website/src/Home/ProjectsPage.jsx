@@ -6,7 +6,7 @@ export default function ProjectsPage(){
         <>
           <div className='flex flex-col items-center gap-6 p-10 pt-2 m-10 mt-4'>
             <a  href="https://github.com/nickprinz/NickPortfolio/tree/main" target="_blank" rel="noreferrer noopener" className='text-center text-slate-300 text-lg font-extrabold font-mono'> Click here for full github repo for all projects</a>
-            <div className='flex gap-x-6 items-center flex-row'>
+            <div className='flex gap-x-6'>
                 <ProjectCard url="/redblack">Red Black Tree</ProjectCard>
                 <ProjectCard url="/palette">Palette</ProjectCard>
             </div>

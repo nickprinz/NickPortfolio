@@ -7,6 +7,7 @@ import ErrorPage from './Home/ErrorPage';
 import HomePage from './Home/HomePage';
 import RedBlackTreeApp from './RedBlackTree/RedBlackTreeApp';
 import PaletteMakerApp from './PaletteMaker/PaletteMakerApp';
+import ProjectsPage from './Home/ProjectsPage';
 
 
 //home
@@ -21,6 +22,7 @@ const router = createBrowserRouter([{
   errorElement:<ErrorPage></ErrorPage>,
   children:[
     { index: true, element:<HomePage></HomePage>, },
+    { path: "projects", element:<ProjectsPage></ProjectsPage>, },
     // { path: "events", element:<EventsLayout></EventsLayout>,
     //   children:[
     //     { index: true, element:<EventsPage></EventsPage>, loader: eventsLoader },

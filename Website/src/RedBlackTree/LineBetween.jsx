@@ -1,8 +1,8 @@
 
-export default function LineBetween({toPoint, fromPoint}){
-    const {xPos, yPos, width, rotate} = getLine(toPoint, fromPoint)
+export default function LineBetween({toPoint, fromPoint, lineFn = getLine}){
+    const {xPos, yPos, width, rotate} = lineFn(toPoint, fromPoint)
     
-    return <div className="absolute h-1 bg-black rounded" 
+    return <div className="absolute h-1 bg-black rounded" role="separator"
         style={{"left": `${xPos}px`, 
         "top": `${yPos}px`, 
         "transform": `rotate(${rotate}deg)`,

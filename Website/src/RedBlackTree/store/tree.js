@@ -14,6 +14,12 @@ const treeSlice = createSlice({
     initialState: makeInitialTreeState(),
     reducers:{
         add(state, action){
+            if(Array.isArray(action.payload.value)){
+                action.payload.value.forEach(v => {
+                    treeAdd(v, state);
+                });
+                return;
+            }
             treeAdd(action.payload.value, state);
         },
         remove(state, action){
@@ -24,7 +30,9 @@ const treeSlice = createSlice({
             treeRemoveIndex(action.payload.index, state);
         },
         clear(state, action){
-            state = makeInitialTreeState();
+            state.nodes = [];
+            state.rootIndex = -1;
+            state.freeIndexes = [];
         },
     }
 });

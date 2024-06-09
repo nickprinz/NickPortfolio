@@ -73,6 +73,7 @@ function addNodeToArray(newNode, tree){
     if(tree.freeIndexes.length > 0){
         newNode.index = tree.freeIndexes.pop();
         tree.nodes[newNode.index] = newNode;
+        return;
     }
 
     newNode.index = tree.nodes.length;

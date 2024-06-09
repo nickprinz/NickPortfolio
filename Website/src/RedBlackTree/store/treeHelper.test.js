@@ -54,6 +54,18 @@ describe('red black tree', () => {
         expect(tree.rootIndex).toBe(-1);
     })
 
+    it("should reuse freed indexes", () => {
+        const tree = makeInitialTreeState();
+        treeAdd(10, tree);
+        
+        expect(tree.rootIndex).toBe(0);
+        treeRemove(10, tree);
+        expect(tree.rootIndex).toBe(-1);
+        treeAdd(5, tree);
+        expect(tree.rootIndex).toBe(0);
+        expect(tree.nodes[tree.rootIndex].value).toBe(5);
+    })
+
     it("should remove node with 2 children", () => {
         const tree = makeInitialTreeState();
         treeAdd(10, tree);

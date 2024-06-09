@@ -1,9 +1,14 @@
 export default function RedBlackContainer({children}){
-    return <div className="flex flex-col items-center py-6">
-    <div className="rounded-3xl border-2 bg-gray-400 border-gray-400 shadow-xl shadow-slate-900">
-        <div className="w-[54rem] h-[40rem] bg-gray-300 rounded-3xl border-8 border-gray-700 relative overflow-hidden">
-            {children}
+    return <>
+    <div className="relative">
+        <div className="absolute h-0.5 w-full bg-gray-400 -z-10"></div>
+    </div>
+    <div className="flex flex-col items-center">
+        <div className="rounded-b-3xl border-2 border-t-0 bg-gray-400 border-gray-400 shadow-xl shadow-slate-900">
+            <div className="w-[54rem] h-[40rem]  bg-gradient-to-b from-gray-300 to-gray-400 rounded-b-3xl border-[12px] border-t-0 border-zinc-950 overflow-hidden">
+                {children}
+            </div>
         </div>
     </div>
-</div>
+    </>
 }

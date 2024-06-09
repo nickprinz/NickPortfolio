@@ -1,5 +1,5 @@
 export function add(value, tree) {
-    const newNode = new RedBlackNode(value);
+    const newNode = makeNewNode(value);
     addNodeToArray(newNode, tree);
     if(tree.rootIndex === -1)
     {
@@ -54,14 +54,12 @@ function findAddParent(node, tree){
     while(potentialParent !== null){
         if(node.value <= potentialParent.value){
             if(potentialParent.left === -1) {
-                console.log(`found left ${potentialParent.index}`)
                 return potentialParent
             };
             potentialParent = tree.nodes[potentialParent.left];
         }
         else{
             if(potentialParent.right === -1) {
-                console.log(`found right ${potentialParent.index}`)
                 return potentialParent
             };
             potentialParent = tree.nodes[potentialParent.right];
@@ -166,17 +164,15 @@ function swapNodesInTree(node1, node2){
     node2.value = tempVal1;
 }
 
-export class RedBlackNode{
-    isRed = false;
-    value = 0;
-    childCount = 0;
-    depth = 1;
-    left = -1;
-    right = -1;
-    parent = -1;
-    index = -1;
-    constructor(v){
-        this.value = v;
+function makeNewNode(v){
+    return {
+        value: v,
+        isRed: false,
+        childCount: 0,
+        depth: 1,
+        left: -1,
+        right: -1,
+        parent: -1,
+        index: -1,
     }
 }
-

@@ -83,14 +83,12 @@ export default class RedBlackTree{
         while(potentialParent !== null){
             if(node.value <= potentialParent.value){
                 if(potentialParent.left === -1) {
-                    console.log(`found left ${potentialParent.index}`)
                     return potentialParent
                 };
                 potentialParent = this.#nodeArray[potentialParent.left];
             }
             else{
                 if(potentialParent.right === -1) {
-                    console.log(`found right ${potentialParent.index}`)
                     return potentialParent
                 };
                 potentialParent = this.#nodeArray[potentialParent.right];

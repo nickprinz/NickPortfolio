@@ -1,12 +1,10 @@
 
 
-import {Provider} from "react-redux";
+import {Provider, } from "react-redux";
 import HomeIcon from "../Shared/HomeIcon";
 import { setBodyColor, setPageTitle } from "../Shared/utility";
-import LineBetween from "./LineBetween";
-import RedBlackContainer from "./RedBlackContainer";
-import RedBlackNodeElement from "./RedBlackNodeElement";
-import store from "./store/store"
+import store from "./store/store";
+import RedBlackManager from "./RedBlackManager";
 
 function RedBlackTreeApp() {
     setBodyColor("bg-rose-950");
@@ -18,19 +16,7 @@ function RedBlackTreeApp() {
         <Provider store={store}>
             <div className="p-4 pt-10 ">
                 <h1 className="text-center text-5xl font-extrabold font-mono text-rose-300">Red Black Tree Simulator</h1>
-                <RedBlackContainer>
-                    <RedBlackNodeElement x={120} y={40} value="1234567"/>
-                    <RedBlackNodeElement x={40} y={100} value="2345678"/>
-                    <LineBetween toPoint={{x:40, y:100}} fromPoint={{x:120, y:40}}/>
-                    
-                    <RedBlackNodeElement x={220} y={200} value="1234567"/>
-                    <RedBlackNodeElement x={40} y={200} value="2345678"/>
-                    <LineBetween toPoint={{x:220, y:200}} fromPoint={{x:40, y:200}}/>
-                    
-                    <RedBlackNodeElement x={500} y={100} value="1234567"/>
-                    <RedBlackNodeElement x={500} y={200} value="2345678"/>
-                    <LineBetween toPoint={{x:500, y:100}} fromPoint={{x:500, y:200}}/>
-                </RedBlackContainer>
+                <RedBlackManager/>
             </div>
         </Provider>
       </>

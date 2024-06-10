@@ -41,11 +41,15 @@ export default function RedBlackManager({}){
         dispatch(treeActions.clear());
     }
 
+    const onNodeClicked = function(clickedIndex){
+        console.log(clickedIndex);
+    }
+
     const nodesToShow = getTreeSection(0,1, nodes);
 
     const nodeElements = [];
     if(nodes.length > 0){
-        addRenderNodes(rootIndex, 30, 10, 400, 70, nodeElements, nodes);
+        addRenderNodes(rootIndex, 30, 10, 400, 70, onNodeClicked, nodeElements, nodes);
     }
 
     //right now hardcode a center at 430, 300
@@ -70,22 +74,22 @@ export default function RedBlackManager({}){
     
 }
 
-function addRenderNodes(baseIndex, previousX, previousY, changeX, changeY, elements, nodes){
+function addRenderNodes(baseIndex, previousX, previousY, changeX, changeY, onNodeClicked, elements, nodes){
     let baseNode = nodes[baseIndex];
     const newX = previousX + changeX;
     const newY = previousY + changeY;
     if(!baseNode){
-        elements.push(<RedBlackNodeElement x={newX} y={newY} value={""} />);//change to small black
+        elements.push(<RedBlackNodeElement key={newX + "-" + newY} x={newX} y={newY} value={""} isSmall/>);//change to small black
         return;
     }
     if(elements.length > 200) return;
-    elements.push(<RedBlackNodeElement x={newX} y={newY} value={baseNode.value} isRed={baseNode.isRed}/>);
+    elements.push(<RedBlackNodeElement key={baseIndex} onClick={() => onNodeClicked(baseIndex)} x={newX} y={newY} value={baseNode.value} isRed={baseNode.isRed}/>);
     let leftChangeX = -Math.abs(changeX/2);
     let rightChangeX = Math.abs(changeX/2);
-    elements.push(<LineBetween toPoint={{x:newX+leftChangeX, y:newY+changeY}} fromPoint={{x:newX, y:newY}}/>);
-    elements.push(<LineBetween toPoint={{x:newX+rightChangeX, y:newY+changeY}} fromPoint={{x:newX, y:newY}}/>);
-    addRenderNodes(baseNode.left, newX, newY, leftChangeX, changeY, elements, nodes);
-    addRenderNodes(baseNode.right, newX, newY, rightChangeX, changeY, elements, nodes);
+    elements.push(<LineBetween key={baseIndex+"-toleft"} toPoint={{x:newX+leftChangeX, y:newY+changeY}} fromPoint={{x:newX, y:newY}}/>);
+    elements.push(<LineBetween key={baseIndex+"-toright"} toPoint={{x:newX+rightChangeX, y:newY+changeY}} fromPoint={{x:newX, y:newY}}/>);
+    addRenderNodes(baseNode.left, newX, newY, leftChangeX, changeY, onNodeClicked, elements, nodes);
+    addRenderNodes(baseNode.right, newX, newY, rightChangeX, changeY, onNodeClicked, elements, nodes);
 
 
 }

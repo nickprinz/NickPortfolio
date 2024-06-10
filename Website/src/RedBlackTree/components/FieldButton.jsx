@@ -5,7 +5,7 @@ export default function FieldButton({onClick, children}){
     const inputRef = useRef();
     return <>
         <div className={"contents"}>
-            <input type="number" min="0" max="99999999" ref={inputRef}></input>
+            <input type="number" min="-9999999" max="99999999" ref={inputRef}></input>
             <MenuButton onClick={() => {
                 onClick( Math.round(inputRef.current.value));
                 inputRef.current.value = "";

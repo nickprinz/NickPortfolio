@@ -34,29 +34,38 @@ export function getTreeSection(initialIndex, count, nodes){
     //after fulfilling count, the parent and 2 children will be added to a queue
     //those nodes will get their relationship and add those to a queue, making a breadth first discovery
     //nulls that are not parents will be returned but not added to discovery queue
+
+    //maybe just go up 2 levels, then get everything 4 levels down from that
     
     //how do I structure this for easy access on the ui?
     //could just give a list of ids starting with the root id
     //also attach total found depth and widest depth to make drawing easier
-    const result = {
-        totalDepth: 0,
-        items: [],
-    }
-    //this function is currently real bad, just shows the nodes immediately surrounding the chosen node
-    const amount = Math.max(4, count);
-    let found = 0;
-    let currentNode = nodes[initialIndex];
+    if(nodes.length === 0) return [];
+    let topIndex = getIndexUpTree(initialIndex, 2, nodes);
+    return getNodeIndexesDown(topIndex, 4, nodes);
+}
 
-    if(!currentNode) return result;
-    result.items.push(currentNode);
-    result.totalDepth++;
-    if(currentNode.parent !== -1) {
-        nodes[currentNode.parent];
-        result.totalDepth++;
+function getIndexUpTree(startIndex, levelsUp, nodes){
+    let currentIndex = startIndex;
+    for (let index = 0; index < levelsUp; index++) {
+        const node = nodes[currentIndex];
+        if(!node) return -1;
+        if(node.parent === -1) return currentIndex;
+        currentIndex = node.parent;
     }
-    if(currentNode.left !== -1) result.items.push(nodes[currentNode.left]);
-    if(currentNode.right !== -1) result.items.push(nodes[currentNode.right]);
+    return currentIndex;
+}
 
+function getNodeIndexesDown(startIndex, levelsDown, nodes){
+    let result = [startIndex];
+    if(levelsDown == 0) return result;
+    let currentNode = nodes[startIndex];
+    if(currentNode.left !== -1){
+        result = [...result, ...getNodeIndexesDown(currentNode.left, levelsDown-1, nodes)];
+    }
+    if(currentNode.right !== -1){
+        result = [...result, ...getNodeIndexesDown(currentNode.right, levelsDown-1, nodes)];
+    }
     return result;
 }
 

@@ -74,12 +74,35 @@ describe('red black tree', () => {
         treeAdd(7, tree);
         treeAdd(2, tree);
         
-        treeRemoveIndex(1, tree);
         const r = tree.nodes[tree.rootIndex];
+        expect(r.childCount).toBe(4);
+
+        treeRemoveIndex(1, tree);
         const l1 = tree.nodes[r.left];
         expect(l1.value).toBe(7);
         expect(l1.right).toBe(-1);
         expect(l1.left).not.toBe(-1);
+        expect(r.childCount).toBe(3);
+    })
+
+    it("should update depthBelow", () => {
+        const tree = makeInitialTreeState();
+        treeAdd(10, tree);
+        const r = tree.nodes[tree.rootIndex];
+        expect(r.depthBelow).toBe(0);
+        treeAdd(5, tree);
+        expect(r.depthBelow).toBe(1);
+        treeAdd(15, tree);
+        expect(r.depthBelow).toBe(1);
+        treeAdd(7, tree);
+        expect(r.depthBelow).toBe(2);
+        treeAdd(2, tree);
+        expect(r.depthBelow).toBe(2);
+
+        treeRemoveIndex(3, tree);
+        expect(r.depthBelow).toBe(2);
+        treeRemoveIndex(4, tree);
+        expect(r.depthBelow).toBe(1);
     })
 });
 

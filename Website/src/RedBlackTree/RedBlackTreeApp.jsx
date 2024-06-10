@@ -14,7 +14,7 @@ function RedBlackTreeApp() {
       <>
         <HomeIcon/>
         <Provider store={store}>
-            <h1 className=" pt-6 pb-6 p-4 text-center text-6xl font-extrabold tracking-widest font-mono bg-zinc-950 text-rose-300">Red Black Tree</h1>
+            <h1 className=" pt-6 pb-6 p-4 text-center text-6xl font-extrabold tracking-widest font-mono bg-zinc-950 text-rose-300">Red <span className="text-zinc-500">&nbsp;Black&nbsp;</span> Tree</h1>
             <RedBlackManager/>
         </Provider>
       </>

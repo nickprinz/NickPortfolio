@@ -4,8 +4,6 @@ export function add(value, tree) {
     if(tree.rootIndex === -1)
     {
         tree.rootIndex = newNode.index;
-        newNode.depth = 1
-        newNode.childCount = 0;
         newNode.isRed = false;
         return;
     }
@@ -30,13 +28,31 @@ export function removeIndex(index, tree) {
     removeSingleNode(tree.nodes[index], tree)
 }
 
+export function getTreeSection(rootIndex, count, tree){
+    //for now, just stop at nodes within range, will eventually want a more count wherever there is extra stuff
+    //if count is less than 3, still get 2 children, self, and parent
+    //after fulfilling count, the parent and 2 children will be added to a queue
+    //those nodes will get their relationship and add those to a queue, making a breadth first discovery
+    //nulls that are not parents will be returned but not added to discovery queue
+    
+    //how do I structure this for easy access on the ui?
+    //could just give a list of ids starting with the root id
+    //also attach total found depth and widest depth to make drawing easier
+    const amount = Math.max(4, count);
+
+
+
+
+}
+
 function removeSingleNode(removeNode, tree){
+    const parentIndex = removeNode.parent;
     if(removeNode.left === -1 && removeNode.right === -1){
-        updateParentChildRelationship(removeNode.parent, removeNode, null, tree);
+        updateParentChildRelationship(parentIndex, removeNode, null, tree);
     } else if(removeNode.left === -1){
-        updateParentChildRelationship(removeNode.parent, removeNode, tree.nodes[removeNode.right], tree);
+        updateParentChildRelationship(parentIndex, removeNode, tree.nodes[removeNode.right], tree);
     } else if(removeNode.right === -1){
-        updateParentChildRelationship(removeNode.parent, removeNode, tree.nodes[removeNode.left], tree);
+        updateParentChildRelationship(parentIndex, removeNode, tree.nodes[removeNode.left], tree);
     }
     else{
         //both children exist, need to find leftmost child in right tree
@@ -45,8 +61,24 @@ function removeSingleNode(removeNode, tree){
         removeSingleNode(swapChild, tree);
         return;
     }
-
+    adjustChildCount(parentIndex, -1, tree)
     removeNodeFromArray(removeNode, tree);
+}
+
+function adjustChildCount(parentIndex, changeAmount, tree){
+    while(parentIndex !== -1){
+        const parentNode = tree.nodes[parentIndex];
+        parentNode.childCount += changeAmount;
+        parentNode.depthBelow = getHighestDepth(parentNode.left, parentNode.right, tree) + 1;
+        parentIndex = parentNode.parent;
+    }
+}
+
+function getHighestDepth(index1, index2, tree){
+    const n1 = tree.nodes[index1];
+    const n2 = tree.nodes[index2];
+    return Math.max(n1 ? n1.depthBelow : -1, n2 ? n2.depthBelow : -1)
+
 }
 
 function findAddParent(node, tree){
@@ -83,13 +115,6 @@ function addNodeToArray(newNode, tree){
 function removeNodeFromArray(removingNode, tree){
     tree.freeIndexes.push(removingNode.index);
     tree.nodes[removingNode.index] = null;
-}
-
-function updateChildCounts(parent, amount, tree){
-    while(parent !== null){
-        parent.childCount += amount;
-        parent = parent.parent === -1 ? null : tree.nodes[parent.parent];
-    }
 }
 
 function findFirstNode(value, tree){
@@ -137,7 +162,6 @@ function updateParentChildRelationship(parentIndex, childNode, newChildNode, tre
 }
 
 function addToParent(newNode, parentNode, tree){
-    updateChildCounts(parentNode, 1, tree)
     newNode.parent = parentNode.index;
     newNode.depth = parentNode.depth+1;//might also want a below depth
     if(newNode.value <= parentNode.value){
@@ -148,6 +172,7 @@ function addToParent(newNode, parentNode, tree){
         if(parentNode.right !== -1) throw new Error(`tried to add right child in occupied spot p:${parentNode.index}`)
         parentNode.right = newNode.index;
     }
+    adjustChildCount(parentNode.index, 1, tree);
 }
 
 function findMin(startNode, tree){
@@ -171,6 +196,7 @@ function makeNewNode(v){
         isRed: false,
         childCount: 0,
         depth: 1,
+        depthBelow: 0,
         left: -1,
         right: -1,
         parent: -1,

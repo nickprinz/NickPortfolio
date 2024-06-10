@@ -28,7 +28,7 @@ export function removeIndex(index, tree) {
     removeSingleNode(tree.nodes[index], tree)
 }
 
-export function getTreeSection(rootIndex, count, tree){
+export function getTreeSection(initialIndex, count, nodes){
     //for now, just stop at nodes within range, will eventually want a more count wherever there is extra stuff
     //if count is less than 3, still get 2 children, self, and parent
     //after fulfilling count, the parent and 2 children will be added to a queue
@@ -38,21 +38,36 @@ export function getTreeSection(rootIndex, count, tree){
     //how do I structure this for easy access on the ui?
     //could just give a list of ids starting with the root id
     //also attach total found depth and widest depth to make drawing easier
+    const result = {
+        totalDepth: 0,
+        items: [],
+    }
+    //this function is currently real bad, just shows the nodes immediately surrounding the chosen node
     const amount = Math.max(4, count);
+    let found = 0;
+    let currentNode = nodes[initialIndex];
 
+    if(!currentNode) return result;
+    result.items.push(currentNode);
+    result.totalDepth++;
+    if(currentNode.parent !== -1) {
+        nodes[currentNode.parent];
+        result.totalDepth++;
+    }
+    if(currentNode.left !== -1) result.items.push(nodes[currentNode.left]);
+    if(currentNode.right !== -1) result.items.push(nodes[currentNode.right]);
 
-
-
+    return result;
 }
 
 function removeSingleNode(removeNode, tree){
     const parentIndex = removeNode.parent;
     if(removeNode.left === -1 && removeNode.right === -1){
-        updateParentChildRelationship(parentIndex, removeNode, null, tree);
+        swapChildRelationship(parentIndex, removeNode, null, tree);
     } else if(removeNode.left === -1){
-        updateParentChildRelationship(parentIndex, removeNode, tree.nodes[removeNode.right], tree);
+        swapChildRelationship(parentIndex, removeNode, tree.nodes[removeNode.right], tree);
     } else if(removeNode.right === -1){
-        updateParentChildRelationship(parentIndex, removeNode, tree.nodes[removeNode.left], tree);
+        swapChildRelationship(parentIndex, removeNode, tree.nodes[removeNode.left], tree);
     }
     else{
         //both children exist, need to find leftmost child in right tree
@@ -78,7 +93,6 @@ function getHighestDepth(index1, index2, tree){
     const n1 = tree.nodes[index1];
     const n2 = tree.nodes[index2];
     return Math.max(n1 ? n1.depthBelow : -1, n2 ? n2.depthBelow : -1)
-
 }
 
 function findAddParent(node, tree){
@@ -133,7 +147,7 @@ function findFirstNode(value, tree){
     return null;
 }
 
-function updateParentChildRelationship(parentIndex, childNode, newChildNode, tree){
+function swapChildRelationship(parentIndex, childNode, newChildNode, tree){
     if(parentIndex === -1){
         if(newChildNode === null){
             tree.rootIndex = -1;
@@ -156,14 +170,12 @@ function updateParentChildRelationship(parentIndex, childNode, newChildNode, tre
         throw new Error(`no parent child relationship from ${parentNode.index} to ${childNode.index}`);
     }
     
-    //will need to update depths and amounts
     if(newChildNode) newChildNode.parent = parentNode.index;
 
 }
 
 function addToParent(newNode, parentNode, tree){
     newNode.parent = parentNode.index;
-    newNode.depth = parentNode.depth+1;//might also want a below depth
     if(newNode.value <= parentNode.value){
         if(parentNode.left !== -1) throw new Error(`tried to add left child in occupied spot p:${parentNode.index}`)
         parentNode.left = newNode.index;
@@ -195,7 +207,6 @@ function makeNewNode(v){
         value: v,
         isRed: false,
         childCount: 0,
-        depth: 1,
         depthBelow: 0,
         left: -1,
         right: -1,

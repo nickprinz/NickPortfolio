@@ -1,6 +1,7 @@
 
 import {useSelector, useDispatch,} from "react-redux";
 import { treeActions } from "./store/tree";
+import {getTreeSection} from "./store/treeHelper"
 import RedBlackContainer from "./RedBlackContainer";
 import RedBlackNodeElement from "./RedBlackNodeElement";
 import LineBetween from "./LineBetween";
@@ -40,6 +41,15 @@ export default function RedBlackManager({}){
         dispatch(treeActions.clear());
     }
 
+    const nodesToShow = getTreeSection(0,1, nodes);
+
+    const nodeElements = [];
+    if(nodes.length > 0){
+        addRenderNodes(rootIndex, 30, 10, 400, 70, nodeElements, nodes);
+    }
+
+    //right now hardcode a center at 430, 300
+
     return <>
         <RedBlackContainer>
             <div className="flex gap-x-6 px-4 justify-between bg-zinc-800">
@@ -53,19 +63,29 @@ export default function RedBlackManager({}){
                 </div>
             </div>
             <div className="relative">
-                <RedBlackNodeElement x={120} y={40} value="623"/>
-                <RedBlackNodeElement x={40} y={100} value="5"/>
-                <LineBetween toPoint={{x:40, y:100}} fromPoint={{x:120, y:40}}/>
-                
-                <RedBlackNodeElement x={220} y={200} value="1234567"/>
-                <RedBlackNodeElement x={40} y={200} value="2345678"/>
-                <LineBetween toPoint={{x:220, y:200}} fromPoint={{x:40, y:200}}/>
-                
-                <RedBlackNodeElement x={500} y={100} value="23456"/>
-                <RedBlackNodeElement x={500} y={200} value="2345678901234"/>
-                <LineBetween toPoint={{x:500, y:100}} fromPoint={{x:500, y:200}}/>
+                {nodeElements}
             </div>
         </RedBlackContainer>
     </>
     
+}
+
+function addRenderNodes(baseIndex, previousX, previousY, changeX, changeY, elements, nodes){
+    let baseNode = nodes[baseIndex];
+    const newX = previousX + changeX;
+    const newY = previousY + changeY;
+    if(!baseNode){
+        elements.push(<RedBlackNodeElement x={newX} y={newY} value={""} />);//change to small black
+        return;
+    }
+    if(elements.length > 200) return;
+    elements.push(<RedBlackNodeElement x={newX} y={newY} value={baseNode.value} isRed={baseNode.isRed}/>);
+    let leftChangeX = -Math.abs(changeX/2);
+    let rightChangeX = Math.abs(changeX/2);
+    elements.push(<LineBetween toPoint={{x:newX+leftChangeX, y:newY+changeY}} fromPoint={{x:newX, y:newY}}/>);
+    elements.push(<LineBetween toPoint={{x:newX+rightChangeX, y:newY+changeY}} fromPoint={{x:newX, y:newY}}/>);
+    addRenderNodes(baseNode.left, newX, newY, leftChangeX, changeY, elements, nodes);
+    addRenderNodes(baseNode.right, newX, newY, rightChangeX, changeY, elements, nodes);
+
+
 }

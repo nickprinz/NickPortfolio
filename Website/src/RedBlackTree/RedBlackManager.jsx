@@ -2,13 +2,12 @@
 import { useState } from "react";
 import {useSelector, useDispatch,} from "react-redux";
 import { treeActions } from "./store/tree";
-import {getTreeSection} from "./store/treeHelper"
+import {getTreeSection, getClosestReplacement} from "./store/treeHelper"
 import RedBlackContainer from "./RedBlackContainer";
 import RedBlackNodeElement from "./RedBlackNodeElement";
 import LineBetween from "./LineBetween";
 import MenuButton from "./components/MenuButton";
 import FieldButton from "./components/FieldButton";
-
 
 function getRandomInt(min, max) {
     min = Math.ceil(min);
@@ -36,7 +35,9 @@ export default function RedBlackManager({}){
     }
     const handleRemove = function(){
         if(rootIndex === -1) return;
-        dispatch(treeActions.removeIndex({index:rootIndex}));
+        const replacedIndex = getClosestReplacement(selectedNode, nodes);
+        dispatch(treeActions.removeIndex({index:selectedNode}));
+        setSelectedNode(replacedIndex);
     }
     const handleClear = function(){
         if(rootIndex === -1) return;
@@ -45,10 +46,9 @@ export default function RedBlackManager({}){
 
     const onNodeClicked = function(clickedIndex){
         setSelectedNode(clickedIndex);
-        console.log(clickedIndex);
     }
 
-    const nodesToShow = getTreeSection(selectedNode === -1 ? rootIndex : selectedNode ,1, nodes);
+    const nodesToShow = getTreeSection(selectedNode === -1 ? rootIndex : selectedNode , 2, 4, nodes);
 
     const nodeElements = [];
     if(nodes.length > 0){
@@ -79,7 +79,7 @@ export default function RedBlackManager({}){
                         <MenuButton onClick={handleAddMany}>+100,000</MenuButton>
                     </div>
                     <div>
-                        <MenuButton onClick={handleRemove} disabled>Remove</MenuButton>
+                        <MenuButton onClick={handleRemove} disabled={selectedNode === -1}>Remove</MenuButton>
                         <MenuButton onClick={handleClear} dim disabled={realLength <= 0}>Clear All</MenuButton>
                     </div>
                 </div>

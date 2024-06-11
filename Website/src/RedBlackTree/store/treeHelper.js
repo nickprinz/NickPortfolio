@@ -28,21 +28,22 @@ export function removeIndex(index, tree) {
     removeSingleNode(tree.nodes[index], tree)
 }
 
-export function getTreeSection(initialIndex, count, nodes){
-    //for now, just stop at nodes within range, will eventually want a more count wherever there is extra stuff
-    //if count is less than 3, still get 2 children, self, and parent
-    //after fulfilling count, the parent and 2 children will be added to a queue
-    //those nodes will get their relationship and add those to a queue, making a breadth first discovery
-    //nulls that are not parents will be returned but not added to discovery queue
-
-    //maybe just go up 2 levels, then get everything 4 levels down from that
-    
-    //how do I structure this for easy access on the ui?
-    //could just give a list of ids starting with the root id
-    //also attach total found depth and widest depth to make drawing easier
+export function getTreeSection(initialIndex, levelsUp, totalLevels, nodes){
     if(nodes.length === 0) return [];
-    let topIndex = getIndexUpTree(initialIndex, 2, nodes);
-    return getNodeIndexesDown(topIndex, 4, nodes);
+    let topIndex = getIndexUpTree(initialIndex, levelsUp, nodes);
+    return getNodeIndexesDown(topIndex, totalLevels, nodes);
+}
+
+export function getClosestReplacement(removeIndex, nodes){
+    let removeNode = nodes[removeIndex];
+    if(removeNode.left === -1 && removeNode.right === -1) {
+        if(removeNode.parent === -1) return -1;
+        return removeNode.parent;
+    }
+    if(removeNode.left === -1) return removeNode.right;
+    if(removeNode.right === -1) return removeNode.left;
+    return removeIndex;
+
 }
 
 function getIndexUpTree(startIndex, levelsUp, nodes){
@@ -60,6 +61,7 @@ function getNodeIndexesDown(startIndex, levelsDown, nodes){
     let result = [startIndex];
     if(levelsDown == 0) return result;
     let currentNode = nodes[startIndex];
+    if(!currentNode) return result;
     if(currentNode.left !== -1){
         result = [...result, ...getNodeIndexesDown(currentNode.left, levelsDown-1, nodes)];
     }
@@ -80,7 +82,7 @@ function removeSingleNode(removeNode, tree){
     }
     else{
         //both children exist, need to find leftmost child in right tree
-        let swapChild = findMin(tree.nodes[removeNode.right], tree);
+        let swapChild = findMin(tree.nodes[removeNode.right], tree.nodes);
         swapNodesInTree(removeNode, swapChild, tree);
         removeSingleNode(swapChild, tree);
         return;
@@ -196,10 +198,10 @@ function addToParent(newNode, parentNode, tree){
     adjustChildCount(parentNode.index, 1, tree);
 }
 
-function findMin(startNode, tree){
+function findMin(startNode, nodes){
     let node = startNode;
     while(node.left >= 0){
-        node = tree.nodes[node.left];
+        node = nodes[node.left];
     }
     return node;
 }

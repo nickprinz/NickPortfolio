@@ -24,7 +24,6 @@ const treeSlice = createSlice({
         },
         remove(state, action){
             treeRemove(action.payload.value, state);
-            
         },
         removeIndex(state, action){
             treeRemoveIndex(action.payload.index, state);

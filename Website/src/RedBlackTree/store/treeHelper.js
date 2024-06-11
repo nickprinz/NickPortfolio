@@ -10,7 +10,7 @@ export function add(value, tree) {
     newNode.isRed = true;
     const addParent = findAddParent(newNode, tree);//will need to add these checks to the history
     addToParent(newNode, addParent, tree);
-    //will need to balance to turn this from bst to rbt
+    rebalanceAdd(newNode, tree);
 }
 
 export function remove(value, tree) {
@@ -95,14 +95,18 @@ function adjustChildCount(parentIndex, changeAmount, tree){
     while(parentIndex !== -1){
         const parentNode = tree.nodes[parentIndex];
         parentNode.childCount += changeAmount;
-        parentNode.depthBelow = getHighestDepth(parentNode.left, parentNode.right, tree) + 1;
+        recalculateDepthBelow(parentNode, tree.nodes);
         parentIndex = parentNode.parent;
     }
 }
 
-function getHighestDepth(index1, index2, tree){
-    const n1 = tree.nodes[index1];
-    const n2 = tree.nodes[index2];
+function recalculateDepthBelow(node, nodes){
+    node.depthBelow = getHighestDepth(node.left, node.right, nodes) + 1;
+}
+
+function getHighestDepth(index1, index2, nodes){
+    const n1 = nodes[index1];
+    const n2 = nodes[index2];
     return Math.max(n1 ? n1.depthBelow : -1, n2 ? n2.depthBelow : -1)
 }
 
@@ -224,4 +228,111 @@ function makeNewNode(v){
         parent: -1,
         index: -1,
     }
+}
+
+function rebalanceAdd(newNode, tree){
+    if(newNode.parent === -1) return;
+    const parent = tree.nodes[newNode.parent];
+    if(!parent.isRed) return;//no change in black depth
+    const uncle = getSibling(parent.index, tree.nodes);
+    if(isNodeRed(uncle)){
+        uncle.isRed = false;
+        parent.isRed = false;
+        const grandParent = tree.nodes[parent.parent];
+        grandParent.isRed = true;
+        rebalanceAdd(grandParent, tree);//change to loop later
+        return;
+    }
+    const grandParent = tree.nodes[parent.parent];
+    if(!grandParent) {
+        parent.isRed = false;//parent is root, just turn it black
+        return;
+    }
+    if(grandParent.left === parent.index){
+        if(parent.left === newNode.index){
+            rotateRight(grandParent, tree);
+        }
+        else{
+            rotateLeft(parent, tree);
+            rotateRight(grandParent, tree);
+        }
+    } else {
+        if(parent.right === newNode.index){
+            rotateLeft(grandParent, tree);
+        }
+        else{
+            rotateRight(parent, tree);
+            rotateLeft(grandParent, tree);
+        }
+    }
+}
+
+function rotateRight(pivotNode, tree){
+    const newParent = tree.nodes[pivotNode.left];
+    pivotNode.left = newParent.right;
+    const newChild = tree.nodes[pivotNode.left];
+    if(newChild) newChild.parent = pivotNode.index;
+    newParent.right = pivotNode.index;
+    cleanupRotation(pivotNode, newParent, tree);
+}
+
+function rotateLeft(pivotNode, tree){
+    const newParent = tree.nodes[pivotNode.right];
+    pivotNode.right = newParent.left;
+    const newChild = tree.nodes[pivotNode.right];
+    if(newChild) newChild.parent = pivotNode.index;
+    newParent.left = pivotNode.index;
+    cleanupRotation(pivotNode, newParent, tree);
+}
+
+function cleanupRotation(pivotNode, newParent, tree){
+    const grandParent = tree.nodes[pivotNode.parent];
+    if(grandParent){
+        if(grandParent.left === pivotNode.index){
+            grandParent.left = newParent.index;
+        } else{
+            grandParent.right = newParent.index;
+        }
+    }
+    newParent.parent = pivotNode.parent;
+    pivotNode.parent = newParent.index;
+    recalculateDepthBelow(pivotNode, tree.nodes);
+    recalculateDepthBelow(newParent, tree.nodes);
+    recalculateChildCount(pivotNode, tree.nodes);
+    recalculateChildCount(newParent, tree.nodes);
+    swapNodeColors(pivotNode, newParent);
+    if(pivotNode.index === tree.rootIndex) tree.rootIndex = newParent.index;
+}
+
+function isNodeRed(node){
+    return node && node.isRed;
+}
+
+function getSibling(nodeIndex, nodes){
+    if(nodeIndex === -1) return null;
+    const node = nodes[nodeIndex];
+    if(node.parent === -1) return null;
+    const parent = nodes[node.parent];
+    if(parent.left === nodeIndex){
+        return nodes[parent.right];
+    }
+    return nodes[parent.left];
+}
+
+function swapNodeColors(node1, node2){
+    const tempRed = node1.isRed;
+    node1.isRed = node2.isRed;
+    node2.isRed = tempRed;
+}
+
+function recalculateChildCount(node, nodes){
+    let childCount = 0;
+    if(node.left !== -1){
+        childCount += nodes[node.left].childCount + 1;
+    }
+    if(node.right !== -1){
+        childCount += nodes[node.right].childCount + 1;
+    }
+
+    node.childCount = childCount;
 }

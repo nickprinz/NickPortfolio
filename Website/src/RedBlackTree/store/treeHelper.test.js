@@ -104,6 +104,39 @@ describe('red black tree', () => {
         treeRemoveIndex(4, tree);
         expect(r.depthBelow).toBe(1);
     })
+
+    it("should recolor on add when parent and uncle are red", () => {
+        const tree = makeInitialTreeState();
+        treeAdd(10, tree);
+        treeAdd(5, tree);
+        treeAdd(15, tree);
+        expect(tree.nodes[0].isRed).not.toBeTruthy();
+        expect(tree.nodes[1].isRed).toBeTruthy();
+        expect(tree.nodes[2].isRed).toBeTruthy();
+        treeAdd(2, tree);
+        expect(tree.nodes[0].isRed).toBeTruthy();
+        expect(tree.nodes[1].isRed).not.toBeTruthy();
+        expect(tree.nodes[2].isRed).not.toBeTruthy();
+    })
+
+    it("should rotate right when 2 left nodes are added", () => {
+        const tree = makeInitialTreeState();
+        treeAdd(10, tree);
+        treeAdd(5, tree);
+        treeAdd(3, tree);
+        expect(tree.rootIndex).toBe(1);
+    })
+
+    it("should rotate right then left when a left then middle node is added", () => {
+        const tree = makeInitialTreeState();
+        treeAdd(10, tree);
+        treeAdd(5, tree);
+        treeAdd(7, tree);
+        expect(tree.rootIndex).toBe(2);
+        expect(tree.nodes[2].childCount).toBe(2);
+        expect(tree.nodes[0].childCount).toBe(0);
+        expect(tree.nodes[1].childCount).toBe(0);
+    })
 });
 
 

@@ -73,12 +73,15 @@ function getNodeIndexesDown(startIndex, levelsDown, nodes){
 
 function removeSingleNode(removeNode, tree){
     const parentIndex = removeNode.parent;
+    let replacedChild = null;
     if(removeNode.left === -1 && removeNode.right === -1){
         swapChildRelationship(parentIndex, removeNode, null, tree);
     } else if(removeNode.left === -1){
         swapChildRelationship(parentIndex, removeNode, tree.nodes[removeNode.right], tree);
+        replacedChild = tree.nodes[removeNode.right];
     } else if(removeNode.right === -1){
         swapChildRelationship(parentIndex, removeNode, tree.nodes[removeNode.left], tree);
+        replacedChild = tree.nodes[removeNode.left];
     }
     else{
         //both children exist, need to find leftmost child in right tree
@@ -89,6 +92,62 @@ function removeSingleNode(removeNode, tree){
     }
     adjustChildCount(parentIndex, -1, tree)
     removeNodeFromArray(removeNode, tree);
+    rebalanceRemove(removeNode, replacedChild, parentIndex, tree);
+}
+
+function rebalanceRemove(removeNode, replacedChild, parentIndex, tree){
+    
+    if(removeNode.isRed || parentIndex === -1){
+        return;
+    }
+    if(isNodeRed(replacedChild)){
+        replacedChild.isRed = false;
+        return;//removed child takes up the removed node's black position
+    }
+    console.log("double black");
+    let replacedChildIndex = replacedChild ? replacedChild.index : -1;
+
+    let siblingNode = getOtherChild(parentIndex, replacedChildIndex, tree.nodes);
+    if(!siblingNode){
+        throw new Error(`somehow we got a null sibling of a doubleblack below ${parentIndex}`);
+    }
+
+    const parentNode = tree.nodes[parentIndex];
+    if(isNodeRed(siblingNode)){
+        siblingNode.isRed = false;
+        parentNode.isRed = true;
+        if(parentNode.left === siblingNode.index){
+            rotateRight(parent, tree);
+        }
+        else{
+            rotateLeft(parent, tree);
+        }
+        return;
+    }
+
+    if(!isNodeRed(tree.nodes[siblingNode.left]) && !isNodeRed(tree.nodes[siblingNode.left])){
+        siblingNode.isRed = true;
+        if(parentNode.isRed){
+            parentNode.isRed = false;
+            return;
+        }
+        rebalanceRemove(parentNode, parentNode, parentNode.parentIndex, tree);
+        return;
+    }
+
+    if(parentNode.left === siblingNode.index){
+        if(!isNodeRed(tree.nodes[siblingNode.left])){
+            rotateLeft(siblingNode, tree);
+        }
+        rotateRight(parentNode, tree);
+    }
+    else{
+        if(!isNodeRed(tree.nodes[siblingNode.right])){
+            rotateRight(siblingNode, tree);
+        }
+        rotateLeft(parentNode, tree);
+    }
+
 }
 
 function adjustChildCount(parentIndex, changeAmount, tree){
@@ -314,6 +373,14 @@ function getSibling(nodeIndex, nodes){
     if(node.parent === -1) return null;
     const parent = nodes[node.parent];
     if(parent.left === nodeIndex){
+        return nodes[parent.right];
+    }
+    return nodes[parent.left];
+}
+
+function getOtherChild(parentIndex, firstChildIndex, nodes){
+    const parent = nodes[parentIndex];
+    if(parent.left === firstChildIndex){
         return nodes[parent.right];
     }
     return nodes[parent.left];

@@ -46,6 +46,37 @@ export function getClosestReplacement(removeIndex, nodes){
 
 }
 
+function rebalanceAdd(newNode, tree){
+    if(newNode.parent === -1) return;
+    const parent = tree.nodes[newNode.parent];
+    if(!parent.isRed) return;//no change in black depth
+    const uncle = getSibling(parent.index, tree.nodes);
+    if(isNodeRed(uncle)){
+        uncle.isRed = false;
+        parent.isRed = false;
+        const grandParent = tree.nodes[parent.parent];
+        grandParent.isRed = true;
+        rebalanceAdd(grandParent, tree);//change to loop later
+        return;
+    }
+    const grandParent = tree.nodes[parent.parent];
+    if(!grandParent) {
+        parent.isRed = false;//parent is root, just turn it black
+        return;
+    }
+    if(grandParent.left === parent.index){
+        if(parent.left !== newNode.index){
+            rotateLeft(parent, true, tree);
+        }
+        rotateRight(grandParent, true, tree);
+    } else {
+        if(parent.right !== newNode.index){
+            rotateRight(parent, true, tree);
+        }
+        rotateLeft(grandParent, true, tree);
+    }
+}
+
 function getIndexUpTree(startIndex, levelsUp, nodes){
     let currentIndex = startIndex;
     for (let index = 0; index < levelsUp; index++) {
@@ -72,24 +103,24 @@ function getNodeIndexesDown(startIndex, levelsDown, nodes){
 }
 
 function removeSingleNode(removeNode, tree){
-    const parentIndex = removeNode.parent;
-    let replacedChild = null;
-    if(removeNode.left === -1 && removeNode.right === -1){
-        swapChildRelationship(parentIndex, removeNode, null, tree);
-    } else if(removeNode.left === -1){
-        swapChildRelationship(parentIndex, removeNode, tree.nodes[removeNode.right], tree);
-        replacedChild = tree.nodes[removeNode.right];
-    } else if(removeNode.right === -1){
-        swapChildRelationship(parentIndex, removeNode, tree.nodes[removeNode.left], tree);
-        replacedChild = tree.nodes[removeNode.left];
-    }
-    else{
+    
+    if(removeNode.left !== -1 && removeNode.right !== -1){
         //both children exist, need to find leftmost child in right tree
         let swapChild = findMin(tree.nodes[removeNode.right], tree.nodes);
         swapNodesInTree(removeNode, swapChild, tree);
         removeSingleNode(swapChild, tree);
         return;
     }
+
+    const parentIndex = removeNode.parent;
+    let replacedChild = null;
+    if(removeNode.right !== -1){
+        replacedChild = tree.nodes[removeNode.right];
+    } else if(removeNode.left !== -1){
+        replacedChild = tree.nodes[removeNode.left];
+    }
+    swapChildRelationship(parentIndex, removeNode, replacedChild, tree);
+
     adjustChildCount(parentIndex, -1, tree)
     removeNodeFromArray(removeNode, tree);
     rebalanceRemove(removeNode, replacedChild, parentIndex, tree);
@@ -132,19 +163,43 @@ function rebalanceRemove(removeNode, replacedChild, parentIndex, tree){
             parentNode.isRed = false;
             return;
         }
-        rebalanceRemove(parentNode, parentNode, parentNode.parentIndex, tree);
+        rebalanceRemove(parentNode, parentNode, parentNode.parent, tree);
         return;
     }
 
     if(parentNode.left === siblingNode.index){
         if(!isNodeRed(tree.nodes[siblingNode.left])){
+            if(siblingNode.left !== -1){
+                tree.nodes[siblingNode.left].isRed = false;
+            }
             rotateLeft(siblingNode, true, tree);
+        }
+        else if(isNodeRed(tree.nodes[siblingNode.left]) && isNodeRed(tree.nodes[siblingNode.right])){
+            swapNodeColors(siblingNode, tree.nodes[siblingNode.left]);
+            if(parentNode.isRed){
+                parentNode.isRed = false;
+            }
+            else{
+                siblingNode.isRed = false;
+            }
         }
         rotateRight(parentNode, false, tree);
     }
     else{
         if(!isNodeRed(tree.nodes[siblingNode.right])){
+            if(siblingNode.right !== -1){
+                tree.nodes[siblingNode.right].isRed = false;
+            }
             rotateRight(siblingNode, true, tree);
+        }
+        else if(isNodeRed(tree.nodes[siblingNode.left]) && isNodeRed(tree.nodes[siblingNode.right])){
+            swapNodeColors(siblingNode, tree.nodes[siblingNode.right]);
+            if(parentNode.isRed){
+                parentNode.isRed = false;
+            }
+            else{
+                siblingNode.isRed = false;
+            }
         }
         rotateLeft(parentNode, false, tree);
     }
@@ -287,37 +342,6 @@ function makeNewNode(v){
         index: -1,
         childCount: 0,
         depthBelow: 0,
-    }
-}
-
-function rebalanceAdd(newNode, tree){
-    if(newNode.parent === -1) return;
-    const parent = tree.nodes[newNode.parent];
-    if(!parent.isRed) return;//no change in black depth
-    const uncle = getSibling(parent.index, tree.nodes);
-    if(isNodeRed(uncle)){
-        uncle.isRed = false;
-        parent.isRed = false;
-        const grandParent = tree.nodes[parent.parent];
-        grandParent.isRed = true;
-        rebalanceAdd(grandParent, tree);//change to loop later
-        return;
-    }
-    const grandParent = tree.nodes[parent.parent];
-    if(!grandParent) {
-        parent.isRed = false;//parent is root, just turn it black
-        return;
-    }
-    if(grandParent.left === parent.index){
-        if(parent.left !== newNode.index){
-            rotateLeft(parent, true, tree);
-        }
-        rotateRight(grandParent, true, tree);
-    } else {
-        if(parent.right !== newNode.index){
-            rotateRight(parent, true, tree);
-        }
-        rotateLeft(grandParent, true, tree);
     }
 }
 

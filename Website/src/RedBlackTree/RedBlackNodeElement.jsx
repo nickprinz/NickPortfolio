@@ -14,7 +14,7 @@ export default function RedBlackNodeElement({onClick, x, y, value, isRed, isSmal
 
     let colorClasses = "from-zinc-400 via-zinc-400 to-zinc-500 hover:from-zinc-300 hover:via-zinc-300 hover:to-zinc-400 border-2 border-b-black border-x-zinc-950 border-t-zinc-900";
     if(selected){
-        colorClasses = "from-zinc-200 via-zinc-200 to-zinc-300 hover:from-zinc-100 hover:via-zinc-100 hover:to-zinc-200 border-2 border-b-black border-x-zinc-950 border-t-zinc-900"
+        colorClasses = "from-gray-300 via-gray-300 to-gray-400 hover:from-zinc-200 hover:via-zinc-200 hover:to-zinc-300 border-2 border-b-black border-x-zinc-950 border-t-zinc-900"
     }
     if(isRed){
         colorClasses = "from-red-400 via-red-400 to-red-500 hover:from-rose-300 hover:via-rose-300 hover:to-rose-400 border-2 border-b-black border-x-red-950 border-t-purple-900";

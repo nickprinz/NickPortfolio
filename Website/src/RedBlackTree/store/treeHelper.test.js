@@ -194,6 +194,13 @@ describe('red black tree', () => {
         expect(tree.nodes[3].isRed).toBeTruthy();
         expect(tree.nodes[4].isRed).toBeFalsy();
     })
+
+    //need to make all tests reversable, can do this by giving an array of numbers that can be negative
+    //need to start setting colors manually and have a treeValidator, which can give true or false for valid trees and give a total black depth
+    //currently known bug, will just pass up the red when it should turn black:
+    //         b
+    //     b       b
+    //      r
 });
 
 

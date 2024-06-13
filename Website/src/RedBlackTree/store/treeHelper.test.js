@@ -138,6 +138,21 @@ describe('red black tree', () => {
         expect(tree.nodes[1].childCount).toBe(0);
     })
 
+    it("should handle a doubleblack delete with a red sibling", () => {
+        const tree = makeInitialTreeState();
+        for (let index = 8; index > 1; index--) {
+            treeAdd(index, tree);
+        }
+        expect(tree.rootIndex).toBe(1);
+        treeRemove(8, tree);
+        expect(tree.rootIndex).toBe(3);
+        expect(tree.nodes[0]).toBeFalsy();
+        expect(tree.nodes[1].isRed).toBeFalsy();
+        expect(tree.nodes[2].isRed).toBeTruthy();
+        expect(tree.nodes[3].isRed).toBeFalsy();
+        expect(tree.nodes[5].isRed).toBeFalsy();
+    })
+
     it("should handle a doubleblack delete when a black sibling has an outer red child", () => {
         const tree = makeInitialTreeState();
         for (let index = 8; index > 2; index--) {

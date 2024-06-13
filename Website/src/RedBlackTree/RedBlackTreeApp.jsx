@@ -9,7 +9,8 @@ import RedBlackManager from "./RedBlackManager";
 function RedBlackTreeApp() {
     setBodyColor("bg-gradient-to-r from-red-900 via-rose-950 to-red-900");
     setPageTitle("Red Black Tree Simulator");
-    
+    //creating the store here has an issue: any code change will clear the store because files are reloaded
+    //to fix that, move the provider out of the RedBlackTree folder or give this app its own index.html to give a full separation between projects
     return (
       <>
         <HomeIcon/>

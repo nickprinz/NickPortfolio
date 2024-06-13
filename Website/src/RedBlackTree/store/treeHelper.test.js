@@ -84,7 +84,7 @@ describe('red black tree', () => {
         expect(l1.left).not.toBe(-1);
         expect(r.childCount).toBe(3);
     })
-
+ 
     it("should update depthBelow", () => {
         const tree = makeInitialTreeState();
         treeAdd(10, tree);
@@ -110,13 +110,13 @@ describe('red black tree', () => {
         treeAdd(10, tree);
         treeAdd(5, tree);
         treeAdd(15, tree);
-        expect(tree.nodes[0].isRed).not.toBeTruthy();
+        expect(tree.nodes[0].isRed).toBeFalsy();
         expect(tree.nodes[1].isRed).toBeTruthy();
         expect(tree.nodes[2].isRed).toBeTruthy();
         treeAdd(2, tree);
         expect(tree.nodes[0].isRed).toBeTruthy();
-        expect(tree.nodes[1].isRed).not.toBeTruthy();
-        expect(tree.nodes[2].isRed).not.toBeTruthy();
+        expect(tree.nodes[1].isRed).toBeFalsy();
+        expect(tree.nodes[2].isRed).toBeFalsy();
     })
 
     it("should rotate right when 2 left nodes are added", () => {
@@ -136,6 +136,48 @@ describe('red black tree', () => {
         expect(tree.nodes[2].childCount).toBe(2);
         expect(tree.nodes[0].childCount).toBe(0);
         expect(tree.nodes[1].childCount).toBe(0);
+    })
+
+    it("should handle a doubleblack delete when a black sibling has an outer red child", () => {
+        const tree = makeInitialTreeState();
+        for (let index = 8; index > 2; index--) {
+            treeAdd(index, tree);
+        }
+        expect(tree.rootIndex).toBe(1);
+        treeRemove(6, tree);
+        expect(tree.nodes[2]).toBeFalsy();
+        expect(tree.nodes[3].isRed).toBeTruthy();
+        expect(tree.nodes[4].isRed).toBeFalsy();
+    })
+
+    it("should handle a doubleblack delete when a black sibling has an inner red child", () => {
+        const tree = makeInitialTreeState();
+        treeAdd(7, tree);
+        treeAdd(8, tree);
+        treeAdd(4, tree);
+        treeAdd(5, tree);
+        expect(tree.rootIndex).toBe(0);
+        treeRemove(8, tree);
+        expect(tree.rootIndex).toBe(3);
+        expect(tree.nodes[0].isRed).toBeTruthy();
+        expect(tree.nodes[2].isRed).toBeTruthy();
+        expect(tree.nodes[3].isRed).toBeFalsy();
+    })
+
+    it("should handle a doubleblack delete when a black sibling has 2 red children", () => {
+        const tree = makeInitialTreeState();
+        treeAdd(7, tree);
+        treeAdd(8, tree);
+        treeAdd(4, tree);
+        treeAdd(5, tree);
+        treeAdd(3, tree);
+        expect(tree.rootIndex).toBe(0);
+        treeRemove(8, tree);
+        expect(tree.rootIndex).toBe(2);
+        expect(tree.nodes[0].isRed).toBeFalsy();
+        expect(tree.nodes[2].isRed).toBeTruthy();
+        expect(tree.nodes[3].isRed).toBeTruthy();
+        expect(tree.nodes[4].isRed).toBeFalsy();
     })
 });
 

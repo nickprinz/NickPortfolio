@@ -117,15 +117,15 @@ function rebalanceRemove(removeNode, replacedChild, parentIndex, tree){
         siblingNode.isRed = false;
         parentNode.isRed = true;
         if(parentNode.left === siblingNode.index){
-            rotateRight(parent, tree);
+            rotateRight(parent, true, tree);
         }
         else{
-            rotateLeft(parent, tree);
+            rotateLeft(parent, true, tree);
         }
         return;
     }
 
-    if(!isNodeRed(tree.nodes[siblingNode.left]) && !isNodeRed(tree.nodes[siblingNode.left])){
+    if(!isNodeRed(tree.nodes[siblingNode.left]) && !isNodeRed(tree.nodes[siblingNode.right])){
         siblingNode.isRed = true;
         if(parentNode.isRed){
             parentNode.isRed = false;
@@ -137,15 +137,17 @@ function rebalanceRemove(removeNode, replacedChild, parentIndex, tree){
 
     if(parentNode.left === siblingNode.index){
         if(!isNodeRed(tree.nodes[siblingNode.left])){
-            rotateLeft(siblingNode, tree);
+            console.log("not here")
+            rotateLeft(siblingNode, true, tree);
         }
-        rotateRight(parentNode, tree);
+        console.log("here")
+        rotateRight(parentNode, false, tree);
     }
     else{
         if(!isNodeRed(tree.nodes[siblingNode.right])){
-            rotateRight(siblingNode, tree);
+            rotateRight(siblingNode, true, tree);
         }
-        rotateLeft(parentNode, tree);
+        rotateLeft(parentNode, false, tree);
     }
 
 }
@@ -280,12 +282,12 @@ function makeNewNode(v){
     return {
         value: v,
         isRed: false,
-        childCount: 0,
-        depthBelow: 0,
         left: -1,
         right: -1,
         parent: -1,
         index: -1,
+        childCount: 0,
+        depthBelow: 0,
     }
 }
 
@@ -308,43 +310,37 @@ function rebalanceAdd(newNode, tree){
         return;
     }
     if(grandParent.left === parent.index){
-        if(parent.left === newNode.index){
-            rotateRight(grandParent, tree);
+        if(parent.left !== newNode.index){
+            rotateLeft(parent, true, tree);
         }
-        else{
-            rotateLeft(parent, tree);
-            rotateRight(grandParent, tree);
-        }
+        rotateRight(grandParent, true, tree);
     } else {
-        if(parent.right === newNode.index){
-            rotateLeft(grandParent, tree);
+        if(parent.right !== newNode.index){
+            rotateRight(parent, true, tree);
         }
-        else{
-            rotateRight(parent, tree);
-            rotateLeft(grandParent, tree);
-        }
+        rotateLeft(grandParent, true, tree);
     }
 }
 
-function rotateRight(pivotNode, tree){
+function rotateRight(pivotNode, swapColors, tree){
     const newParent = tree.nodes[pivotNode.left];
     pivotNode.left = newParent.right;
     const newChild = tree.nodes[pivotNode.left];
     if(newChild) newChild.parent = pivotNode.index;
     newParent.right = pivotNode.index;
-    cleanupRotation(pivotNode, newParent, tree);
+    cleanupRotation(pivotNode, newParent, swapColors, tree);
 }
 
-function rotateLeft(pivotNode, tree){
+function rotateLeft(pivotNode, swapColors, tree){
     const newParent = tree.nodes[pivotNode.right];
     pivotNode.right = newParent.left;
     const newChild = tree.nodes[pivotNode.right];
     if(newChild) newChild.parent = pivotNode.index;
     newParent.left = pivotNode.index;
-    cleanupRotation(pivotNode, newParent, tree);
+    cleanupRotation(pivotNode, newParent, swapColors, tree);
 }
 
-function cleanupRotation(pivotNode, newParent, tree){
+function cleanupRotation(pivotNode, newParent, swapColors, tree){
     const grandParent = tree.nodes[pivotNode.parent];
     if(grandParent){
         if(grandParent.left === pivotNode.index){
@@ -359,7 +355,7 @@ function cleanupRotation(pivotNode, newParent, tree){
     recalculateDepthBelow(newParent, tree.nodes);
     recalculateChildCount(pivotNode, tree.nodes);
     recalculateChildCount(newParent, tree.nodes);
-    swapNodeColors(pivotNode, newParent);
+    if(swapColors) swapNodeColors(pivotNode, newParent);
     if(pivotNode.index === tree.rootIndex) tree.rootIndex = newParent.index;
 }
 

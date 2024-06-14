@@ -169,8 +169,8 @@ function rebalanceRemove(removeNode, replacedChild, parentIndex, tree){
 
     if(parentNode.left === siblingNode.index){
         if(!isNodeRed(tree.nodes[siblingNode.left])){
-            if(siblingNode.left !== -1){
-                tree.nodes[siblingNode.left].isRed = false;
+            if(!parentNode.isRed){
+                tree.nodes[siblingNode.right].isRed = false;
             }
             rotateLeft(siblingNode, true, tree);
         }
@@ -187,8 +187,8 @@ function rebalanceRemove(removeNode, replacedChild, parentIndex, tree){
     }
     else{
         if(!isNodeRed(tree.nodes[siblingNode.right])){
-            if(siblingNode.right !== -1){
-                tree.nodes[siblingNode.right].isRed = false;
+            if(!parentNode.isRed){
+                tree.nodes[siblingNode.left].isRed = false;
             }
             rotateRight(siblingNode, true, tree);
         }

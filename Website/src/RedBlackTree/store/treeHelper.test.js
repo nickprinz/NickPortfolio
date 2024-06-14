@@ -140,66 +140,140 @@ describe('red black tree', () => {
     })
 
     it("should handle a doubleblack delete with a red sibling", () => {
-        const tree = makeInitialTreeState();
-        for (let index = 8; index > 1; index--) {
-            treeAdd(index, tree);
+        const actualTest = (vals) => {
+            const tree = makeFromValues(vals);
+            expect(tree.rootIndex).toBe(1);
+            let beforeValidResult = validateTree(tree);
+            expect(beforeValidResult.isValid).toBeTruthy();
+            treeRemove(vals[0], tree);
+            expect(tree.rootIndex).toBe(3);
+            let validResult = validateTree(tree);
+            expect(validResult.isValid).toBeTruthy();
+            expect(validResult.firstBlackDepth).toBe(beforeValidResult.firstBlackDepth);
         }
-        expect(tree.rootIndex).toBe(1);
-        treeRemove(8, tree);
-        expect(tree.rootIndex).toBe(3);
-        expect(tree.nodes[0]).toBeFalsy();
-        expect(tree.nodes[1].isRed).toBeFalsy();
-        expect(tree.nodes[2].isRed).toBeTruthy();
-        expect(tree.nodes[3].isRed).toBeFalsy();
-        expect(tree.nodes[5].isRed).toBeFalsy();
+
+        const inOrderValues = [8,7,6,5,4,3,2];
+        actualTest(inOrderValues);
+        inOrderValues.forEach((x, i) => inOrderValues[i] = -x);
+        actualTest(makeNegative(inOrderValues));
     })
 
     it("should handle a doubleblack delete when a black sibling has an outer red child", () => {
-        const tree = makeInitialTreeState();
-        for (let index = 8; index > 2; index--) {
-            treeAdd(index, tree);
+        const actualTest = (vals) => {
+            const tree = makeFromValues(vals);
+            expect(tree.rootIndex).toBe(1);
+            let beforeValidResult = validateTree(tree);
+            expect(beforeValidResult.isValid).toBeTruthy();
+            treeRemove(vals[2], tree);
+            let validResult = validateTree(tree);
+            expect(validResult.isValid).toBeTruthy();
+            expect(validResult.firstBlackDepth).toBe(beforeValidResult.firstBlackDepth);
         }
-        expect(tree.rootIndex).toBe(1);
-        treeRemove(6, tree);
-        expect(tree.nodes[2]).toBeFalsy();
-        expect(tree.nodes[3].isRed).toBeTruthy();
-        expect(tree.nodes[4].isRed).toBeFalsy();
+
+        const inOrderValues = [8,7,6,5,4,3];
+        actualTest(inOrderValues);
+        inOrderValues.forEach((x, i) => inOrderValues[i] = -x);
+        actualTest(makeNegative(inOrderValues));
     })
 
     it("should handle a doubleblack delete when a black sibling has an inner red child", () => {
-        const tree = makeInitialTreeState();
-        treeAdd(7, tree);
-        treeAdd(8, tree);
-        treeAdd(4, tree);
-        treeAdd(5, tree);
-        expect(tree.rootIndex).toBe(0);
-        treeRemove(8, tree);
-        expect(tree.rootIndex).toBe(3);
-        expect(tree.nodes[0].isRed).toBeTruthy();
-        expect(tree.nodes[2].isRed).toBeTruthy();
-        expect(tree.nodes[3].isRed).toBeFalsy();
+        const actualTest = (vals) => {
+            const tree = makeFromValues(vals);
+            expect(tree.rootIndex).toBe(0);
+            let beforeValidResult = validateTree(tree);
+            expect(beforeValidResult.isValid).toBeTruthy();
+            treeRemove(vals[1], tree);
+            expect(tree.rootIndex).toBe(3);
+            let validResult = validateTree(tree);
+            expect(validResult.isValid).toBeTruthy();
+            expect(validResult.firstBlackDepth).toBe(beforeValidResult.firstBlackDepth);
+        }
+
+        const inOrderValues = [7,8,4,5];
+        actualTest(inOrderValues);
+        inOrderValues.forEach((x, i) => inOrderValues[i] = -x);
+        actualTest(makeNegative(inOrderValues));
     })
 
     it("should handle a doubleblack delete when a black sibling has 2 red children", () => {
-        const tree = makeInitialTreeState();
-        treeAdd(7, tree);
-        treeAdd(8, tree);
-        treeAdd(4, tree);
-        treeAdd(5, tree);
-        treeAdd(3, tree);
-        expect(tree.rootIndex).toBe(0);
-        treeRemove(8, tree);
-        expect(tree.rootIndex).toBe(2);
-        let validResult = validateTree(tree);
-        expect(validResult.isValid).toBeTruthy();
+
+        const actualTest = (vals) => {
+            const tree = makeFromValues(vals);
+            expect(tree.rootIndex).toBe(0);
+            let beforeValidResult = validateTree(tree);
+            expect(beforeValidResult.isValid).toBeTruthy();
+            treeRemove(vals[1], tree);
+            expect(tree.rootIndex).toBe(2);
+            let validResult = validateTree(tree);
+            expect(validResult.isValid).toBeTruthy();
+            expect(validResult.firstBlackDepth).toBe(beforeValidResult.firstBlackDepth);
+        }
+
+        const inOrderValues = [7,8,4,5,3];
+        actualTest(inOrderValues);
+        inOrderValues.forEach((x, i) => inOrderValues[i] = -x);
+        actualTest(makeNegative(inOrderValues));
     })
 
-    //need to make all tests reversable, can do this by giving an array of numbers that can be negative
-    //need to start setting colors manually and have a treeValidator, which can give true or false for valid trees and give a total black depth
-    //currently known bug, will just pass up the red when it should turn black:
-    //         b
-    //     b       b
-    //      r
+    it("should handle a doubleblack delete with black parent when a black sibling has an inner red child only", () => {
+
+        const actualTest = (vals) => {
+            const tree = makeFromValues(vals);
+            tree.nodes[0].isRed = false;
+            tree.nodes[1].isRed = false;
+            tree.nodes[2].isRed = false;
+            tree.nodes[3].isRed = true;
+            expect(tree.rootIndex).toBe(0);
+            let beforeValidResult = validateTree(tree);
+            expect(beforeValidResult.isValid).toBeTruthy();
+            treeRemove(vals[1], tree);
+            expect(tree.rootIndex).toBe(3);
+            let validResult = validateTree(tree);
+            expect(validResult.isValid).toBeTruthy();
+            expect(validResult.firstBlackDepth).toBe(beforeValidResult.firstBlackDepth);
+        }
+
+        const inOrderValues = [7,8,4,5];
+        actualTest(inOrderValues);
+        inOrderValues.forEach((x, i) => inOrderValues[i] = -x);
+        actualTest(makeNegative(inOrderValues));
+    })
+
+    it("should handle a doubleblack delete with red parent when a black sibling has an inner red child only", () => {
+
+        const actualTest = (vals) => {
+            const tree = makeFromValues(vals);
+            tree.nodes[0].isRed = true;
+            tree.nodes[1].isRed = false;
+            tree.nodes[2].isRed = false;
+            tree.nodes[3].isRed = true;
+            expect(tree.rootIndex).toBe(0);
+            let beforeValidResult = validateTree(tree);
+            expect(beforeValidResult.isValid).toBeTruthy();
+            treeRemove(vals[1], tree);
+            expect(tree.rootIndex).toBe(3);
+            let validResult = validateTree(tree);
+            expect(validResult.isValid).toBeTruthy();
+            expect(validResult.firstBlackDepth).toBe(beforeValidResult.firstBlackDepth);
+        }
+
+        const inOrderValues = [7,8,4,5];
+        actualTest(inOrderValues);
+        inOrderValues.forEach((x, i) => inOrderValues[i] = -x);
+        actualTest(makeNegative(inOrderValues));
+    })
 });
+
+function makeFromValues(vals){
+    const tree = makeInitialTreeState();
+    vals.forEach(x => treeAdd(x, tree))
+    return tree
+}
+
+function makeNegative(vals){
+    const newVals = []
+    vals.forEach(x => newVals.push(-x));
+    return newVals;
+}
 
 

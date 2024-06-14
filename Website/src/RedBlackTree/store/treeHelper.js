@@ -167,6 +167,7 @@ function rebalanceRemove(removeNode, replacedChild, parentIndex, tree){
         return;
     }
 
+    //if down here, there is a black sibling of a doubleblack node and that sibling has at least 1 red child
     if(parentNode.left === siblingNode.index){
         if(!isNodeRed(tree.nodes[siblingNode.left])){
             if(!parentNode.isRed){
@@ -181,6 +182,10 @@ function rebalanceRemove(removeNode, replacedChild, parentIndex, tree){
             }
             else{
                 siblingNode.isRed = false;
+            }
+        }else{
+            if(!parentNode.isRed){
+                tree.nodes[siblingNode.left].isRed = false;
             }
         }
         rotateRight(parentNode, false, tree);
@@ -199,6 +204,10 @@ function rebalanceRemove(removeNode, replacedChild, parentIndex, tree){
             }
             else{
                 siblingNode.isRed = false;
+            }
+        }else{
+            if(!parentNode.isRed){
+                tree.nodes[siblingNode.right].isRed = false;
             }
         }
         rotateLeft(parentNode, false, tree);

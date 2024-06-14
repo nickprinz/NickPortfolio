@@ -190,10 +190,8 @@ describe('red black tree', () => {
         expect(tree.rootIndex).toBe(0);
         treeRemove(8, tree);
         expect(tree.rootIndex).toBe(2);
-        expect(tree.nodes[0].isRed).toBeFalsy();
-        expect(tree.nodes[2].isRed).toBeTruthy();
-        expect(tree.nodes[3].isRed).toBeTruthy();
-        expect(tree.nodes[4].isRed).toBeFalsy();
+        let validResult = validateTree(tree);
+        expect(validResult.isValid).toBeTruthy();
     })
 
     //need to make all tests reversable, can do this by giving an array of numbers that can be negative

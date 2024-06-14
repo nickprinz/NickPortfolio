@@ -40,6 +40,52 @@ describe('red black tree', () => {
         expect(invalidResult.isValid).toBeFalsy();
 
     })
+
+
+    it("should not allow left child to be more than parent", () => {
+        const tree = makeInitialTreeState();
+        treeAdd(10, tree);
+        treeAdd(5, tree);
+        treeAdd(15, tree);
+
+        let validResult = validateTree(tree);
+        expect(validResult.isValid).toBeTruthy();
+
+        tree.nodes[1].value = 12;
+        let invalidResult = validateTree(tree);
+        expect(invalidResult.isValid).toBeFalsy();
+
+    })
+
+    it("should not allow left child to be more than grandparent", () => {
+        const tree = makeInitialTreeState();
+        treeAdd(10, tree);
+        treeAdd(5, tree);
+        treeAdd(15, tree);
+        treeAdd(7, tree);
+
+        let validResult = validateTree(tree);
+        expect(validResult.isValid).toBeTruthy();
+
+        tree.nodes[3].value = 12;
+        let invalidResult = validateTree(tree);
+        expect(invalidResult.isValid).toBeFalsy();
+    })
+
+    it("should detect children with the wrong parent listed", () => {
+        const tree = makeInitialTreeState();
+        treeAdd(10, tree);
+        treeAdd(5, tree);
+        treeAdd(15, tree);
+        treeAdd(7, tree);
+
+        let validResult = validateTree(tree);
+        expect(validResult.isValid).toBeTruthy();
+
+        tree.nodes[3].parent = 0;
+        let invalidResult = validateTree(tree);
+        expect(invalidResult.isValid).toBeFalsy();
+    })
 });
 
 

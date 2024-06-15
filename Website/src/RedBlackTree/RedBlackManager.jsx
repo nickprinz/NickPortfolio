@@ -8,6 +8,11 @@ import RedBlackNodeElement from "./RedBlackNodeElement";
 import LineBetween from "./LineBetween";
 import MenuButton from "./components/MenuButton";
 import FieldButton from "./components/FieldButton";
+import { useDistibuted } from "./hooks/useDistributed";
+import AddMultipleNodesModal from "./components/AddMultipleNodesModal";
+
+const LARGE_ADD_TOTAL = 100000;
+const LARGE_ADD_ITERATIONS = 10;
 
 function getRandomInt(min, max) {
     min = Math.ceil(min);
@@ -18,6 +23,7 @@ function getRandomInt(min, max) {
 export default function RedBlackManager({}){
     const dispatch = useDispatch();
     const [selectedNode, setSelectedNode] = useState(-1);
+    const [isDistributing, distCount, beginDistributing] = useDistibuted();
     const { nodes, rootIndex, freeIndexes } = useSelector(state => {
         return state.tree;
     });
@@ -26,12 +32,16 @@ export default function RedBlackManager({}){
     const handleAdd = function(value){
         dispatch(treeActions.add({value:value}));
     }
-    const handleAddMany = function(){
-        let values = [];
-        for (let index = 0; index < 100000; index++) {
-            values.push(getRandomInt(0,1000000));
-        }
-        dispatch(treeActions.add({value:values}));
+    const handleAddMany = async function(){
+
+        beginDistributing(() => {
+            let values = [];
+            for (let index = 0; index < LARGE_ADD_TOTAL/LARGE_ADD_ITERATIONS; index++) {
+                values.push(getRandomInt(0,1000000));
+            }
+            dispatch(treeActions.add({value:values}));
+
+        },LARGE_ADD_ITERATIONS,100);
     }
     const handleRemove = function(){
         if(rootIndex === -1) return;
@@ -65,12 +75,13 @@ export default function RedBlackManager({}){
             }
         }
 
+        //right now hardcode a center at 430, 300
         addRenderNodes(nodesToShow[0], 30, 10, 400, 70, onNodeClicked, 4, nodeElements, nodes, selectedNode);
     }
 
-    //right now hardcode a center at 430, 300
 
     return <>
+        <AddMultipleNodesModal open={isDistributing} max={LARGE_ADD_ITERATIONS} value={distCount} />
         <RedBlackContainer>
             <div className="bg-zinc-950">
                 <div className="flex gap-x-6 px-4 justify-between bg-zinc-800 rounded-t-md">

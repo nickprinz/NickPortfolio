@@ -170,9 +170,7 @@ function rebalanceRemove(removeNode, replacedChild, parentIndex, tree){
     //if down here, there is a black sibling of a doubleblack node and that sibling has at least 1 red child
     if(parentNode.left === siblingNode.index){
         if(!isNodeRed(tree.nodes[siblingNode.left])){
-            if(!parentNode.isRed){
-                tree.nodes[siblingNode.right].isRed = false;
-            }
+            tree.nodes[siblingNode.right].isRed = parentNode.isRed;
             rotateLeft(siblingNode, true, tree);
         }
         else if(isNodeRed(tree.nodes[siblingNode.left]) && isNodeRed(tree.nodes[siblingNode.right])){
@@ -184,17 +182,13 @@ function rebalanceRemove(removeNode, replacedChild, parentIndex, tree){
                 siblingNode.isRed = false;
             }
         }else{
-            if(!parentNode.isRed){
-                tree.nodes[siblingNode.left].isRed = false;
-            }
+            tree.nodes[siblingNode.left].isRed = parentNode.isRed;
         }
         rotateRight(parentNode, false, tree);
     }
     else{
         if(!isNodeRed(tree.nodes[siblingNode.right])){
-            if(!parentNode.isRed){
-                tree.nodes[siblingNode.left].isRed = false;
-            }
+            tree.nodes[siblingNode.left].isRed = parentNode.isRed;
             rotateRight(siblingNode, true, tree);
         }
         else if(isNodeRed(tree.nodes[siblingNode.left]) && isNodeRed(tree.nodes[siblingNode.right])){
@@ -206,9 +200,7 @@ function rebalanceRemove(removeNode, replacedChild, parentIndex, tree){
                 siblingNode.isRed = false;
             }
         }else{
-            if(!parentNode.isRed){
-                tree.nodes[siblingNode.right].isRed = false;
-            }
+            tree.nodes[siblingNode.right].isRed = parentNode.isRed;
         }
         rotateLeft(parentNode, false, tree);
     }

@@ -7,3 +7,12 @@ export function setBodyColor(extraClasses){
 export function setPageTitle(title){
     document.title = title;
 }
+
+export function pTimeout(func, ms){
+    return new Promise(resolve => setTimeout(
+        () => {
+            const result = func();
+            resolve(result);
+        }
+        , ms));
+}

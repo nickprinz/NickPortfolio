@@ -1,6 +1,5 @@
 import RedBlackModal from "./RedBlackModal";
 
-
 export default function AddMultipleNodesModal({open, value, max, children, onClose }) {
   
     return <RedBlackModal onClose={onClose} open={open}>

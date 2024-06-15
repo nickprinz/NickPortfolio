@@ -41,7 +41,7 @@ export default function RedBlackManager({}){
             }
             dispatch(treeActions.add({value:values}));
 
-        },LARGE_ADD_ITERATIONS,100);
+        },LARGE_ADD_ITERATIONS,50,700);
     }
     const handleRemove = function(){
         if(rootIndex === -1) return;

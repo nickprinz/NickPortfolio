@@ -5,13 +5,13 @@ export function useDistibuted() {
     const [isDistributing, setIsDistributing] = useState(false);
     const [count, setCount] = useState(0);
 
-    const beginDistributing = async (distributedFn, iterations = 1, delay = 1) => {
+    const beginDistributing = async (distributedFn, iterations = 1, delay = 1, initialDelay = 1) => {
         if(isDistributing){
             throw new Error("can't distribute when already distributing");
         }
         setIsDistributing(true);
         setCount(0);
-        await pTimeout(() => {}, delay);
+        await pTimeout(() => {}, initialDelay);
         for (let index = 0; index < iterations; index++) {
             distributedFn(index);
             setCount(index + 1);

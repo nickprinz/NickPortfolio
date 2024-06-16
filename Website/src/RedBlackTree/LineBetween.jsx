@@ -1,13 +1,11 @@
+import { motion } from "framer-motion";
 
 export default function LineBetween({toPoint, fromPoint, lineFn = getLine}){
     const {xPos, yPos, width, rotate} = lineFn(toPoint, fromPoint)
     
-    return <div className="absolute h-1 bg-black rounded" role="separator"
-        style={{"left": `${xPos}px`, 
-        "top": `${yPos}px`, 
-        "transform": `rotate(${rotate}deg)`,
-        "width": `${width}px`} 
-    }></div>
+    return <motion.div className="absolute h-1 bg-black rounded" role="separator"
+        transition={{ duration:.8, }} initial={{x:xPos, y:yPos, opacity:0, scale: .4, width:width, rotate:rotate}} exit={{x:xPos, y:yPos}} animate={{x:xPos, y:yPos, opacity:1, scale:1, width:width, rotate:rotate}} 
+        ></motion.div>
 }
 
 export function getLine(toPoint, fromPoint){

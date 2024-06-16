@@ -1,5 +1,5 @@
 
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 
 const nodeHalfSize = 28;//needs to match with size-xx in class
 const smallHalfSize = 18;
@@ -28,8 +28,9 @@ export default function RedBlackNodeElement({onClick, x, y, value, isRed, isSmal
     const size = isSmall ? "size-9 pointer-events-none" : "size-14";
     const halfSize = isSmall ? smallHalfSize : nodeHalfSize;
     
-    return <motion.div transition={{ duration:.3, }} onClick={onClick} className={`${alwaysClasses} ${size} ${colorClasses} ${textSize}`}
-                style={{"left": `${x-halfSize}px`, "top": `${y-halfSize}px`}} disabled={isSmall}>
+    return <motion.div transition={{ duration:.8, }} initial={{x:x, y:y, scale: .2}} exit={{x:x, y:y}} animate={{x:x, y:y, opacity:1, scale:1}} 
+                onClick={onClick} className={`${alwaysClasses} ${size} ${colorClasses} ${textSize}`}
+                style={{"left": `${-halfSize}px`, "top": `${-halfSize}px`}} disabled={isSmall}>
             <p className={`text-center size select-none font-mono`}>{value}</p>
         </motion.div>
 }

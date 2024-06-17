@@ -250,11 +250,13 @@ function addNodeToArray(newNode, tree){
     if(tree.freeIndexes.length > 0){
         newNode.index = tree.freeIndexes.pop();
         tree.nodes[newNode.index] = newNode;
-        return;
+    }
+    else{
+        newNode.index = tree.nodes.length;
+        tree.nodes.push(newNode);
     }
 
-    newNode.index = tree.nodes.length;
-    tree.nodes.push(newNode);
+    newNode.id = generateId(newNode.value, newNode.index, tree.nodes.length);
 }
 
 function removeNodeFromArray(removingNode, tree){
@@ -329,13 +331,17 @@ function findMin(startNode, nodes){
 function swapNodesInTree(node1, node2){
     //for now this just swaps the values in the object at each index
     let tempVal1 = node1.value;
+    let tempId1 = node1.id;
     node1.value = node2.value;
+    node1.id = node2.id;
     node2.value = tempVal1;
+    node2.id = tempId1;
 }
 
 function makeNewNode(v){
     return {
         value: v,
+        id:"not yet",
         isRed: false,
         left: -1,
         right: -1,
@@ -344,6 +350,13 @@ function makeNewNode(v){
         childCount: 0,
         depthBelow: 0,
     }
+}
+
+function generateId(value, index, nodeCount){
+    //need to provide a unique but also stable id on creation
+    //value+nodeCount+index when created maybe
+    //this isn't perfect, but an least isolated problem
+    return `${value}-${index}-${nodeCount}`
 }
 
 function rotateRight(pivotNode, swapColors, tree){

@@ -4,8 +4,7 @@ import {useSelector, useDispatch,} from "react-redux";
 import { treeActions } from "./store/tree";
 import {getTreeSection, getClosestReplacement} from "./store/treeHelper"
 import RedBlackContainer from "./RedBlackContainer";
-import RedBlackNodeElement from "./RedBlackNodeElement";
-import LineBetween from "./LineBetween";
+import RedBlackNodeCanvas from "./components/RedBlackCanvas";
 import MenuButton from "./components/MenuButton";
 import FieldButton from "./components/FieldButton";
 import { useDistibuted } from "./hooks/useDistributed";
@@ -60,26 +59,6 @@ export default function RedBlackManager({}){
 
     const nodesToShow = getTreeSection(selectedNode === -1 ? rootIndex : selectedNode , 2, 4, nodes);
 
-    const nodeElements = [];
-    if(nodes.length > 0){
-        //if top node is not root it needs a line up
-        if(nodesToShow[0] !== rootIndex){
-            let topNode = nodes[nodesToShow[0]];
-            let firstParent = nodes[topNode.parent];
-            //should also add node indicating how many things are up there
-            if(firstParent.left == topNode.index){
-                nodeElements.push(<LineBetween key={firstParent.index+"-toLeft"} toPoint={{x:430, y:70}} fromPoint={{x:430+200, y:20}}/>);
-            }
-            else{
-                nodeElements.push(<LineBetween key={firstParent.index+"-toRight"} toPoint={{x:430, y:70}} fromPoint={{x:430-200, y:20}}/>);
-            }
-        }
-
-        //right now hardcode a center at 430, 300
-        addRenderNodes(nodesToShow[0], 30, 10, 400, 70, onNodeClicked, 4, nodeElements, nodes, selectedNode);
-    }
-
-
     return <>
         <AddMultipleNodesModal open={isDistributing} max={LARGE_ADD_ITERATIONS} value={distCount} />
         <RedBlackContainer>
@@ -95,30 +74,9 @@ export default function RedBlackManager({}){
                     </div>
                 </div>
                 <div className="relative">
-                    {nodeElements}
+                    <RedBlackNodeCanvas nodes={nodes} nodesToShow={nodesToShow} rootIndex={rootIndex} selectedNode={selectedNode} onNodeClicked={onNodeClicked} centerX={430} topY={10} changeX={400} changeY={70}/>
                 </div>
             </div>
         </RedBlackContainer>
     </>
-    
-}
-
-function addRenderNodes(baseIndex, previousX, previousY, changeX, changeY, onNodeClicked, depth, elements, nodes, selectedNode){
-    let baseNode = nodes[baseIndex];
-    const newX = previousX + changeX;
-    const newY = previousY + changeY;
-    if(!baseNode){
-        elements.push(<RedBlackNodeElement key={newX + "-" + newY} x={newX} y={newY} value={""} isSmall/>);//need better key, for that need to know parent and if left or right null child
-        return;
-    }
-    if(depth <= 0) return;//when hitting depth, would like something indicating how many children are down there
-    elements.push(<RedBlackNodeElement key={baseIndex} onClick={() => onNodeClicked(baseIndex)} x={newX} y={newY} value={baseNode.value} isRed={baseNode.isRed} selected={baseIndex === selectedNode}/>);
-    let leftChangeX = -Math.abs(changeX/2);
-    let rightChangeX = Math.abs(changeX/2);
-    elements.push(<LineBetween key={baseIndex+"-toleft"} toPoint={{x:newX+leftChangeX, y:newY+changeY}} fromPoint={{x:newX, y:newY}}/>);
-    elements.push(<LineBetween key={baseIndex+"-toright"} toPoint={{x:newX+rightChangeX, y:newY+changeY}} fromPoint={{x:newX, y:newY}}/>);
-    addRenderNodes(baseNode.left, newX, newY, leftChangeX, changeY, onNodeClicked, depth-1, elements, nodes, selectedNode);
-    addRenderNodes(baseNode.right, newX, newY, rightChangeX, changeY, onNodeClicked, depth-1, elements, nodes, selectedNode);
-
-
 }

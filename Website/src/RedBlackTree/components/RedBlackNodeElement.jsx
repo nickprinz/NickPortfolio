@@ -5,6 +5,7 @@ const nodeHalfSize = 28;//needs to match with size-xx in class
 const smallHalfSize = 18;
 
 export default function RedBlackNodeElement({onClick, x, y, originX, originY, value, isRed, isSmall, selected}){
+    //need to refactor this to separate out of tree indicators
     if(originX === undefined) originX = x;
     if(originY === undefined) originY = y;
     let stringValue = value.toString();
@@ -16,14 +17,14 @@ export default function RedBlackNodeElement({onClick, x, y, originX, originY, va
         textSize = "text-base"
     }
 
-    let colorClasses = "from-zinc-400 via-zinc-400 to-zinc-500 hover:from-zinc-300 hover:via-zinc-300 hover:to-zinc-400 border-2 border-b-black border-x-zinc-950 border-t-zinc-900";
+    let colorClasses = "from-gray-400 via-gray-400 to-gray-500 hover:from-gray-300 hover:via-gray-300 hover:to-gray-400 border-2 border-b-black border-x-gray-950 border-t-gray-900";
     if(selected){
-        colorClasses = "from-gray-300 via-gray-300 to-gray-400 hover:from-zinc-200 hover:via-zinc-200 hover:to-zinc-300 border-2 border-b-black border-x-zinc-950 border-t-zinc-900"
+        colorClasses = "from-gray-300 via-gray-300 to-gray-400 hover:from-gray-200 hover:via-gray-200 hover:to-gray-300 border-2 border-b-black border-x-gray-950 border-t-gray-900"
     }
     if(isRed){
-        colorClasses = "from-red-400 via-red-400 to-red-500 hover:from-rose-300 hover:via-rose-300 hover:to-rose-400 border-2 border-b-black border-x-red-950 border-t-purple-900";
+        colorClasses = "from-red-400 via-red-400 to-red-500 hover:from-red-300 hover:via-red-300 hover:to-red-400 border-2 border-b-black border-x-gray-950 border-t-gray-900";
         if(selected){
-            colorClasses = "from-red-200 via-red-200 to-red-400 hover:from-rose-100 hover:via-rose-100 hover:to-rose-200 border-2 border-b-black border-x-red-950 border-t-purple-900"
+            colorClasses = "from-red-200 via-red-200 to-red-400 hover:from-red-200 hover:via-red-200 hover:to-red-300 border-2 border-b-black border-x-gray-950 border-t-gray-900"
         }
     }
 
@@ -31,7 +32,7 @@ export default function RedBlackNodeElement({onClick, x, y, originX, originY, va
     const halfSize = isSmall ? smallHalfSize : nodeHalfSize;
     const scaleX = isRed ? -1 : 1;
     
-    return <motion.div transition={{ duration:.8, }} initial={{x:originX, y:originY, scale: .2, scaleX:scaleX}} exit={{x:x, y:y}} animate={{x:x, y:y, opacity:1, scale:1, scaleX:scaleX}} 
+    return <motion.div transition={{ duration:.8, }} initial={{x:originX, y:originY, scale: 0, scaleX:scaleX}} exit={{x:x, y:y}} animate={{x:[null,x,x], y:[null,y,y], opacity:1, scale:[null,null,1], scaleX:scaleX}} 
                 onClick={onClick} className={`${alwaysClasses} ${size} ${colorClasses} ${textSize}`}
                 style={{"left": `${-halfSize}px`, "top": `${-halfSize}px`}} disabled={isSmall}>
             <motion.p initial={{scaleX:scaleX}} animate={{scaleX:scaleX}} className={`text-center size select-none font-mono`}>{value}</motion.p>

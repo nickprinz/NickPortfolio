@@ -40,7 +40,12 @@ function addRenderNodes(baseIndex, previousX, previousY, changeX, changeY, onNod
         elements.push(<RedBlackNodeElement key={`${leftChild}-${parentId}`} x={newX} y={newY} originX={previousX} originY={previousY} value={""} isSmall/>);//need better key, for that need to know parent and if left or right null child
         return;
     }
-    if(depth <= 0) return;//when hitting depth, would like something indicating how many children are down there
+    if(depth <= 0) {
+        elements.push(<RedBlackNodeElement key={baseNode.id} x={newX} y={newY} originX={previousX} originY={previousY} value={baseNode.childCount+1} onClick={() => onNodeClicked(baseIndex)} />)
+        //baseNode.childCount;
+        //baseNode.depthBelow;
+        return;
+    }
     elements.push(<RedBlackNodeElement key={baseNode.id} onClick={() => onNodeClicked(baseIndex)} x={newX} y={newY} value={baseNode.value} isRed={baseNode.isRed} selected={baseIndex === selectedNode}/>);
     let leftChangeX = -Math.abs(changeX/2);
     let rightChangeX = Math.abs(changeX/2);

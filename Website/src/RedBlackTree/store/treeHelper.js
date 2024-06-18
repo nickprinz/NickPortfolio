@@ -43,7 +43,6 @@ export function getClosestReplacement(removeIndex, nodes){
     if(removeNode.left === -1) return removeNode.right;
     if(removeNode.right === -1) return removeNode.left;
     return removeIndex;
-
 }
 
 function rebalanceAdd(newNode, tree){
@@ -135,7 +134,7 @@ function rebalanceRemove(removeNode, replacedChild, parentIndex, tree){
         replacedChild.isRed = false;
         return;//removed child takes up the removed node's black position
     }
-    console.log("double black");
+    
     let replacedChildIndex = replacedChild ? replacedChild.index : -1;
 
     let siblingNode = getOtherChild(parentIndex, replacedChildIndex, tree.nodes);

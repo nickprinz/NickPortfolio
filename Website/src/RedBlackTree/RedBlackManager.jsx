@@ -74,7 +74,7 @@ export default function RedBlackManager({}){
                     </div>
                 </div>
                 <div className="relative">
-                    <RedBlackNodeCanvas nodes={nodes} nodesToShow={nodesToShow} rootIndex={rootIndex} selectedNode={selectedNode} onNodeClicked={onNodeClicked} centerX={430} topY={10} changeX={400} changeY={70}/>
+                    <RedBlackNodeCanvas nodes={nodes} nodesToShow={nodesToShow} rootIndex={rootIndex} selectedNode={selectedNode} onNodeClicked={onNodeClicked} centerX={420} topY={50} changeX={400} changeY={70}/>
                 </div>
             </div>
         </RedBlackContainer>

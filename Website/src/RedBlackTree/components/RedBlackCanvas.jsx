@@ -1,3 +1,4 @@
+import ExteriorNodeElement from "./ExteriorNodeElement";
 import LineBetween from "./LineBetween";
 import RedBlackNodeElement from "./RedBlackNodeElement";
 
@@ -41,7 +42,7 @@ function addRenderNodes(baseIndex, previousX, previousY, changeX, changeY, onNod
         return;
     }
     if(depth <= 0) {
-        elements.push(<RedBlackNodeElement key={baseNode.id} x={newX} y={newY} originX={previousX} originY={previousY} value={baseNode.childCount+1} onClick={() => onNodeClicked(baseIndex)} />)
+        elements.push(<ExteriorNodeElement key={baseNode.id} x={newX} y={newY} originX={previousX} originY={previousY} childCount={baseNode.childCount+1} depth={baseNode.depthBelow+1} onClick={() => onNodeClicked(baseIndex)} />)
         //baseNode.childCount;
         //baseNode.depthBelow;
         return;

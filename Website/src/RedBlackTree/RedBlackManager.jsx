@@ -29,7 +29,7 @@ export default function RedBlackManager({}){
     
     const realLength = nodes.length - freeIndexes.length;
     const handleAdd = function(value){
-        dispatch(treeActions.add({value:value}));
+        dispatch(treeActions.add({value:value}));//I would like to get the newly inserted node so it can be selected immediately. having a history will probably solve that
     }
     const handleAddMany = async function(){
 
@@ -62,20 +62,18 @@ export default function RedBlackManager({}){
     return <>
         <AddMultipleNodesModal open={isDistributing} max={LARGE_ADD_ITERATIONS} value={distCount} />
         <RedBlackContainer>
-            <div className="bg-zinc-950">
-                <div className="flex gap-x-6 px-4 justify-between bg-zinc-800 rounded-t-md">
-                    <div>
-                        <FieldButton onClick={handleAdd}>Insert Number</FieldButton>
-                        <MenuButton onClick={handleAddMany}>+100,000</MenuButton>
-                    </div>
-                    <div>
-                        <MenuButton onClick={handleRemove} disabled={selectedNode === -1}>Remove</MenuButton>
-                        <MenuButton onClick={handleClear} dim disabled={realLength <= 0}>Clear All</MenuButton>
-                    </div>
+            <div className="flex gap-x-6 px-4 justify-between bg-zinc-800 rounded-t-md">
+                <div>
+                    <FieldButton onClick={handleAdd}>Insert Number</FieldButton>
+                    <MenuButton onClick={handleAddMany}>+100,000</MenuButton>
                 </div>
-                <div className="relative">
-                    <RedBlackNodeCanvas nodes={nodes} nodesToShow={nodesToShow} rootIndex={rootIndex} selectedNode={selectedNode} onNodeClicked={onNodeClicked} centerX={420} topY={50} changeX={400} changeY={70}/>
+                <div>
+                    <MenuButton onClick={handleRemove} disabled={selectedNode === -1}>Remove</MenuButton>
+                    <MenuButton onClick={handleClear} dim disabled={realLength <= 0}>Clear All</MenuButton>
                 </div>
+            </div>
+            <div className="relative">
+                <RedBlackNodeCanvas nodes={nodes} nodesToShow={nodesToShow} rootIndex={rootIndex} selectedNode={selectedNode} onNodeClicked={onNodeClicked} centerX={420} topY={50} changeX={400} changeY={70}/>
             </div>
         </RedBlackContainer>
     </>

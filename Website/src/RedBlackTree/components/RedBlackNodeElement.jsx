@@ -3,7 +3,7 @@ import NodeElement from "./NodeElement";
 
 const normalSize = 56;
 const smallSize = 36;
-
+//rework this to take in a node index and get the value from the useSelector used on the manager
 export default function RedBlackNodeElement({onClick, x, y, originX, originY, value, isRed, isSmall, selected}){
     const alwaysClasses = "rounded-full bg-radient-circle-tr via-50% to-100% hover:via-50% hover:to-100% border-2 border-b-black border-x-gray-950 border-t-gray-900";
     

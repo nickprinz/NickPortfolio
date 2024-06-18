@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 
+//this and LineBetween need to get an isProcessing from useSelector to greatly lower animation duration
 export default function NodeElement({onClick, x, y, originX, originY, children, bgClasses, textClasses, width, height, selectable, flipped}){
     
     if(originX === undefined) originX = x;

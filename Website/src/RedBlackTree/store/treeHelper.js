@@ -1,16 +1,21 @@
 export function add(value, tree) {
     const newNode = makeNewNode(value);
+    const actionHistory = makeActionHistory(`Add ${value}`);
     addNodeToArray(newNode, tree);
     if(tree.rootIndex === -1)
     {
         tree.rootIndex = newNode.index;
+        addHistoryRecordChange(actionHistory,newNode.index,"parent",-1);
         newNode.isRed = false;
+        addHistoryRecordChange(actionHistory,newNode.index,"isRed",false);
+        tree.history.push(actionHistory);
         return;
     }
     newNode.isRed = true;
     const addParent = findAddParent(newNode, tree);//will need to add these checks to the history
     addToParent(newNode, addParent, tree);
     rebalanceAdd(newNode, tree);
+    tree.history.push(actionHistory);
 }
 
 export function remove(value, tree) {
@@ -434,4 +439,28 @@ function recalculateChildCount(node, nodes){
     }
 
     node.childCount = childCount;
+}
+
+function makeActionHistory(name){
+    return {
+        name: name,
+        records: [],
+    }
+}
+
+function addHistoryRecordChange(actionHistory, nodeIndex, attributeName, attributeValue){
+    actionHistory.records.push({
+        type:"change",
+        index:nodeIndex,
+        attribute:attributeName,
+        value:attributeValue,
+    })
+}
+
+function addHistoryRecordCompare(actionHistory, primaryNodeIndex, SecondaryNodeIndex){
+    actionHistory.records.push({
+        type:"compare",
+        primaryIndex:primaryNodeIndex,
+        secondaryIndex:SecondaryNodeIndex,
+    })
 }

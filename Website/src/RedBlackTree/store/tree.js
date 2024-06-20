@@ -6,6 +6,7 @@ export function makeInitialTreeState(){
         nodes: [],
         rootIndex: -1,
         freeIndexes: [],
+        history: [],
     };
 }
 
@@ -32,6 +33,7 @@ const treeSlice = createSlice({
             state.nodes = [];
             state.rootIndex = -1;
             state.freeIndexes = [];
+            state.history = [];
         },
     }
 });

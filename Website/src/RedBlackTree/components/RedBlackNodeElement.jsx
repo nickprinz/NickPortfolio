@@ -4,8 +4,10 @@ import NodeElement from "./NodeElement";
 const normalSize = 56;
 const smallSize = 36;
 //rework this to take in a node index and get the value from the useSelector used on the manager
+//if dynamically generated classes are not showing up here, add them to TailwindColorFixer
 export default function RedBlackNodeElement({onClick, x, y, originX, originY, value, isRed, isSmall, selected}){
-    const alwaysClasses = "rounded-full bg-radient-circle-tr via-50% to-100% hover:via-50% hover:to-100% border-2 border-b-black border-x-gray-950 border-t-gray-900";
+
+    const alwaysClasses = "rounded-full border-2 border-b-black border-x-gray-950 border-t-gray-900 bg-radient-circle-tr from-60% to-100%";
     
     let stringValue = value.toString();
     let textSize = "text-xs";
@@ -23,7 +25,7 @@ export default function RedBlackNodeElement({onClick, x, y, originX, originY, va
     if(isRed){
         colorName = "red";
     }
-    const colorClasses = `from-${colorName}-${200+colorAddAmount} via-${colorName}-${300+colorAddAmount} to-${colorName}-${400+colorAddAmount} hover:from-${colorName}-${100+colorAddAmount} hover:via-${colorName}-${200+colorAddAmount} hover:to-${colorName}-${300+colorAddAmount}`;
+    const colorClasses = `from-${colorName}-${300+colorAddAmount} to-${colorName}-${500+colorAddAmount} hover:from-${colorName}-${200+colorAddAmount} hover:to-${colorName}-${300+colorAddAmount}`;
     
     const nodeSize = isSmall ? smallSize : normalSize;
     

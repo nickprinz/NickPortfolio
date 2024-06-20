@@ -57,8 +57,6 @@ export default function RedBlackManager({}){
         setSelectedNode(clickedIndex);
     }
 
-    const nodesToShow = getTreeSection(selectedNode === -1 ? rootIndex : selectedNode , 2, 4, nodes);
-
     return <>
         <AddMultipleNodesModal open={isDistributing} max={LARGE_ADD_ITERATIONS} value={distCount} />
         <RedBlackContainer>
@@ -73,7 +71,7 @@ export default function RedBlackManager({}){
                 </div>
             </div>
             <div className="relative">
-                <RedBlackNodeCanvas nodes={nodes} nodesToShow={nodesToShow} rootIndex={rootIndex} selectedNode={selectedNode} onNodeClicked={onNodeClicked} centerX={420} topY={50} changeX={400} changeY={70}/>
+                <RedBlackNodeCanvas selectedNode={selectedNode} onNodeClicked={onNodeClicked} centerX={420} topY={50} changeX={400} changeY={70}/>
             </div>
         </RedBlackContainer>
     </>

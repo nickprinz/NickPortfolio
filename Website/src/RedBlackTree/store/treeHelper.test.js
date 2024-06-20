@@ -327,6 +327,27 @@ describe('red black tree', () => {
         inOrderValues.forEach((x, i) => inOrderValues[i] = -x);
         actualTest(makeNegative(inOrderValues));
     })
+
+    it("should handle a doubleblack delete replaced with a black child while having a red sibling", () => {
+        //add 14 nodes in order, delete the second one
+        const actualTest = (vals) => {
+            const tree = makeFromValues(vals);
+            let beforeValidResult = validateTree(tree);
+            expect(beforeValidResult.isValid).toBeTruthy();
+            treeRemove(vals[1], tree);
+            let validResult = validateTree(tree);
+            expect(validResult.isValid).toBeTruthy();
+        }
+
+        const inOrderValues = [];
+        for (let index = 0; index < 14; index++) {
+            inOrderValues.push(index);
+        }
+
+        actualTest(inOrderValues);
+        inOrderValues.forEach((x, i) => inOrderValues[i] = -x);
+        actualTest(makeNegative(inOrderValues));
+    })
 });
 
 function makeFromValues(vals){

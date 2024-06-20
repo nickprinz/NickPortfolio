@@ -1,8 +1,16 @@
+import { useSelector } from "react-redux";
 import ExteriorNodeElement from "./ExteriorNodeElement";
 import LineBetween from "./LineBetween";
 import RedBlackNodeElement from "./RedBlackNodeElement";
+import { getTreeSection } from "../store/treeHelper";
 
-export default function RedBlackCanvas({ nodes, nodesToShow, rootIndex, selectedNode, onNodeClicked, centerX, topY, changeX, changeY }) {
+export default function RedBlackCanvas({ selectedNode, onNodeClicked, centerX, topY, changeX, changeY }) {
+    
+    const { nodes, rootIndex } = useSelector(state => {
+        return state.tree;
+    });
+
+    const nodesToShow = getTreeSection(selectedNode === -1 ? rootIndex : selectedNode , 2, 4, nodes);
 
     const nodeElements = [];
     if(nodes.length > 0){

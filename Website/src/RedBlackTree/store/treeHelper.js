@@ -51,34 +51,40 @@ export function getClosestReplacement(removeIndex, nodes){
 }
 
 function rebalanceAdd(newNode, tree){
-    if(newNode.parent === -1) return;
-    const parent = tree.nodes[newNode.parent];
-    if(!parent.isRed) return;//no change in black depth
-    const uncle = getSibling(parent.index, tree.nodes);
-    if(isNodeRed(uncle)){
-        uncle.isRed = false;
-        parent.isRed = false;
+    let nodeToCheck = newNode;
+    while(nodeToCheck){
+        if(nodeToCheck.parent === -1) return;
+        const parent = tree.nodes[nodeToCheck.parent];
+        if(!parent.isRed) return;//no change in black depth
+        const uncle = getSibling(parent.index, tree.nodes);
+        if(isNodeRed(uncle)){
+            uncle.isRed = false;
+            parent.isRed = false;
+            const grandParent = tree.nodes[parent.parent];
+            grandParent.isRed = true;
+            nodeToCheck = grandParent;
+            continue;
+        }
         const grandParent = tree.nodes[parent.parent];
-        grandParent.isRed = true;
-        rebalanceAdd(grandParent, tree);//change to loop later
-        return;
-    }
-    const grandParent = tree.nodes[parent.parent];
-    if(!grandParent) {
-        parent.isRed = false;//parent is root, just turn it black
-        return;
-    }
-    if(grandParent.left === parent.index){
-        if(parent.left !== newNode.index){
-            rotateLeft(parent, true, tree);
+        if(!grandParent) {
+            parent.isRed = false;//parent is root, just turn it black
+            return;
         }
-        rotateRight(grandParent, true, tree);
-    } else {
-        if(parent.right !== newNode.index){
-            rotateRight(parent, true, tree);
+        if(grandParent.left === parent.index){
+            if(parent.left !== nodeToCheck.index){
+                rotateLeft(parent, true, tree);
+            }
+            rotateRight(grandParent, true, tree);
+            return;
+        } else {
+            if(parent.right !== nodeToCheck.index){
+                rotateRight(parent, true, tree);
+            }
+            rotateLeft(grandParent, true, tree);
+            return;
         }
-        rotateLeft(grandParent, true, tree);
     }
+    
 }
 
 function getIndexUpTree(startIndex, levelsUp, nodes){
@@ -127,12 +133,13 @@ function removeSingleNode(removeNode, tree){
 
     adjustChildCount(parentIndex, -1, tree)
     removeNodeFromArray(removeNode, tree);
-    rebalanceRemove(removeNode, replacedChild, parentIndex, tree);
+    if(removeNode.isRed) return;
+    rebalanceRemove(replacedChild, parentIndex, tree);
 }
 
-function rebalanceRemove(removeNode, replacedChild, parentIndex, tree){
+function rebalanceRemove(replacedChild, parentIndex, tree){
     
-    if(removeNode.isRed || parentIndex === -1){
+    if(parentIndex === -1){
         return;
     }
     if(isNodeRed(replacedChild)){
@@ -157,7 +164,7 @@ function rebalanceRemove(removeNode, replacedChild, parentIndex, tree){
         else{
             rotateLeft(parentNode, false, tree);
         }
-        rebalanceRemove(removeNode, replacedChild, parentIndex, tree);
+        rebalanceRemove(replacedChild, parentIndex, tree);
         return;
     }
 
@@ -167,7 +174,7 @@ function rebalanceRemove(removeNode, replacedChild, parentIndex, tree){
             parentNode.isRed = false;
             return;
         }
-        rebalanceRemove(parentNode, parentNode, parentNode.parent, tree);
+        rebalanceRemove(parentNode, parentNode.parent, tree);
         return;
     }
 

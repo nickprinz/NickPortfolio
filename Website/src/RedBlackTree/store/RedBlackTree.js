@@ -1,12 +1,12 @@
 import BinarySearchTree from "./BinarySearchTree";
 export default class RedBlackTree extends BinarySearchTree{
 
-    _performAdd(value, actionHistory){
-        const newNode = super._performAdd(value, actionHistory);
+    _performAdd(value){
+        const newNode = super._performAdd(value);
         newNode.isRed = true;
         if(this._tree.rootIndex === newNode.index){
             newNode.isRed = false;
-            this._addHistoryRecordChange(actionHistory,newNode.index,"isRed",false);
+            this._addHistoryRecordChange(newNode.index,"isRed",false);
         }
         this._rebalanceAdd(newNode);
         return newNode;
@@ -37,34 +37,55 @@ export default class RedBlackTree extends BinarySearchTree{
     _rebalanceAdd(newNode){
         let nodeToCheck = newNode;
         while(nodeToCheck){
-            if(nodeToCheck.parent === -1) return;
+            if(nodeToCheck.parent === -1) {
+                this._addHistoryRecordNote(parent.index,"add root");
+                return
+            };
             const parent = this._tree.nodes[nodeToCheck.parent];
-            if(!parent.isRed) return;//no change in black depth
+            if(!parent.isRed) {
+                this._addHistoryRecordNote(parent.index,"add black parent");
+                return
+            };//no change in black depth
             const uncle = this._getSibling(parent.index, this._tree.nodes);
             if(this._isNodeRed(uncle)){
+                this._addHistoryRecordNote(uncle.index,"add red uncle");
                 uncle.isRed = false;
+                this._addHistoryRecordChange(uncle.index,"isRed",false);
                 parent.isRed = false;
+                this._addHistoryRecordChange(parent.index,"isRed",false);
                 const grandParent = this._tree.nodes[parent.parent];
                 grandParent.isRed = true;
+                this._addHistoryRecordChange(grandParent.index,"isRed",true);
                 nodeToCheck = grandParent;
+                this._addHistoryRecordNote(grandParent.index,"repeat add rebalance");
                 continue;
             }
+            this._addHistoryRecordNote(uncle ? uncle.index : -1,"add black uncle");
             const grandParent = this._tree.nodes[parent.parent];
             if(!grandParent) {
                 parent.isRed = false;//parent is root, just turn it black
+                this._addHistoryRecordChange(grandParent.index,"isRed",false);
                 return;
             }
             if(grandParent.left === parent.index){
+                this._addHistoryRecordNote(parent.index,"add parent left child");
                 if(parent.left !== nodeToCheck.index){
+                    this._addHistoryRecordNote(nodeToCheck.index,"add node right child");
                     this._rotateLeft(parent, true);
+                    this._addHistoryRecordChange(parent.index,"rotateLeft",true);
                 }
                 this._rotateRight(grandParent, true);
+                this._addHistoryRecordChange(grandParent.index,"rotateRight",true);
                 return;
             } else {
+                this._addHistoryRecordNote(parent.index,"add parent right child");
                 if(parent.right !== nodeToCheck.index){
+                    this._addHistoryRecordNote(nodeToCheck.index,"add node left child");
                     this._rotateRight(parent, true);
+                    this._addHistoryRecordChange(parent.index,"rotateRight",true);
                 }
                 this._rotateLeft(grandParent, true);
+                this._addHistoryRecordChange(grandParent.index,"rotateLeft",true);
                 return;
             }
         }

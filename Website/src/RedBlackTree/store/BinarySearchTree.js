@@ -1,16 +1,14 @@
 export default class BinarySearchTree{
-
-    //refactor this and redBlackTree to be constructed with a tree and unstatic functions that require tree or node, then tree no longer needs to be passed to every function
-    //keep an ActionHistory for its entire lifetime, which the store can pull after an action
     //add a keepHistory flag to the constructor
-    constructor(tree){
+    #keepHistory = true;
+    constructor(tree, keepHistory=true){
         this._tree = tree;
+        this.#keepHistory = keepHistory;
     }
 
     add(value) {
-        const actionHistory = this._makeActionHistory(`Add ${value}`);
-        this._performAdd(value, actionHistory);
-        this._tree.history.push(actionHistory);
+        this._makeActionHistory(`Add ${value}`);
+        this._performAdd(value);
     }
 
     remove(value) {
@@ -45,16 +43,16 @@ export default class BinarySearchTree{
         return removeIndex;
     }
 
-    _performAdd(value, actionHistory){
+    _performAdd(value){
         const newNode = this._makeNewNode(value);
         this._addNodeToArray(newNode);
         if(this._tree.rootIndex === -1)
         {
             this._tree.rootIndex = newNode.index;
-            this._addHistoryRecordChange(actionHistory,newNode.index,"parent",-1);
+            this._addHistoryRecordChange(newNode.index,"parent",-1);
             return newNode;
         }
-        const addParent = this._findAddParent(newNode);//will need to add these checks to the history
+        const addParent = this._findAddParent(newNode);
         this._addToParent(newNode, addParent);
         return newNode;
     }
@@ -62,6 +60,7 @@ export default class BinarySearchTree{
     _findAddParent(node){
         let potentialParent = this._tree.nodes[this._tree.rootIndex];
         while(potentialParent !== null){
+            this._addHistoryRecordCompare(node.index, potentialParent.index);
             if(node.value <= potentialParent.value){
                 if(potentialParent.left === -1) {
                     return potentialParent;
@@ -226,27 +225,50 @@ export default class BinarySearchTree{
     }
 
     _makeActionHistory(name){
-        return {
-            name: name,
-            records: [],
+        if(this.#keepHistory){
+            this._tree.history.push({
+                name: name,
+                records: [],
+            });
         }
     }
 
-    _addHistoryRecordChange(actionHistory, nodeIndex, attributeName, attributeValue){
-        actionHistory.records.push({
-            type:"change",
-            index:nodeIndex,
-            attribute:attributeName,
-            value:attributeValue,
-        })
+    _addHistoryRecordChange(nodeIndex, attributeName, attributeValue){
+        if(this.#keepHistory){
+            const actionHistory = this.#getCurrentHistory();
+            actionHistory.records.push({
+                type:"change",
+                index:nodeIndex,
+                attribute:attributeName,
+                value:attributeValue,
+            })
+        }
     }
     
-    _addHistoryRecordCompare(actionHistory, primaryNodeIndex, SecondaryNodeIndex){
-        actionHistory.records.push({
-            type:"compare",
-            primaryIndex:primaryNodeIndex,
-            secondaryIndex:SecondaryNodeIndex,
-        })
+    _addHistoryRecordCompare(primaryNodeIndex, SecondaryNodeIndex){
+        if(this.#keepHistory){
+            const actionHistory = this.#getCurrentHistory();
+            actionHistory.records.push({
+                type:"compare",
+                primaryIndex:primaryNodeIndex,
+                secondaryIndex:SecondaryNodeIndex,
+            })
+        }
+    }
+    
+    _addHistoryRecordNote(nodeIndex, note){
+        if(this.#keepHistory){
+            const actionHistory = this.#getCurrentHistory();
+            actionHistory.records.push({
+                type:"note",
+                index:nodeIndex,
+                note:note,
+            })
+        }
+    }
+
+    #getCurrentHistory(){
+        return this._tree.history[this._tree.history.length-1];
     }
 
     _addToParent(newNode, parentNode){
@@ -259,6 +281,7 @@ export default class BinarySearchTree{
             if(parentNode.right !== -1) throw new Error(`tried to add right child in occupied spot p:${parentNode.index}`)
             parentNode.right = newNode.index;
         }
+        this._addHistoryRecordChange(newNode.index,"parent",parentNode.index);
         this._adjustChildCount(parentNode.index, 1);
     }
 

@@ -2,7 +2,7 @@
 import { useState } from "react";
 import {useSelector, useDispatch,} from "react-redux";
 import { treeActions } from "./store/tree";
-import {getTreeSection, getClosestReplacement} from "./store/treeHelper"
+import { getClosestReplacement} from "./store/treeHelper"
 import RedBlackContainer from "./RedBlackContainer";
 import RedBlackNodeCanvas from "./components/RedBlackCanvas";
 import MenuButton from "./components/MenuButton";
@@ -23,9 +23,10 @@ export default function RedBlackManager({}){
     const dispatch = useDispatch();
     const [selectedNode, setSelectedNode] = useState(-1);
     const [isDistributing, distCount, beginDistributing] = useDistibuted();
-    const { nodes, rootIndex, freeIndexes } = useSelector(state => {
+    const tree = useSelector(state => {
         return state.tree;
     });
+    const { nodes, rootIndex, freeIndexes } = tree;
     
     const realLength = nodes.length - freeIndexes.length;
     const handleAdd = function(value){
@@ -44,7 +45,7 @@ export default function RedBlackManager({}){
     }
     const handleRemove = function(){
         if(rootIndex === -1) return;
-        const replacedIndex = getClosestReplacement(selectedNode, nodes);
+        const replacedIndex = getClosestReplacement(selectedNode, tree);
         dispatch(treeActions.removeIndex({index:selectedNode}));
         setSelectedNode(replacedIndex);
     }

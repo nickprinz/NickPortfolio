@@ -38,7 +38,7 @@ export default class RedBlackTree extends BinarySearchTree{
         let nodeToCheck = newNode;
         while(nodeToCheck){
             if(nodeToCheck.parent === -1) {
-                this._addHistoryRecordNote(parent.index,"add root");
+                this._addHistoryRecordNote(nodeToCheck.index,"add root");
                 return
             };
             const parent = this._tree.nodes[nodeToCheck.parent];
@@ -64,7 +64,7 @@ export default class RedBlackTree extends BinarySearchTree{
             const grandParent = this._tree.nodes[parent.parent];
             if(!grandParent) {
                 parent.isRed = false;//parent is root, just turn it black
-                this._addHistoryRecordChange(grandParent.index,"isRed",false);
+                this._addHistoryRecordChange(parent.index,"isRed",false);
                 return;
             }
             if(grandParent.left === parent.index){

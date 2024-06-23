@@ -9,6 +9,7 @@ import MenuButton from "./components/MenuButton";
 import FieldButton from "./components/FieldButton";
 import { useDistibuted } from "./hooks/useDistributed";
 import AddMultipleNodesModal from "./components/AddMultipleNodesModal";
+import HistoryButton from "./components/HistoryButton";
 
 const LARGE_ADD_TOTAL = 100000;
 const LARGE_ADD_ITERATIONS = 10;
@@ -65,6 +66,9 @@ export default function RedBlackManager({}){
                 <div>
                     <FieldButton onClick={handleAdd}>Insert Number</FieldButton>
                     <MenuButton onClick={handleAddMany}>+100,000</MenuButton>
+                </div>
+                <div>
+                    <HistoryButton/>
                 </div>
                 <div>
                     <MenuButton onClick={handleRemove} disabled={selectedNode === -1}>Remove</MenuButton>

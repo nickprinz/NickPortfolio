@@ -23,6 +23,7 @@ function getRandomInt(min, max) {
 export default function RedBlackManager({}){
     const dispatch = useDispatch();
     const [selectedNode, setSelectedNode] = useState(-1);
+    const [showHistory, setShowHistory] = useState(false);
     const [isDistributing, distCount, beginDistributing] = useDistibuted();
     const tree = useSelector(state => {
         return state.tree;
@@ -30,10 +31,10 @@ export default function RedBlackManager({}){
     const { nodes, rootIndex, freeIndexes } = tree;
     
     const realLength = nodes.length - freeIndexes.length;
-    const handleAdd = function(value){
+    const handleAdd = (value) => {
         dispatch(treeActions.add({value:value}));//I would like to get the newly inserted node so it can be selected immediately. having a history will probably solve that
     }
-    const handleAddMany = async function(){
+    const handleAddMany = async () => {
 
         beginDistributing(() => {
             let values = [];
@@ -44,19 +45,25 @@ export default function RedBlackManager({}){
 
         },LARGE_ADD_ITERATIONS,50,700);
     }
-    const handleRemove = function(){
+    const handleRemove = () => {
         if(rootIndex === -1) return;
         const replacedIndex = getClosestReplacement(selectedNode, tree);
         dispatch(treeActions.removeIndex({index:selectedNode}));
         setSelectedNode(replacedIndex);
     }
-    const handleClear = function(){
+    const handleClear = () => {
         if(rootIndex === -1) return;
         dispatch(treeActions.clear());
     }
 
-    const onNodeClicked = function(clickedIndex){
+    const onNodeClicked = (clickedIndex) => {
         setSelectedNode(clickedIndex);
+    }
+
+    const toggleHistory = () => {
+        setShowHistory((old) => {
+            return !old;
+        })
     }
 
     return <>
@@ -68,7 +75,7 @@ export default function RedBlackManager({}){
                     <MenuButton onClick={handleAddMany}>+100,000</MenuButton>
                 </div>
                 <div>
-                    <HistoryButton/>
+                    <HistoryButton showHistory={showHistory} onClick={toggleHistory}/>
                 </div>
                 <div>
                     <MenuButton onClick={handleRemove} disabled={selectedNode === -1}>Remove</MenuButton>

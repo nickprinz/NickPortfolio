@@ -1,3 +1,5 @@
+const historyCount = 10;
+
 export default class BinarySearchTree{
     //add a keepHistory flag to the constructor
     #keepHistory = true;
@@ -113,7 +115,7 @@ export default class BinarySearchTree{
             this._tree.nodes.push(newNode);
         }
     
-        newNode.id = this._generateId(newNode.value, newNode.index, this._tree.nodes.length);
+        newNode.id = this.#generateId();
     }
 
     _removeSingleNode(removeNode){
@@ -204,11 +206,9 @@ export default class BinarySearchTree{
         if(newChildNode) newChildNode.parent = parentNode.index;
     }
 
-    _generateId(value, index, nodeCount){
-        //need to provide a unique but also stable id on creation
-        //value+nodeCount+index when created maybe
-        //this isn't perfect, but an least isolated problem
-        return `${value}-${index}-${nodeCount}`;
+    #generateId(){
+        this._tree.nextId++;
+        return this._tree.nextId;
     }
 
     _makeNewNode(v){
@@ -226,10 +226,15 @@ export default class BinarySearchTree{
 
     _makeActionHistory(name){
         if(this.#keepHistory){
-            this._tree.history.push({
+            this._tree.history.splice(0,0,{
+                id: this._tree.nextHistoryId,
                 name: name,
                 records: [],
             });
+            this._tree.nextHistoryId++;
+            if(this._tree.history.length > historyCount){
+                this._tree.history = this._tree.history.slice(0,historyCount);
+            }
         }
     }
 

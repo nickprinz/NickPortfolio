@@ -7,6 +7,8 @@ export function makeInitialTreeState(){
         rootIndex: -1,
         freeIndexes: [],
         history: [],
+        nextId: 0,
+        nextHistoryId: 0,
     };
 }
 
@@ -30,10 +32,10 @@ const treeSlice = createSlice({
             treeRemoveIndex(action.payload.index, state);
         },
         clear(state, action){
-            state.nodes = [];
-            state.rootIndex = -1;
-            state.freeIndexes = [];
-            state.history = [];
+            const blankTree = makeInitialTreeState();
+            Object.keys(blankTree).forEach((k) => {
+                state[k] = blankTree[k];
+            })
         },
     }
 });

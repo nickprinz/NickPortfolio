@@ -1,6 +1,4 @@
 /** @type {import('tailwindcss').Config} */
-import radient from "./src/plugins/radient"
-console.log(radient)
 export default {
   content: [
     "./index.html",
@@ -9,6 +7,6 @@ export default {
   theme: {
     extend: {},
   },
-  plugins: [...radient.plugins],
+  plugins: [],
 }
 

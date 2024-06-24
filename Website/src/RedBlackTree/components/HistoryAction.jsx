@@ -6,6 +6,6 @@ export default function HistoryAction({historyAction}){
     // }
     
     return <>
-        <motion.div className="flex flex-row justify-between cursor-pointer" transition={{ duration:.4, }} initial={{opacity: 0, x:-50}} animate={{opacity:1, x:0}}><p>{historyAction.name}</p><p>{">"}</p></motion.div>
+        <motion.div className="flex flex-row px-2 justify-between cursor-pointer hover:bg-zinc-700" transition={{ duration:.4, }} initial={{opacity: 0, x:-50}} animate={{opacity:1, x:0}}><p>{historyAction.name}</p><p>{">"}</p></motion.div>
     </>
 }

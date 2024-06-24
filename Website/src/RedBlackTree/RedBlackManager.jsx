@@ -5,11 +5,11 @@ import { treeActions } from "./store/tree";
 import { getClosestReplacement} from "./store/treeHelper"
 import RedBlackContainer from "./RedBlackContainer";
 import RedBlackNodeCanvas from "./components/RedBlackCanvas";
-import MenuButton from "./components/MenuButton";
-import FieldButton from "./components/FieldButton";
 import { useDistibuted } from "./hooks/useDistributed";
 import AddMultipleNodesModal from "./components/AddMultipleNodesModal";
-import HistoryButton from "./components/HistoryButton";
+import RedBlackEditBar from "./components/RedBlackEditBar";
+import RedBlackHistoryBar from "./components/RedBlackHistoryBar";
+import MenuTab from "./components/MenuTab";
 
 const LARGE_ADD_TOTAL = 100000;
 const LARGE_ADD_ITERATIONS = 10;
@@ -23,7 +23,6 @@ function getRandomInt(min, max) {
 export default function RedBlackManager({}){
     const dispatch = useDispatch();
     const [selectedNode, setSelectedNode] = useState(-1);
-    const [showHistory, setShowHistory] = useState(false);
     const [isDistributing, distCount, beginDistributing] = useDistibuted();
     const tree = useSelector(state => {
         return state.tree;
@@ -60,28 +59,12 @@ export default function RedBlackManager({}){
         setSelectedNode(clickedIndex);
     }
 
-    const toggleHistory = () => {
-        setShowHistory((old) => {
-            return !old;
-        })
-    }
-
     return <>
         <AddMultipleNodesModal open={isDistributing} max={LARGE_ADD_ITERATIONS} value={distCount} />
         <RedBlackContainer>
-            <div className="flex gap-x-6 px-4 justify-between bg-zinc-800 rounded-t-md">
-                <div>
-                    <FieldButton onClick={handleAdd}>Insert Number</FieldButton>
-                    <MenuButton onClick={handleAddMany}>+100,000</MenuButton>
-                </div>
-                <div>
-                    <HistoryButton showHistory={showHistory} onClick={toggleHistory}/>
-                </div>
-                <div>
-                    <MenuButton onClick={handleRemove} disabled={selectedNode === -1}>Remove</MenuButton>
-                    <MenuButton onClick={handleClear} dim disabled={realLength <= 0}>Clear All</MenuButton>
-                </div>
-            </div>
+            <div><MenuTab text={"Edit"}/><MenuTab text={"History"} dim/></div>
+            <RedBlackHistoryBar />
+            <RedBlackEditBar onAdd={handleAdd} onAddMany={handleAddMany} onRemove={handleRemove} onClear={handleClear} selectedNode={selectedNode} realLength={realLength}/>
             <div className="relative">
                 <RedBlackNodeCanvas selectedNode={selectedNode} onNodeClicked={onNodeClicked} centerX={420} topY={50} changeX={400} changeY={70}/>
             </div>

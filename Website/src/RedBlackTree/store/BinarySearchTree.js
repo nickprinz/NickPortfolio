@@ -1,7 +1,6 @@
 const historyCount = 10;
 
 export default class BinarySearchTree{
-    //add a keepHistory flag to the constructor
     #keepHistory = true;
     constructor(tree, keepHistory=true){
         this._tree = tree;
@@ -273,7 +272,7 @@ export default class BinarySearchTree{
     }
 
     #getCurrentHistory(){
-        return this._tree.history[this._tree.history.length-1];
+        return this._tree.history[0];
     }
 
     _addToParent(newNode, parentNode){

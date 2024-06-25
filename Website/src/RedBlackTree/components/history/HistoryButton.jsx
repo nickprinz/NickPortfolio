@@ -1,5 +1,5 @@
-import MenuButton from "./MenuButton";
-import historyIcon from "../images/historyIcon.png"
+import MenuButton from "../MenuButton";
+import historyIcon from "../../images/historyIcon.png"
 import HistoryMenu from "./HistoryMenu";
 import { AnimatePresence, motion } from "framer-motion";
 

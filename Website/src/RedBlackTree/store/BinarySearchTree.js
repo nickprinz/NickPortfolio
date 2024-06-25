@@ -9,7 +9,8 @@ export default class BinarySearchTree{
 
     add(value) {
         this._makeActionHistory(`Add ${value}`);
-        this._performAdd(value);
+        const addedNode = this._performAdd(value);
+        return addedNode.index;
     }
 
     remove(value) {

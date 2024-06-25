@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import HistoryButton from "./HistoryButton";
-import RedBlackMenuBar from "./RedBlackMenuBar";
+import RedBlackMenuBar from "../RedBlackMenuBar";
 
 export default function RedBlackHistoryBar({}){
     const [showHistory, setShowHistory] = useState(false);

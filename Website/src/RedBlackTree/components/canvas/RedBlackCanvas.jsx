@@ -2,7 +2,7 @@ import { useSelector } from "react-redux";
 import ExteriorNodeElement from "./ExteriorNodeElement";
 import LineBetween from "./LineBetween";
 import RedBlackNodeElement from "./RedBlackNodeElement";
-import { getTreeSection } from "../store/treeHelper";
+import { getTreeSection } from "../../store/treeHelper";
 
 export default function RedBlackCanvas({ selectedNode, onNodeClicked, centerX, topY, changeX, changeY }) {
     

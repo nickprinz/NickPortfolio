@@ -23,7 +23,8 @@ const treeSlice = createSlice({
                 });
                 return;
             }
-            treeAdd(action.payload.value, state);
+            const addedIndex = treeAdd(action.payload.value, state);
+            action.payload.index = addedIndex;
         },
         remove(state, action){
             treeRemove(action.payload.value, state);

@@ -4,12 +4,13 @@ import {useSelector, useDispatch,} from "react-redux";
 import { treeActions } from "./store/tree";
 import { getClosestReplacement} from "./store/treeHelper"
 import RedBlackContainer from "./RedBlackContainer";
-import RedBlackNodeCanvas from "./components/RedBlackCanvas";
+import RedBlackNodeCanvas from "./components/canvas/RedBlackCanvas";
 import { useDistibuted } from "./hooks/useDistributed";
 import AddMultipleNodesModal from "./components/AddMultipleNodesModal";
 import RedBlackEditBar from "./components/RedBlackEditBar";
-import RedBlackHistoryBar from "./components/RedBlackHistoryBar";
+import RedBlackHistoryBar from "./components/history/RedBlackHistoryBar";
 import MenuTab from "./components/MenuTab";
+import MenuTabBar from "./components/MenuTabBar";
 
 const LARGE_ADD_TOTAL = 100000;
 const LARGE_ADD_ITERATIONS = 10;
@@ -23,6 +24,7 @@ function getRandomInt(min, max) {
 export default function RedBlackManager({}){
     const dispatch = useDispatch();
     const [selectedNode, setSelectedNode] = useState(-1);
+    const [activeTab, setActiveTab] = useState(0);
     const [isDistributing, distCount, beginDistributing] = useDistibuted();
     const tree = useSelector(state => {
         return state.tree;
@@ -31,8 +33,10 @@ export default function RedBlackManager({}){
     
     const realLength = nodes.length - freeIndexes.length;
     const handleAdd = (value) => {
-        dispatch(treeActions.add({value:value}));//I would like to get the newly inserted node so it can be selected immediately. having a history will probably solve that
+        const result = dispatch(treeActions.add({value:value}));
+        setSelectedNode(result.payload.index);
     }
+    
     const handleAddMany = async () => {
 
         beginDistributing(() => {
@@ -59,12 +63,16 @@ export default function RedBlackManager({}){
         setSelectedNode(clickedIndex);
     }
 
+    const onTabClicked = (name,index) => {
+        setActiveTab(index);
+    }
+
     return <>
         <AddMultipleNodesModal open={isDistributing} max={LARGE_ADD_ITERATIONS} value={distCount} />
         <RedBlackContainer>
-            <div><MenuTab text={"Edit"}/><MenuTab text={"History"} dim/></div>
-            <RedBlackHistoryBar />
-            <RedBlackEditBar onAdd={handleAdd} onAddMany={handleAddMany} onRemove={handleRemove} onClear={handleClear} selectedNode={selectedNode} realLength={realLength}/>
+            <MenuTabBar activeIndex={activeTab} tabNames={["Edit","History"]} onTabClicked={onTabClicked}/>
+            {activeTab === 0 && <RedBlackEditBar onAdd={handleAdd} onAddMany={handleAddMany} onRemove={handleRemove} onClear={handleClear} selectedNode={selectedNode} realLength={realLength}/>}
+            {activeTab === 1 && <RedBlackHistoryBar />}
             <div className="relative">
                 <RedBlackNodeCanvas selectedNode={selectedNode} onNodeClicked={onNodeClicked} centerX={420} topY={50} changeX={400} changeY={70}/>
             </div>

@@ -2,7 +2,8 @@ import RedBlackTree from "./RedBlackTree";
 
 export function add(value, tree) {
     const rbt = new RedBlackTree(tree);
-    rbt.add(value);
+    const addedIndex = rbt.add(value);
+    return addedIndex;
 }
 
 export function remove(value, tree) {

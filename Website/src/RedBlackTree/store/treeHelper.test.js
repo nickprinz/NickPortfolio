@@ -1,7 +1,6 @@
 import { afterEach, describe, expect, it } from 'vitest'
 import { cleanup } from '@testing-library/react';
-import { makeInitialTreeState } from './tree';
-import { add as treeAdd, remove as treeRemove, removeIndex as treeRemoveIndex } from './treeHelper';
+import { add as treeAdd, remove as treeRemove, removeIndex as treeRemoveIndex, makeInitialTreeState } from './treeHelper';
 import validateTree from "./redBlackTreeValidator";
 
 describe('red black tree', () => {

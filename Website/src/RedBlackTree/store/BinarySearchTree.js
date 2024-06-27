@@ -3,6 +3,9 @@ const historyCount = 10;
 export default class BinarySearchTree{
 
     static PARENT = "parent";
+    static CHANGE = "change";
+    static COMPARE = "compare";
+    static NOTE = "note";
 
     static MakeInitialTree(){
         return {
@@ -12,6 +15,8 @@ export default class BinarySearchTree{
             history: [],
             nextId: 0,
             nextHistoryId: 0,
+            currentHistoryAction:-1,
+            currentHistoryStep:-1,
         };
     }
 
@@ -59,6 +64,47 @@ export default class BinarySearchTree{
         return removeIndex;
     }
 
+    moveHistory(amount){
+        const moveBack = amount > 0;
+        let totalSteps = Math.round(Math.abs(amount));
+        for (let index = 0; index < totalSteps; index++) {
+            if(moveBack){
+                this._moveHistoryBack();
+            }else{
+                this._moveHistoryForward();
+            }
+        }
+    }
+
+    _moveHistoryBack(){
+        if(currentHistoryAction === this._tree.history.length || this._tree.history.length === 0){
+            return;//already at back
+        }
+        let activeAction = this._tree.history[currentHistoryAction]
+        if(currentHistoryAction === -1){
+            currentHistoryAction = this._tree.history.steps.length-1;
+            currentHistoryStep = this._tree.history.steps[currentHistoryAction].length;
+        }
+
+    }
+
+    _moveHistoryForward(){
+        if(currentHistoryAction === -1){
+            return;//already at front
+        }
+        
+    }
+
+    _undoHistoryStep(historyStep){
+        const node = this._tree.nodes[historyStep.index];
+        node[historyStep.attribute] = historyStep.oldValue;
+    }
+
+    _redoHistoryStep(historyStep){
+        const node = this._tree.nodes[historyStep.index];
+        node[historyStep.attribute] = historyStep.value;
+    }
+
     _performAdd(value){
         const newNode = this._makeNewNode(value);
         this._addNodeToArray(newNode);
@@ -76,7 +122,7 @@ export default class BinarySearchTree{
     _findAddParent(node){
         let potentialParent = this._tree.nodes[this._tree.rootIndex];
         while(potentialParent !== null){
-            this._addHistoryRecordCompare(node.index, potentialParent.index);
+            this._addHistoryStepCompare(node.index, potentialParent.index);
             if(node.value <= potentialParent.value){
                 if(potentialParent.left === -1) {
                     return potentialParent;
@@ -241,7 +287,7 @@ export default class BinarySearchTree{
     _changeValue(node, attributeName, newValue){
         const oldValue = node[attributeName];
         node[attributeName] = newValue;
-        this._addHistoryRecordChange(node.index,attributeName,newValue,oldValue);
+        this._addHistoryStepChange(node.index,attributeName,newValue,oldValue);
     }
 
     _makeActionHistory(name){
@@ -249,7 +295,7 @@ export default class BinarySearchTree{
             this._tree.history.splice(0,0,{
                 id: this._tree.nextHistoryId,
                 name: name,
-                records: [],
+                steps: [],
             });
             this._tree.nextHistoryId++;
             if(this._tree.history.length > historyCount){
@@ -258,11 +304,11 @@ export default class BinarySearchTree{
         }
     }
 
-    _addHistoryRecordChange(nodeIndex, attributeName, attributeValue, oldValue){
+    _addHistoryStepChange(nodeIndex, attributeName, attributeValue, oldValue){
         if(this.#keepHistory){
             const actionHistory = this.#getCurrentHistory();
-            actionHistory.records.push({
-                type:"change",
+            actionHistory.steps.push({
+                type:BinarySearchTree.CHANGE,
                 index:nodeIndex,
                 attribute:attributeName,
                 value:attributeValue,
@@ -271,22 +317,22 @@ export default class BinarySearchTree{
         }
     }
     
-    _addHistoryRecordCompare(primaryNodeIndex, SecondaryNodeIndex){
+    _addHistoryStepCompare(primaryNodeIndex, SecondaryNodeIndex){
         if(this.#keepHistory){
             const actionHistory = this.#getCurrentHistory();
-            actionHistory.records.push({
-                type:"compare",
+            actionHistory.steps.push({
+                type:BinarySearchTree.COMPARE,
                 primaryIndex:primaryNodeIndex,
                 secondaryIndex:SecondaryNodeIndex,
             })
         }
     }
     
-    _addHistoryRecordNote(nodeIndex, note){
+    _addHistoryStepNote(nodeIndex, note){
         if(this.#keepHistory){
             const actionHistory = this.#getCurrentHistory();
-            actionHistory.records.push({
-                type:"note",
+            actionHistory.steps.push({
+                type:BinarySearchTree.NOTE,
                 index:nodeIndex,
                 note:note,
             })

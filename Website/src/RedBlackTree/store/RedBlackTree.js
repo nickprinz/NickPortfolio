@@ -13,6 +13,40 @@ export default class RedBlackTree extends BinarySearchTree{
         this._rebalanceAdd(newNode);
         return newNode;
     }
+
+    _undoHistoryStep(historyStep){
+        if(historyStep.type !== BinarySearchTree.CHANGE){
+            super._undoHistoryStep(historyStep);
+            return;
+        }
+        if(historyStep.attribute === RedBlackTree.ROTATELEFT){
+            const node = this._tree.nodes[historyStep.index];
+            const parent = this._tree.nodes[node.parent];
+            this._rotateRight(parent, historyStep.value);
+        } else if(historyStep.attribute === RedBlackTree.ROTATERIGHT){
+            const node = this._tree.nodes[historyStep.index];
+            const parent = this._tree.nodes[node.parent];
+            this._rotateLeft(parent, historyStep.value);
+        } else{
+            super._undoHistoryStep(historyStep);
+        }
+    }
+
+    _redoHistoryStep(historyStep){
+        if(historyStep.type !== BinarySearchTree.CHANGE){
+            super._undoHistoryStep(historyStep);
+            return;
+        }
+        if(historyStep.attribute === RedBlackTree.ROTATELEFT){
+            const node = this._tree.nodes[historyStep.index];
+            this._rotateLeft(node, historyStep.value);
+        } else if(historyStep.attribute === RedBlackTree.ROTATERIGHT){
+            const node = this._tree.nodes[historyStep.index];
+            this._rotateRight(node, historyStep.value);
+        } else{
+            super._undoHistoryStep(historyStep);
+        }
+    }
     
     _removeSingleNode(removeNode){
         const parentIndex = removeNode.parent;
@@ -40,44 +74,44 @@ export default class RedBlackTree extends BinarySearchTree{
         let nodeToCheck = newNode;
         while(nodeToCheck){
             if(nodeToCheck.parent === -1) {
-                this._addHistoryRecordNote(nodeToCheck.index,"add root");
+                this._addHistoryStepNote(nodeToCheck.index,"add root");
                 return
             };
             const parent = this._tree.nodes[nodeToCheck.parent];
             if(!parent.isRed) {
-                this._addHistoryRecordNote(parent.index,"add black parent");
+                this._addHistoryStepNote(parent.index,"add black parent");
                 return
             };//no change in black depth
             const uncle = this._getSibling(parent.index, this._tree.nodes);
             if(this._isNodeRed(uncle)){
-                this._addHistoryRecordNote(uncle.index,"add red uncle");
+                this._addHistoryStepNote(uncle.index,"add red uncle");
                 this._changeValue(uncle, RedBlackTree.ISRED, false);
                 this._changeValue(parent, RedBlackTree.ISRED, false);
                 const grandParent = this._tree.nodes[parent.parent];
                 this._changeValue(grandParent, RedBlackTree.ISRED, true);
                 nodeToCheck = grandParent;
-                this._addHistoryRecordNote(grandParent.index,"repeat add rebalance");
+                this._addHistoryStepNote(grandParent.index,"repeat add rebalance");
                 continue;
             }
-            this._addHistoryRecordNote(uncle ? uncle.index : -1,"add black uncle");
+            this._addHistoryStepNote(uncle ? uncle.index : -1,"add black uncle");
             const grandParent = this._tree.nodes[parent.parent];
             if(!grandParent) {
                 this._changeValue(parent, RedBlackTree.ISRED, false);
-                this._addHistoryRecordNote(parent.index,"extra red absorbed by root");
+                this._addHistoryStepNote(parent.index,"extra red absorbed by root");
                 return;
             }
             if(grandParent.left === parent.index){
-                this._addHistoryRecordNote(parent.index,"add parent left child");
+                this._addHistoryStepNote(parent.index,"add parent left child");
                 if(parent.left !== nodeToCheck.index){
-                    this._addHistoryRecordNote(nodeToCheck.index,"add node right child");
+                    this._addHistoryStepNote(nodeToCheck.index,"add node right child");
                     this._rotateLeft(parent, true);
                 }
                 this._rotateRight(grandParent, true);
                 return;
             } else {
-                this._addHistoryRecordNote(parent.index,"add parent right child");
+                this._addHistoryStepNote(parent.index,"add parent right child");
                 if(parent.right !== nodeToCheck.index){
-                    this._addHistoryRecordNote(nodeToCheck.index,"add node left child");
+                    this._addHistoryStepNote(nodeToCheck.index,"add node left child");
                     this._rotateRight(parent, true);
                 }
                 this._rotateLeft(grandParent, true);
@@ -174,7 +208,7 @@ export default class RedBlackTree extends BinarySearchTree{
         if(newChild) newChild.parent = pivotNode.index;
         newParent.right = pivotNode.index;
         this._cleanupRotation(pivotNode, newParent, swapColors);
-        this._addHistoryRecordChange(pivotNode.index, RedBlackTree.ROTATERIGHT, swapColors);
+        this._addHistoryStepChange(pivotNode.index, RedBlackTree.ROTATERIGHT, swapColors);
     }
     
     _rotateLeft(pivotNode, swapColors){
@@ -184,7 +218,7 @@ export default class RedBlackTree extends BinarySearchTree{
         if(newChild) newChild.parent = pivotNode.index;
         newParent.left = pivotNode.index;
         this._cleanupRotation(pivotNode, newParent, swapColors);
-        this._addHistoryRecordChange(pivotNode.index, RedBlackTree.ROTATELEFT, swapColors);
+        this._addHistoryStepChange(pivotNode.index, RedBlackTree.ROTATELEFT, swapColors);
     }
     
     _cleanupRotation(pivotNode, newParent, swapColors){

@@ -30,7 +30,9 @@ export function makeInitialTreeState(){
     return RedBlackTree.MakeInitialTree();
 }
 
-export function moveHistory(amount){
+export function moveHistory(amount, tree){
+    const rbt = new RedBlackTree(tree);
+    rbt.moveHistory(amount);
 }
 
 export function moveHistoryToActionStart(){

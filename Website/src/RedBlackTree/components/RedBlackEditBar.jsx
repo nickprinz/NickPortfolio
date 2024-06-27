@@ -6,7 +6,7 @@ export default function RedBlackEditBar({onAdd, onAddMany, onRemove, onClear, se
 
     return <RedBlackMenuBar>
         <div>
-            <FieldButton onClick={onAdd}>Insert Number</FieldButton>
+            <FieldButton onClick={onAdd}>+</FieldButton>
             <MenuButton onClick={onAddMany}>+100,000</MenuButton>
         </div>
         <div>

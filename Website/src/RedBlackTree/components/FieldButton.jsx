@@ -13,7 +13,7 @@ export default function FieldButton({onClick, children}){
 
     return <>
         <div className={"contents"}>
-            <input type="number" min="-9999999" max="99999999" ref={inputRef} onKeyDown={onKeyDown}></input>
+            <input className="-mr-1" type="number" min="-9999999" max="99999999" ref={inputRef} onKeyDown={onKeyDown}></input>
             <MenuButton onClick={() => valueEntered()}>
                 {children}
             </MenuButton>

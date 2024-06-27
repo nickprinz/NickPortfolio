@@ -6,6 +6,7 @@ export default class BinarySearchTree{
     static CHANGE = "change";
     static COMPARE = "compare";
     static NOTE = "note";
+    static ROOT = "root";
 
     static MakeInitialTree(){
         return {
@@ -65,7 +66,18 @@ export default class BinarySearchTree{
     }
 
     moveHistory(amount){
-        const moveBack = amount > 0;
+        const keepH = this.#keepHistory;
+        this.#keepHistory = false;
+        //this._tree.currentHistoryAction == -1 means not in history
+        //this._tree.currentHistoryAction == 0 and this._tree.currentHistoryStep == 0 means entire first action has been undone
+        //this._tree.currentHistoryAction == 0 and this._tree.currentHistoryStep == this._tree.history[this._tree.currentHistoryAction].steps.length-1 means a single part of the first action is undone
+        //when history is pointing to a specific step:
+        //  if compare or note, need to have that info displayed
+        //  if change, does current history mean that step has been executed or will be executed?
+        //  step == -1 means starting action, step == length means finished action, step == 0 means action 0 has been executed
+        // moving back from -1 goes to 0, steps.length, then 0, steps.length-1
+        // moving back from 0,-1 goes to 1,steps.length
+        const moveBack = amount < 0;
         let totalSteps = Math.round(Math.abs(amount));
         for (let index = 0; index < totalSteps; index++) {
             if(moveBack){
@@ -74,33 +86,75 @@ export default class BinarySearchTree{
                 this._moveHistoryForward();
             }
         }
+        this.#keepHistory = keepH;
     }
 
     _moveHistoryBack(){
-        if(currentHistoryAction === this._tree.history.length || this._tree.history.length === 0){
-            return;//already at back
+        if(!this._moveHistoryIndexBack()) return;
+        const activeStep = this._getCurrentHistoryStep();
+        if(!activeStep) return;
+        if(activeStep.type === BinarySearchTree.CHANGE){
+            this._undoHistoryStep(activeStep);
         }
-        let activeAction = this._tree.history[currentHistoryAction]
-        if(currentHistoryAction === -1){
-            currentHistoryAction = this._tree.history.steps.length-1;
-            currentHistoryStep = this._tree.history.steps[currentHistoryAction].length;
+    }
+
+    _getCurrentHistoryStep(){
+        const activeAction = this._tree.history[this._tree.currentHistoryAction];
+        if(!activeAction) return null;
+        return activeAction.steps[this._tree.currentHistoryStep];
+    }
+
+    _moveHistoryIndexBack(){
+        if(this._tree.currentHistoryAction === this._tree.history.length || this._tree.history.length === 0){
+            return false;//already at back
+        }
+        if(this._tree.currentHistoryAction === -1 || this._tree.currentHistoryStep === -1){
+            this._tree.currentHistoryAction++;
+            if(this._tree.currentHistoryAction === this._tree.history.length){
+                return true;
+            }
+            this._tree.currentHistoryStep = this._tree.history[this._tree.currentHistoryAction].steps.length;
+            return true;
         }
 
+        this._tree.currentHistoryStep--;
+        return true;
     }
 
     _moveHistoryForward(){
-        if(currentHistoryAction === -1){
+        if(this._tree.currentHistoryAction === -1){
             return;//already at front
         }
         
     }
 
     _undoHistoryStep(historyStep){
+        if(historyStep.attribute === BinarySearchTree.ROOT){
+            this._tree.rootIndex = historyStep.oldValue;
+            return;
+        }
+
+        if(historyStep.attribute === BinarySearchTree.PARENT){
+            this._removeParentRelationship(historyStep.index, historyStep.value);
+            this._addParentChildRelationship(historyStep.index, historyStep.oldValue);
+            return;
+        }
+
         const node = this._tree.nodes[historyStep.index];
         node[historyStep.attribute] = historyStep.oldValue;
     }
 
     _redoHistoryStep(historyStep){
+        if(historyStep.attribute === BinarySearchTree.ROOT){
+            this._tree.rootIndex = historyStep.value;
+            return;
+        }
+
+        if(historyStep.attribute === BinarySearchTree.PARENT){
+            this._removeParentRelationship(historyStep.index, historyStep.oldValue);
+            this._addParentChildRelationship(historyStep.index, historyStep.value);
+            return;
+        }
         const node = this._tree.nodes[historyStep.index];
         node[historyStep.attribute] = historyStep.value;
     }
@@ -110,7 +164,7 @@ export default class BinarySearchTree{
         this._addNodeToArray(newNode);
         if(this._tree.rootIndex === -1)
         {
-            this._tree.rootIndex = newNode.index;
+            this._changeRoot(newNode.index);
             this._changeValue(newNode, BinarySearchTree.PARENT, -1);
             return newNode;
         }
@@ -243,27 +297,54 @@ export default class BinarySearchTree{
     _swapChildRelationship(parentIndex, childNode, newChildNode){
         if(parentIndex === -1){
             if(newChildNode === null){
-                this._tree.rootIndex = -1;
+                this._changeRoot(-1);
                 return;
             }
-            this._tree.rootIndex = newChildNode.index;
+            this._changeRoot(newChildNode.index);
             if(newChildNode) newChildNode.parent = -1;
             return;
         }
+        this._removeParentRelationship(childNode.index, parentIndex);
+        if(newChildNode){
+            this._addParentChildRelationship(newChildNode.index, parentIndex);
+        }
+    }
 
+    _removeParentRelationship(childIndex, parentIndex){
+        let childNode = this._tree.nodes[childIndex];
+        childNode.parent = -1;
+        if(parentIndex === -1){
+            return;
+        }
         let parentNode = this._tree.nodes[parentIndex];
-        let newChildIndex = newChildNode ? newChildNode.index : -1;
-        if(parentNode.left === childNode.index){
-            childNode.parent = -1;
-            parentNode.left = newChildIndex;
-        } else if(parentNode.right === childNode.index){
-            childNode.parent = -1;
-            parentNode.right = newChildIndex;
+        if(parentNode.left === childIndex){
+            parentNode.left = -1;
+        } else if(parentNode.right === childIndex){
+            parentNode.right = -1;
         }else{
             throw new Error(`no parent child relationship from ${parentNode.index} to ${childNode.index}`);
         }
-        
-        if(newChildNode) newChildNode.parent = parentNode.index;
+    }
+
+    _addParentChildRelationship(childIndex, parentIndex){
+        let childNode = this._tree.nodes[childIndex];
+        childNode.parent = parentIndex;
+        if(parentIndex === -1){
+            return;
+        }
+        let parentNode = this._tree.nodes[parentIndex];
+        if(parentNode.value <= childNode.value){
+            if(parentNode.left !== -1){
+                throw new Error(`parent node ${parentNode.index} is trying to assign an occupied left to ${childNode.index}`);
+            }
+            parentNode.left = childIndex;
+        } else{
+            if(parentNode.right !== -1){
+                throw new Error(`parent node ${parentNode.index} is trying to assign an occupied right to ${childNode.index}`);
+            }
+            parentNode.right = childIndex;
+        }
+
     }
 
     #generateId(){
@@ -288,6 +369,12 @@ export default class BinarySearchTree{
         const oldValue = node[attributeName];
         node[attributeName] = newValue;
         this._addHistoryStepChange(node.index,attributeName,newValue,oldValue);
+    }
+
+    _changeRoot(newRootIndex){
+        const oldRoot = this._tree.rootIndex;
+        this._tree.rootIndex = newRootIndex;
+        this._addHistoryStepChange(-1,BinarySearchTree.ROOT,newRootIndex,oldRoot);
     }
 
     _makeActionHistory(name){

@@ -1,6 +1,20 @@
 const historyCount = 10;
 
 export default class BinarySearchTree{
+
+    static PARENT = "parent";
+
+    static MakeInitialTree(){
+        return {
+            nodes: [],
+            rootIndex: -1,
+            freeIndexes: [],
+            history: [],
+            nextId: 0,
+            nextHistoryId: 0,
+        };
+    }
+
     #keepHistory = true;
     constructor(tree, keepHistory=true){
         this._tree = tree;
@@ -51,7 +65,7 @@ export default class BinarySearchTree{
         if(this._tree.rootIndex === -1)
         {
             this._tree.rootIndex = newNode.index;
-            this._addHistoryRecordChange(newNode.index,"parent",-1);
+            this._changeValue(newNode, BinarySearchTree.PARENT, -1);
             return newNode;
         }
         const addParent = this._findAddParent(newNode);
@@ -224,6 +238,12 @@ export default class BinarySearchTree{
         };
     }
 
+    _changeValue(node, attributeName, newValue){
+        const oldValue = node[attributeName];
+        node[attributeName] = newValue;
+        this._addHistoryRecordChange(node.index,attributeName,newValue,oldValue);
+    }
+
     _makeActionHistory(name){
         if(this.#keepHistory){
             this._tree.history.splice(0,0,{
@@ -238,7 +258,7 @@ export default class BinarySearchTree{
         }
     }
 
-    _addHistoryRecordChange(nodeIndex, attributeName, attributeValue){
+    _addHistoryRecordChange(nodeIndex, attributeName, attributeValue, oldValue){
         if(this.#keepHistory){
             const actionHistory = this.#getCurrentHistory();
             actionHistory.records.push({
@@ -246,6 +266,7 @@ export default class BinarySearchTree{
                 index:nodeIndex,
                 attribute:attributeName,
                 value:attributeValue,
+                oldValue: oldValue,
             })
         }
     }
@@ -277,7 +298,7 @@ export default class BinarySearchTree{
     }
 
     _addToParent(newNode, parentNode){
-        newNode.parent = parentNode.index;
+        this._changeValue(newNode, BinarySearchTree.PARENT, parentNode.index);
         if(newNode.value <= parentNode.value){
             if(parentNode.left !== -1) throw new Error(`tried to add left child in occupied spot p:${parentNode.index}`)
             parentNode.left = newNode.index;
@@ -286,7 +307,6 @@ export default class BinarySearchTree{
             if(parentNode.right !== -1) throw new Error(`tried to add right child in occupied spot p:${parentNode.index}`)
             parentNode.right = newNode.index;
         }
-        this._addHistoryRecordChange(newNode.index,"parent",parentNode.index);
         this._adjustChildCount(parentNode.index, 1);
     }
 

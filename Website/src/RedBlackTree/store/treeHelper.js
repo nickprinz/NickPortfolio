@@ -25,3 +25,6 @@ export function getClosestReplacement(removeIndex, tree){
     const rbt = new RedBlackTree(tree);
     return rbt.getClosestReplacement(removeIndex);
 }
+export function makeInitialTreeState(){
+    return RedBlackTree.MakeInitialTree();
+}

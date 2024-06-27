@@ -1,16 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { add as treeAdd, remove as treeRemove, removeIndex as treeRemoveIndex } from './treeHelper';
-
-export function makeInitialTreeState(){
-    return {
-        nodes: [],
-        rootIndex: -1,
-        freeIndexes: [],
-        history: [],
-        nextId: 0,
-        nextHistoryId: 0,
-    };
-}
+import { add as treeAdd, remove as treeRemove, removeIndex as treeRemoveIndex, makeInitialTreeState } from './treeHelper';
 
 const treeSlice = createSlice({
     name:"tree",

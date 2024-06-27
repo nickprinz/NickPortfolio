@@ -1,12 +1,14 @@
 import BinarySearchTree from "./BinarySearchTree";
 export default class RedBlackTree extends BinarySearchTree{
+    static ISRED = "isRed";
+    static ROTATERIGHT = "rotateRight";
+    static ROTATELEFT = "rotateLeft";
 
     _performAdd(value){
         const newNode = super._performAdd(value);
         newNode.isRed = true;
         if(this._tree.rootIndex === newNode.index){
-            newNode.isRed = false;
-            this._addHistoryRecordChange(newNode.index,"isRed",false);
+            this._changeValue(newNode, RedBlackTree.ISRED, false);
         }
         this._rebalanceAdd(newNode);
         return newNode;
@@ -49,13 +51,10 @@ export default class RedBlackTree extends BinarySearchTree{
             const uncle = this._getSibling(parent.index, this._tree.nodes);
             if(this._isNodeRed(uncle)){
                 this._addHistoryRecordNote(uncle.index,"add red uncle");
-                uncle.isRed = false;
-                this._addHistoryRecordChange(uncle.index,"isRed",false);
-                parent.isRed = false;
-                this._addHistoryRecordChange(parent.index,"isRed",false);
+                this._changeValue(uncle, RedBlackTree.ISRED, false);
+                this._changeValue(parent, RedBlackTree.ISRED, false);
                 const grandParent = this._tree.nodes[parent.parent];
-                grandParent.isRed = true;
-                this._addHistoryRecordChange(grandParent.index,"isRed",true);
+                this._changeValue(grandParent, RedBlackTree.ISRED, true);
                 nodeToCheck = grandParent;
                 this._addHistoryRecordNote(grandParent.index,"repeat add rebalance");
                 continue;
@@ -63,8 +62,8 @@ export default class RedBlackTree extends BinarySearchTree{
             this._addHistoryRecordNote(uncle ? uncle.index : -1,"add black uncle");
             const grandParent = this._tree.nodes[parent.parent];
             if(!grandParent) {
-                parent.isRed = false;//parent is root, just turn it black
-                this._addHistoryRecordChange(parent.index,"isRed",false);
+                this._changeValue(parent, RedBlackTree.ISRED, false);
+                this._addHistoryRecordNote(parent.index,"extra red absorbed by root");
                 return;
             }
             if(grandParent.left === parent.index){
@@ -72,20 +71,16 @@ export default class RedBlackTree extends BinarySearchTree{
                 if(parent.left !== nodeToCheck.index){
                     this._addHistoryRecordNote(nodeToCheck.index,"add node right child");
                     this._rotateLeft(parent, true);
-                    this._addHistoryRecordChange(parent.index,"rotateLeft",true);
                 }
                 this._rotateRight(grandParent, true);
-                this._addHistoryRecordChange(grandParent.index,"rotateRight",true);
                 return;
             } else {
                 this._addHistoryRecordNote(parent.index,"add parent right child");
                 if(parent.right !== nodeToCheck.index){
                     this._addHistoryRecordNote(nodeToCheck.index,"add node left child");
                     this._rotateRight(parent, true);
-                    this._addHistoryRecordChange(parent.index,"rotateRight",true);
                 }
                 this._rotateLeft(grandParent, true);
-                this._addHistoryRecordChange(grandParent.index,"rotateLeft",true);
                 return;
             }
         }
@@ -179,6 +174,7 @@ export default class RedBlackTree extends BinarySearchTree{
         if(newChild) newChild.parent = pivotNode.index;
         newParent.right = pivotNode.index;
         this._cleanupRotation(pivotNode, newParent, swapColors);
+        this._addHistoryRecordChange(pivotNode.index, RedBlackTree.ROTATERIGHT, swapColors);
     }
     
     _rotateLeft(pivotNode, swapColors){
@@ -188,6 +184,7 @@ export default class RedBlackTree extends BinarySearchTree{
         if(newChild) newChild.parent = pivotNode.index;
         newParent.left = pivotNode.index;
         this._cleanupRotation(pivotNode, newParent, swapColors);
+        this._addHistoryRecordChange(pivotNode.index, RedBlackTree.ROTATELEFT, swapColors);
     }
     
     _cleanupRotation(pivotNode, newParent, swapColors){

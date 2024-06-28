@@ -50,8 +50,17 @@ export default class BinarySearchTree{
     
     getTreeSection(initialIndex, levelsUp, totalLevels){
         if(this._tree.nodes.length === 0) return [];
+        if(!this._isConnectedToRoot(initialIndex)) initialIndex = this._tree.rootIndex;
         let topIndex = this._getIndexUpTree(initialIndex, levelsUp);
         return this._getNodeIndexesDown(topIndex, totalLevels);
+    }
+
+    _isConnectedToRoot(initialIndex){
+        let node = this._tree.nodes[initialIndex];
+        while(node.parent !== -1){
+            node = this._tree.nodes[node.parent];
+        }
+        return node.index === this._tree.rootIndex;
     }
 
     getClosestReplacement(removeIndex){

@@ -34,7 +34,7 @@ export default class RedBlackTree extends BinarySearchTree{
 
     _redoHistoryStep(historyStep){
         if(historyStep.type !== BinarySearchTree.CHANGE){
-            super._undoHistoryStep(historyStep);
+            super._redoHistoryStep(historyStep);
             return;
         }
         if(historyStep.attribute === RedBlackTree.ROTATELEFT){
@@ -44,7 +44,7 @@ export default class RedBlackTree extends BinarySearchTree{
             const node = this._tree.nodes[historyStep.index];
             this._rotateRight(node, historyStep.value);
         } else{
-            super._undoHistoryStep(historyStep);
+            super._redoHistoryStep(historyStep);
         }
     }
     

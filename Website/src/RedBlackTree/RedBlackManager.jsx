@@ -67,8 +67,8 @@ export default function RedBlackManager({}){
         setActiveTab(index);
     }
 
-    const handleHistoryBack = () => {
-        dispatch(treeActions.moveHistory({amount:-1}));
+    const handleHistoryMove = (amount) => {
+        dispatch(treeActions.moveHistory({amount:amount}));
     }
 
     return <>
@@ -76,7 +76,7 @@ export default function RedBlackManager({}){
         <RedBlackContainer>
             <MenuTabBar activeIndex={activeTab} tabNames={["Edit","History"]} onTabClicked={onTabClicked}/>
             {activeTab === 0 && <RedBlackEditBar onAdd={handleAdd} onAddMany={handleAddMany} onRemove={handleRemove} onClear={handleClear} selectedNode={selectedNode} realLength={realLength}/>}
-            {activeTab === 1 && <RedBlackHistoryBar onHistoryBack={handleHistoryBack} />}
+            {activeTab === 1 && <RedBlackHistoryBar onHistoryBack={() => {handleHistoryMove(-1)}} onHistoryForward={() => {handleHistoryMove(1)}} />}
             <div className="relative">
                 <RedBlackNodeCanvas selectedNode={selectedNode} onNodeClicked={onNodeClicked} centerX={420} topY={50} changeX={400} changeY={70}/>
             </div>

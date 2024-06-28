@@ -77,15 +77,7 @@ export default class BinarySearchTree{
     moveHistory(amount){
         const keepH = this.#keepHistory;
         this.#keepHistory = false;
-        //this._tree.currentHistoryAction == -1 means not in history
-        //this._tree.currentHistoryAction == 0 and this._tree.currentHistoryStep == 0 means entire first action has been undone
-        //this._tree.currentHistoryAction == 0 and this._tree.currentHistoryStep == this._tree.history[this._tree.currentHistoryAction].steps.length-1 means a single part of the first action is undone
-        //when history is pointing to a specific step:
-        //  if compare or note, need to have that info displayed
-        //  if change, does current history mean that step has been executed or will be executed?
-        //  step == -1 means starting action, step == length means finished action, step == 0 means action 0 has been executed
-        // moving back from -1 goes to 0, steps.length, then 0, steps.length-1
-        // moving back from 0,-1 goes to 1,steps.length
+        
         const moveBack = amount < 0;
         let totalSteps = Math.round(Math.abs(amount));
         for (let index = 0; index < totalSteps; index++) {
@@ -105,6 +97,15 @@ export default class BinarySearchTree{
         if(activeStep.type === BinarySearchTree.CHANGE){
             this._undoHistoryStep(activeStep);
         }
+    }
+
+    _moveHistoryForward(){
+        const activeStep = this._getCurrentHistoryStep();
+        if(!activeStep) return;
+        if(activeStep.type === BinarySearchTree.CHANGE){
+            this._redoHistoryStep(activeStep);
+        }
+        if(!this._moveHistoryIndexForward()) return;
     }
 
     _getCurrentHistoryStep(){
@@ -130,11 +131,17 @@ export default class BinarySearchTree{
         return true;
     }
 
-    _moveHistoryForward(){
+    _moveHistoryIndexForward(){
         if(this._tree.currentHistoryAction === -1){
-            return;//already at front
+            return false;//already at front
         }
-        
+        if(this._tree.currentHistoryStep === this._tree.history[this._tree.currentHistoryAction].steps.length){
+            this._tree.currentHistoryAction--;
+            this._tree.currentHistoryStep = 0;
+            return true;
+        }
+        this._tree.currentHistoryStep++;
+        return true;
     }
 
     _undoHistoryStep(historyStep){
@@ -425,14 +432,14 @@ export default class BinarySearchTree{
     }
     
     _addHistoryStepNote(nodeIndex, note){
-        if(this.#keepHistory){
-            const actionHistory = this.#getCurrentHistory();
-            actionHistory.steps.push({
-                type:BinarySearchTree.NOTE,
-                index:nodeIndex,
-                note:note,
-            })
-        }
+        // if(this.#keepHistory){
+        //     const actionHistory = this.#getCurrentHistory();
+        //     actionHistory.steps.push({
+        //         type:BinarySearchTree.NOTE,
+        //         index:nodeIndex,
+        //         note:note,
+        //     })
+        // }
     }
 
     #getCurrentHistory(){

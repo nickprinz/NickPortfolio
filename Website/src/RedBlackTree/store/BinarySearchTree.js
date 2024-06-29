@@ -101,8 +101,7 @@ export default class BinarySearchTree{
 
     _moveHistoryForward(){
         const activeStep = this._getCurrentHistoryStep();
-        if(!activeStep) return;
-        if(activeStep.type === BinarySearchTree.CHANGE){
+        if(activeStep && activeStep.type === BinarySearchTree.CHANGE){
             this._redoHistoryStep(activeStep);
         }
         if(!this._moveHistoryIndexForward()) return;
@@ -134,6 +133,12 @@ export default class BinarySearchTree{
     _moveHistoryIndexForward(){
         if(this._tree.currentHistoryAction === -1){
             return false;//already at front
+        }
+        if(this._tree.currentHistoryAction === this._tree.history.length){
+            this._tree.currentHistoryAction--;
+            this._tree.currentHistoryStep = 0;
+            return true;//at back, might display a message later, for now just start the first action
+
         }
         if(this._tree.currentHistoryStep === this._tree.history[this._tree.currentHistoryAction].steps.length){
             this._tree.currentHistoryAction--;
@@ -349,7 +354,7 @@ export default class BinarySearchTree{
             return;
         }
         let parentNode = this._tree.nodes[parentIndex];
-        if(parentNode.value <= childNode.value){
+        if(childNode.value <= parentNode.value){
             if(parentNode.left !== -1){
                 throw new Error(`parent node ${parentNode.index} is trying to assign an occupied left to ${childNode.index}`);
             }
@@ -387,9 +392,10 @@ export default class BinarySearchTree{
         this._addHistoryStepChange(node.index,attributeName,newValue,oldValue);
     }
 
-    _changeRoot(newRootIndex){
+    _changeRoot(newRootIndex, noHistory){
         const oldRoot = this._tree.rootIndex;
         this._tree.rootIndex = newRootIndex;
+        if(noHistory) return;
         this._addHistoryStepChange(-1,BinarySearchTree.ROOT,newRootIndex,oldRoot);
     }
 

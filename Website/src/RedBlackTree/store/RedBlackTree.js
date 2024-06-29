@@ -237,7 +237,7 @@ export default class RedBlackTree extends BinarySearchTree{
         this._recalculateChildCount(pivotNode);
         this._recalculateChildCount(newParent);
         if(swapColors) this._swapNodeColors(pivotNode, newParent);
-        if(pivotNode.index === this._tree.rootIndex) this._changeRoot(newParent.index);
+        if(pivotNode.index === this._tree.rootIndex) this._changeRoot(newParent.index, true);
     }
 
     _isNodeRed(node){

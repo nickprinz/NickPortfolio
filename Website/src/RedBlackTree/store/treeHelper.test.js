@@ -2,7 +2,9 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { cleanup } from '@testing-library/react';
 import { add as treeAdd, remove as treeRemove, removeIndex as treeRemoveIndex, makeInitialTreeState } from './treeHelper';
 import validateTree from "./redBlackTreeValidator";
-
+//reformat these test to be on the trees, not the helper functions
+//the helper functions just need an interface test
+//need to add history tests
 describe('red black tree', () => {
     afterEach(() => {
     cleanup();

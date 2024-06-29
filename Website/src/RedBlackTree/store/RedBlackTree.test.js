@@ -348,6 +348,51 @@ describe('red black tree', () => {
         inOrderValues.forEach((x, i) => inOrderValues[i] = -x);
         actualTest(makeNegative(inOrderValues));
     })
+
+    it("should have a history action for each add", () => {
+        const tree = makeFromValues([1,2,3]);
+        expect(tree.history.length).toBe(3);
+    })
+
+    it("should undo and redo 3 adds with a rotation needed", () => {
+        const tree = makeFromValues([1,2,3]);
+        expect(tree.history.length).toBe(3);
+        const rbt = new RedBlackTree(tree);
+        rbt.moveHistory(-1);
+
+        
+        const actualTest = (vals) => {
+            const tree = makeFromValues(vals);
+            const rbt = new RedBlackTree(tree);
+            let beforeValidResult = validateTree(tree);
+            expect(beforeValidResult.isValid).toBeTruthy();
+            while(tree.currentHistoryAction < tree.history.length){
+                rbt.moveHistory(-1);
+            }
+            rbt.moveHistory(-1);//extra undos to check for bugs
+            rbt.moveHistory(-1);
+            rbt.moveHistory(-1);
+            let fullUndoValidResult = validateTree(tree);
+            expect(fullUndoValidResult.isValid).toBeTruthy();
+            expect(fullUndoValidResult.firstBlackDepth).toBe(0);
+            expect(tree.rootIndex).toBe(-1);
+            while(tree.currentHistoryAction !== -1){
+                rbt.moveHistory(1);
+            }
+            rbt.moveHistory(1);//extra redos to check for bugs
+            rbt.moveHistory(1);
+            rbt.moveHistory(1);
+            let fullRedoValidResult = validateTree(tree);
+            expect(fullRedoValidResult.isValid).toBeTruthy();
+            expect(fullRedoValidResult.firstBlackDepth).toBe(2);
+            expect(tree.rootIndex).toBe(1);
+        }
+
+        const inOrderValues = [1,2,3];
+        actualTest(inOrderValues);
+        inOrderValues.forEach((x, i) => inOrderValues[i] = -x);
+        actualTest(makeNegative(inOrderValues));
+    })
 });
 
 function makeFromValues(vals){

@@ -97,8 +97,38 @@ export default class BinarySearchTree{
     }
 
     moveHistoryToLast(){
+        if(this._tree.history.length === 0) return;
         while(this._tree.currentHistoryAction < this._tree.history.length){
             this.moveHistory(-1);
+        }
+    }
+
+    setHistoryToPosition(actionIndex, stepIndex){
+        if(this._tree.history.length === 0) return;
+        if(actionIndex < -1) {
+            actionIndex = -1;
+            stepIndex = -1;
+        }
+        if(actionIndex > this._tree.history.length) {
+            actionIndex = this._tree.history.length;
+            stepIndex = -1;
+        }
+        stepIndex = Math.max(stepIndex, -1);
+        const targetAction = this._tree.history[actionIndex];
+        if(!targetAction) stepIndex = -1;
+        stepIndex = Math.min(stepIndex, targetAction.steps.length);
+        
+        let moveBack = true;
+        if(actionIndex === this._tree.currentHistoryAction)
+        {
+            if(stepIndex === this._tree.currentHistoryStep) return;//already there
+            moveBack = this._tree.currentHistoryStep < stepIndex;
+        } else{
+            moveBack = this._tree.currentHistoryAction < actionIndex;
+        }
+        
+        while(actionIndex !== this._tree.currentHistoryAction || stepIndex !== this._tree.currentHistoryStep){
+            moveBack ? this.moveHistory(-1) : this.moveHistory(1);
         }
     }
 

@@ -8,7 +8,7 @@ import RedBlackNodeCanvas from "./components/canvas/RedBlackCanvas";
 import { useDistibuted } from "./hooks/useDistributed";
 import AddMultipleNodesModal from "./components/AddMultipleNodesModal";
 import RedBlackEditBar from "./components/RedBlackEditBar";
-import RedBlackHistoryBar from "./components/history/RedBlackHistoryBar";
+import RedBlackHistoryBar from "./components/history/HistoryBar";
 import MenuTab from "./components/MenuTab";
 import MenuTabBar from "./components/MenuTabBar";
 
@@ -67,16 +67,12 @@ export default function RedBlackManager({}){
         setActiveTab(index);
     }
 
-    const handleHistoryMove = (amount) => {
-        dispatch(treeActions.moveHistory({amount:amount}));
-    }
-
     return <>
         <AddMultipleNodesModal open={isDistributing} max={LARGE_ADD_ITERATIONS} value={distCount} />
         <RedBlackContainer>
             <MenuTabBar activeIndex={activeTab} tabNames={["Edit","History"]} onTabClicked={onTabClicked}/>
             {activeTab === 0 && <RedBlackEditBar onAdd={handleAdd} onAddMany={handleAddMany} onRemove={handleRemove} onClear={handleClear} selectedNode={selectedNode} realLength={realLength}/>}
-            {activeTab === 1 && <RedBlackHistoryBar onHistoryBack={() => {handleHistoryMove(-1)}} onHistoryForward={() => {handleHistoryMove(1)}} />}
+            {activeTab === 1 && <RedBlackHistoryBar />}
             <div className="relative">
                 <RedBlackNodeCanvas selectedNode={selectedNode} onNodeClicked={onNodeClicked} centerX={420} topY={50} changeX={400} changeY={70}/>
             </div>

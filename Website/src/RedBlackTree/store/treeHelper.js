@@ -44,3 +44,8 @@ export function moveHistoryToCurrent(tree){
     const rbt = new RedBlackTree(tree);
     rbt.moveHistoryToCurrent();
 }
+
+export function setHistoryToPosition(actionIndex, stepIndex, tree){
+    const rbt = new RedBlackTree(tree);
+    rbt.setHistoryToPosition(actionIndex, stepIndex);
+}

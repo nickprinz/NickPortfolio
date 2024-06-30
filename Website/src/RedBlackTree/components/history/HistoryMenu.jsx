@@ -14,7 +14,7 @@ export default function HistoryMenu({currentHistory}){
 
     return <>
         <div className="bg-zinc-900 border-2 border-zinc-700 text-zinc-200 w-40 h-32 p-y select-none font-mono gap-y-1 overflow-y-scroll overflow-x-hidden">
-            {history.map((h) => <HistoryAction key={h.id} historyAction={h}/>)}
+            {history.map((h, i) => <HistoryAction key={h.id} historyAction={h} historyActionIndex={i}/>)}
         </div>
     </>
 }

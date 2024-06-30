@@ -389,6 +389,15 @@ describe('red black tree', () => {
         actualTest(inOrderValues);
         actualTest(makeNegative(inOrderValues));
     })
+
+    it("should set history to a specific spot", () => {
+        const tree = makeFromValues([1,2,3,4,5]);
+        expect(tree.history.length).toBe(5);
+        const rbt = new RedBlackTree(tree);
+        rbt.setHistoryToPosition(3,0);
+        expect(tree.currentHistoryAction).toBe(3);
+        expect(tree.currentHistoryStep).toBe(0);
+    })
 });
 
 function makeFromValues(vals){

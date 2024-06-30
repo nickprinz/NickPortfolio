@@ -6,7 +6,7 @@ import HistoryButton from "./HistoryButton";
 import RedBlackMenuBar from "../RedBlackMenuBar";
 import MenuButton from "../MenuButton";
 
-export default function RedBlackHistoryBar({onHistoryBack, onHistoryForward}){
+export default function HistoryBar({}){
     const [showHistory, setShowHistory] = useState(false);
     const dispatch = useDispatch();
 

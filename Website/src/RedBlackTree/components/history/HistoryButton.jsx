@@ -9,10 +9,10 @@ const hideAnimation = {opacity: 0, y:yAnimate};
 export default function HistoryButton({onClick, showHistory}){
     return <>
         <MenuButton onClick={onClick} active={showHistory}>
-            <img className="size-5 my-0.5 inline" src={historyIcon}/>
+            <img className="size-5 mb-0.5 inline" src={historyIcon}/>
         </MenuButton>
         
-        <motion.div className={`absolute z-10 `} transition={{ duration:.3, }} initial={hideAnimation} exit={hideAnimation} 
+        <motion.div className={`absolute z-10 ${showHistory ? "" : "pointer-events-none"}`} transition={{ duration:.3, }} initial={hideAnimation} exit={hideAnimation} 
             animate={showHistory ? showAnimation : hideAnimation} >
             <HistoryMenu/>
         </motion.div>

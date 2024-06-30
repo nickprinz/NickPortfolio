@@ -35,8 +35,12 @@ export function moveHistory(amount, tree){
     rbt.moveHistory(amount);
 }
 
-export function moveHistoryToActionStart(){
+export function moveHistoryToLast(tree){
+    const rbt = new RedBlackTree(tree);
+    rbt.moveHistoryToLast();
 }
 
-export function moveHistoryToNow(){
+export function moveHistoryToCurrent(tree){
+    const rbt = new RedBlackTree(tree);
+    rbt.moveHistoryToCurrent();
 }

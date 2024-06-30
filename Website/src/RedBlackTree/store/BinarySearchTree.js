@@ -90,6 +90,18 @@ export default class BinarySearchTree{
         this.#keepHistory = keepH;
     }
 
+    moveHistoryToCurrent(){
+        while(this._tree.currentHistoryAction !== -1){
+            this.moveHistory(1);
+        }
+    }
+
+    moveHistoryToLast(){
+        while(this._tree.currentHistoryAction < this._tree.history.length){
+            this.moveHistory(-1);
+        }
+    }
+
     _moveHistoryBack(){
         if(!this._moveHistoryIndexBack()) return;
         const activeStep = this._getCurrentHistoryStep();

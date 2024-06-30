@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { add as treeAdd, remove as treeRemove, removeIndex as treeRemoveIndex, makeInitialTreeState, moveHistory as treeMoveHistory } from './treeHelper';
+import { add as treeAdd, remove as treeRemove, removeIndex as treeRemoveIndex, makeInitialTreeState, moveHistory as treeMoveHistory, moveHistoryToCurrent, moveHistoryToLast } from './treeHelper';
 
 const treeSlice = createSlice({
     name:"tree",
@@ -23,6 +23,12 @@ const treeSlice = createSlice({
         },
         moveHistory(state, action){
             treeMoveHistory(action.payload.amount, state);
+        },
+        moveHistoryCurrent(state, action){
+            moveHistoryToCurrent(state);
+        },
+        moveHistoryToStart(state, action){
+            moveHistoryToLast(state);
         },
         clear(state, action){
             const blankTree = makeInitialTreeState();

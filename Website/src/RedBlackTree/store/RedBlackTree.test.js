@@ -298,7 +298,6 @@ describe('red black tree', () => {
 
         const inOrderValues = [7,8,4,5];
         actualTest(inOrderValues);
-        inOrderValues.forEach((x, i) => inOrderValues[i] = -x);
         actualTest(makeNegative(inOrderValues));
     })
 
@@ -323,7 +322,6 @@ describe('red black tree', () => {
 
         const inOrderValues = [7,8,4,3];
         actualTest(inOrderValues);
-        inOrderValues.forEach((x, i) => inOrderValues[i] = -x);
         actualTest(makeNegative(inOrderValues));
     })
 
@@ -345,7 +343,6 @@ describe('red black tree', () => {
         }
 
         actualTest(inOrderValues);
-        inOrderValues.forEach((x, i) => inOrderValues[i] = -x);
         actualTest(makeNegative(inOrderValues));
     })
 
@@ -390,7 +387,6 @@ describe('red black tree', () => {
 
         const inOrderValues = [1,2,3];
         actualTest(inOrderValues);
-        inOrderValues.forEach((x, i) => inOrderValues[i] = -x);
         actualTest(makeNegative(inOrderValues));
     })
 });

@@ -28,12 +28,14 @@ export default class BinarySearchTree{
     }
 
     add(value) {
+        this.moveHistoryToCurrent();
         this._makeActionHistory(`Add ${value}`);
         const addedNode = this._performAdd(value);
         return addedNode.index;
     }
 
     remove(value) {
+        this.moveHistoryToCurrent();
         let removeNode = this._findFirstNode(value);
         if(!removeNode){
             throw new Error(`could not find node ${value} in tree`)
@@ -42,6 +44,7 @@ export default class BinarySearchTree{
     }
     
     removeIndex(index) {
+        this.moveHistoryToCurrent();
         if(index < 0 || index >= this._tree.nodes.length || this._tree.nodes[index] === null){
             throw new Error(`could not find index ${index} in tree`)
         }
@@ -115,8 +118,12 @@ export default class BinarySearchTree{
         }
         stepIndex = Math.max(stepIndex, -1);
         const targetAction = this._tree.history[actionIndex];
-        if(!targetAction) stepIndex = -1;
-        stepIndex = Math.min(stepIndex, targetAction.steps.length);
+        if(!targetAction) {
+            stepIndex = -1;
+        }
+        else{
+            stepIndex = Math.min(stepIndex, targetAction.steps.length);
+        }
         
         let moveBack = true;
         if(actionIndex === this._tree.currentHistoryAction)
@@ -126,9 +133,9 @@ export default class BinarySearchTree{
         } else{
             moveBack = this._tree.currentHistoryAction < actionIndex;
         }
-        
+        const moveDir =  moveBack ? -1 : 1;
         while(actionIndex !== this._tree.currentHistoryAction || stepIndex !== this._tree.currentHistoryStep){
-            moveBack ? this.moveHistory(-1) : this.moveHistory(1);
+            this.moveHistory(moveDir);
         }
     }
 
@@ -157,6 +164,7 @@ export default class BinarySearchTree{
 
     _moveHistoryIndexBack(){
         if(this._tree.currentHistoryAction === this._tree.history.length || this._tree.history.length === 0){
+            this._tree.currentHistoryStep = -1;
             return false;//already at back
         }
         if(this._tree.currentHistoryAction === -1 || this._tree.currentHistoryStep === -1){
@@ -174,6 +182,7 @@ export default class BinarySearchTree{
 
     _moveHistoryIndexForward(){
         if(this._tree.currentHistoryAction === -1){
+            this._tree.currentHistoryStep = -1;
             return false;//already at front
         }
         if(this._tree.currentHistoryAction === this._tree.history.length){

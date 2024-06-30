@@ -398,6 +398,19 @@ describe('red black tree', () => {
         expect(tree.currentHistoryAction).toBe(3);
         expect(tree.currentHistoryStep).toBe(0);
     })
+
+    it("should not add history entries when move through history", () => {
+        const tree = makeFromValues([1,2,3,4,5]);
+        expect(tree.history.length).toBe(5);
+        const rbt = new RedBlackTree(tree);
+        const beforeCount = getHistoryStepCount(tree);
+        rbt.setHistoryToPosition(1,0);
+        rbt.setHistoryToPosition(4,3);
+        rbt.setHistoryToPosition(-11,0);
+        rbt.setHistoryToPosition(5,7);
+        const afterCount = getHistoryStepCount(tree);
+        expect(beforeCount).toBe(afterCount);
+    })
 });
 
 function makeFromValues(vals){
@@ -411,6 +424,14 @@ function makeNegative(vals){
     const newVals = []
     vals.forEach(x => newVals.push(-x));
     return newVals;
+}
+
+function getHistoryStepCount(tree){
+    let totalCount = 0;
+    tree.history.forEach(h => {
+        totalCount += h.steps.length;
+    })
+    return totalCount;
 }
 
 

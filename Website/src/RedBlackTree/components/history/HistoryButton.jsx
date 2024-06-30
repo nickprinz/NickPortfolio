@@ -12,9 +12,11 @@ export default function HistoryButton({onClick, showHistory}){
             <img className="size-5 mb-0.5 inline" src={historyIcon}/>
         </MenuButton>
         
-        <motion.div className={`absolute z-10 ${showHistory ? "" : "pointer-events-none"}`} transition={{ duration:.3, }} initial={hideAnimation} exit={hideAnimation} 
-            animate={showHistory ? showAnimation : hideAnimation} >
-            <HistoryMenu/>
-        </motion.div>
+        <AnimatePresence>
+            {showHistory && <motion.div className={`absolute z-10 ${showHistory ? "" : "pointer-events-none"}`} 
+            transition={{ duration:.3, }} initial={hideAnimation} exit={hideAnimation} animate={showAnimation} >
+                <HistoryMenu/>
+            </motion.div>}
+        </AnimatePresence>
     </>
 }

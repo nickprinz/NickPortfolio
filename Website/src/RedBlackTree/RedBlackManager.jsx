@@ -65,6 +65,7 @@ export default function RedBlackManager({}){
 
     const onTabClicked = (name,index) => {
         setActiveTab(index);
+        dispatch(treeActions.moveHistoryCurrent({}));
     }
 
     return <>

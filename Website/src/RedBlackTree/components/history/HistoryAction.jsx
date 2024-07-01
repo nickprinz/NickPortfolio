@@ -1,6 +1,7 @@
 
 import {useSelector, useDispatch,} from "react-redux";
 import { treeActions } from "../../store/tree";
+import HistoryEntry from "./HistoryEntry";
 export default function HistoryAction({historyAction, historyActionIndex}){
     const dispatch = useDispatch();
     
@@ -9,22 +10,20 @@ export default function HistoryAction({historyAction, historyActionIndex}){
     });
     // {
     //     name: name,
-    //     records: [],
+    //     steps: [],
     // }
-    //need to be able to set tree to move to the start of an action
-    //also need to set a timer to play until the end of an action
+    
     const handleClick = () => {
+        if(currentHistoryAction === historyActionIndex){
+            dispatch(treeActions.moveHistoryCurrent());
+            return;   
+        }
         dispatch(treeActions.setHistoryPosition({actionIndex: historyActionIndex, stepIndex:0}));
     }
 
-    let colorClasses = "hover:bg-zinc-400 hover:text-black";
-    if(currentHistoryAction === historyActionIndex){
-        colorClasses = "bg-zinc-500 hover:bg-zinc-300 text-black"
-    }
-    
     return <>
-        <div className={`flex flex-row px-2 justify-between cursor-pointer  ${colorClasses}` }
-        onClick={handleClick}
-        ><p>{historyAction ? historyAction.name : "Now"}</p><p>{historyAction ? ">" : ""}</p></div>
+        <HistoryEntry onClick={handleClick} isActive={currentHistoryAction === historyActionIndex} hasMore={historyAction && true}>
+            {historyAction ? historyAction.name : "Now"}
+        </HistoryEntry>
     </>
 }

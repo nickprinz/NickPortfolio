@@ -129,7 +129,7 @@ export default class BinarySearchTree{
         if(actionIndex === this._tree.currentHistoryAction)
         {
             if(stepIndex === this._tree.currentHistoryStep) return;//already there
-            moveBack = this._tree.currentHistoryStep < stepIndex;
+            moveBack = this._tree.currentHistoryStep > stepIndex;
         } else{
             moveBack = this._tree.currentHistoryAction < actionIndex;
         }

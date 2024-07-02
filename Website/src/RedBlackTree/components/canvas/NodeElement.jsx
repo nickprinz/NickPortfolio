@@ -9,7 +9,7 @@ export default function NodeElement({onClick, x, y, originX, originY, children, 
     const selectClass = selectable ? "" : "pointer-events-none";
     const scaleX = flipped ? -1 : 1;
     
-    return <motion.div transition={{ duration:.8, }} initial={{x:originX, y:originY, scale: 0, scaleX:scaleX}} exit={{scale:0}} 
+    return <motion.div transition={{ duration:.8, delay:.1}} initial={{x:originX, y:originY, scale: 0, scaleX:scaleX}} exit={{scale:0}} 
                 animate={{x:[null,x,x], y:[null,y,y], opacity:1, scale:[null,null,1], scaleX:scaleX}} 
                 onClick={onClick} className={`${alwaysClasses} ${bgClasses} ${selectClass}`}
                 style={{"left": `${-width/2}px`, "top": `${-height/2}px`, "width": `${width}px`, "height": `${height}px`}} disabled={!selectable}>

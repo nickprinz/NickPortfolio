@@ -2,6 +2,7 @@
 import {useSelector, useDispatch,} from "react-redux";
 import { treeActions } from "../../store/tree";
 import HistoryEntry from "./HistoryEntry";
+import { useCallback } from "react";
 export default function HistoryAction({historyAction, historyActionIndex}){
     const dispatch = useDispatch();
     
@@ -13,16 +14,17 @@ export default function HistoryAction({historyAction, historyActionIndex}){
     //     steps: [],
     // }
     
-    const handleClick = () => {
-        if(currentHistoryAction === historyActionIndex){
+    const isActiveAction = currentHistoryAction === historyActionIndex;
+    const handleClick = useCallback(() => {
+        if(isActiveAction){
             dispatch(treeActions.moveHistoryCurrent());
             return;   
         }
         dispatch(treeActions.setHistoryPosition({actionIndex: historyActionIndex, stepIndex:0}));
-    }
+    }, [isActiveAction]);
 
     return <>
-        <HistoryEntry onClick={handleClick} isActive={currentHistoryAction === historyActionIndex} hasMore={historyAction && true}>
+        <HistoryEntry onClick={handleClick} isActive={isActiveAction} hasMore={historyAction && true}>
             {historyAction ? historyAction.name : "Now"}
         </HistoryEntry>
     </>

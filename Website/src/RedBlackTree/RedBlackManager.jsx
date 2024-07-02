@@ -1,10 +1,10 @@
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import {useSelector, useDispatch,} from "react-redux";
 import { treeActions } from "./store/tree";
 import { getClosestReplacement} from "./store/treeHelper"
 import RedBlackContainer from "./RedBlackContainer";
-import RedBlackNodeCanvas from "./components/canvas/RedBlackCanvas";
+import RedBlackCanvas from "./components/canvas/RedBlackCanvas";
 import { useDistibuted } from "./hooks/useDistributed";
 import AddMultipleNodesModal from "./components/AddMultipleNodesModal";
 import RedBlackEditBar from "./components/RedBlackEditBar";
@@ -38,6 +38,10 @@ export default function RedBlackManager({}){
         const result = dispatch(treeActions.add({value:value}));
         setSelectedNode(result.payload.index);
     }
+
+    const onNodeClicked = useCallback((clickedIndex) => {
+        setSelectedNode(clickedIndex);
+    },[])
     
     const handleAddMany = async () => {
 
@@ -61,10 +65,6 @@ export default function RedBlackManager({}){
         dispatch(treeActions.clear());
     }
 
-    const onNodeClicked = (clickedIndex) => {
-        setSelectedNode(clickedIndex);
-    }
-
     const onTabClicked = (name,index) => {
         setActiveTab(index);
         dispatch(treeActions.moveHistoryCurrent({}));
@@ -77,7 +77,7 @@ export default function RedBlackManager({}){
             {activeTab === 0 && <RedBlackEditBar onAdd={handleAdd} onAddMany={handleAddMany} onRemove={handleRemove} onClear={handleClear} selectedNode={selectedNode} realLength={realLength}/>}
             {activeTab === 1 && <RedBlackHistoryBar />}
             <div className="relative">
-                <RedBlackNodeCanvas selectedIndex={selectedNode} onNodeClicked={onNodeClicked} width={containerWidth-22} height={containerHeight-20}/>
+                <RedBlackCanvas selectedIndex={selectedNode} onNodeClicked={onNodeClicked} width={containerWidth-22} height={containerHeight-20}/>
             </div>
         </RedBlackContainer>
     </>

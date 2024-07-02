@@ -10,8 +10,16 @@ export default function RedBlackCanvas({ selectedNode, onNodeClicked, centerX, t
         return state.tree;
     });
     const { nodes, rootIndex } = tree;
+    let focusedNode = selectedNode;
+    const activeHistoryStep = getActiveHistoryStep(tree);
+    if(activeHistoryStep){
+        if(activeHistoryStep.type === "compare"){
+            //focusedNode = nodes[activeHistoryStep.secondaryIndex];
+        }
+    }
 
-    const nodesToShow = getTreeSection(selectedNode === -1 ? rootIndex : selectedNode , 2, 4, tree);
+
+    const nodesToShow = getTreeSection(focusedNode === -1 ? rootIndex : focusedNode , 2, 4, tree);
 
     const nodeElements = [];
     if(nodes.length > 0){
@@ -33,14 +41,20 @@ export default function RedBlackCanvas({ selectedNode, onNodeClicked, centerX, t
         }
 
         //right now hardcode a center at 430, 300
-        addRenderNodes(nodesToShow[0], centerX-changeX, topY, changeX, changeY, onNodeClicked, 4, nodeElements, nodes, selectedNode, leftChild, parentIndex);
+        addRenderNodes(nodesToShow[0], centerX-changeX, topY, changeX, changeY, onNodeClicked, 4, nodeElements, nodes, focusedNode, leftChild, parentIndex);
     }
   
     return <div >
             {nodeElements}
         </div>
   }
-  
+function getActiveHistoryStep(tree){
+    const activeAction = tree.history[tree.currentHistoryAction];
+    if(!activeAction) return null;
+    const activeStep = activeAction.steps[tree.currentHistoryStep];
+    return activeStep;
+
+}
 
 function addRenderNodes(baseIndex, previousX, previousY, changeX, changeY, onNodeClicked, depth, elements, nodes, selectedNode, leftChild, parentId){
     let baseNode = nodes[baseIndex];

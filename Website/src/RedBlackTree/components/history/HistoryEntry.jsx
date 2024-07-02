@@ -1,9 +1,9 @@
 
 export default function HistoryEntry({isActive, onClick, hasMore, children}){
 
-    let colorClasses = "hover:bg-zinc-400 hover:text-black";
+    let colorClasses = "hover:bg-zinc-300 hover:text-black";
     if(isActive){
-        colorClasses = "bg-zinc-500 hover:bg-zinc-300 text-black"
+        colorClasses = "bg-zinc-400 hover:bg-zinc-200 text-black";
     }
     
     return <>

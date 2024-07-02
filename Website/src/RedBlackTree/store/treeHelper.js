@@ -6,6 +6,15 @@ export function add(value, tree) {
     return addedIndex;
 }
 
+export function addMany(values, tree) {
+    const rbt = new RedBlackTree(tree, false);
+    let lastAddedIndex = -1;
+    values.forEach(value => {
+        lastAddedIndex = rbt.add(value);
+    });
+    return lastAddedIndex;
+}
+
 export function remove(value, tree) {
     const rbt = new RedBlackTree(tree);
     rbt.remove(value);

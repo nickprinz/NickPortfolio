@@ -25,6 +25,9 @@ export default class BinarySearchTree{
     constructor(tree, keepHistory=true){
         this._tree = tree;
         this.#keepHistory = keepHistory;
+        if(!this.#keepHistory){
+            this._clearHistory();
+        }
     }
 
     add(value) {
@@ -229,6 +232,12 @@ export default class BinarySearchTree{
         }
         const node = this._tree.nodes[historyStep.index];
         node[historyStep.attribute] = historyStep.value;
+    }
+
+    _clearHistory(){
+        this._tree.history = [];
+        this._tree.currentHistoryAction = -1;
+        this._tree.currentHistoryStep = -1;
     }
 
     _performAdd(value){

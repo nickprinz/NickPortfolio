@@ -14,6 +14,8 @@ import MenuTabBar from "./components/MenuTabBar";
 
 const LARGE_ADD_TOTAL = 100000;
 const LARGE_ADD_ITERATIONS = 10;
+const containerHeight = 580;
+const containerWidth = 860;
 
 function getRandomInt(min, max) {
     min = Math.ceil(min);
@@ -70,12 +72,12 @@ export default function RedBlackManager({}){
 
     return <>
         <AddMultipleNodesModal open={isDistributing} max={LARGE_ADD_ITERATIONS} value={distCount} />
-        <RedBlackContainer>
+        <RedBlackContainer width={containerWidth} height={containerHeight}>
             <MenuTabBar activeIndex={activeTab} tabNames={["Edit","History"]} onTabClicked={onTabClicked}/>
             {activeTab === 0 && <RedBlackEditBar onAdd={handleAdd} onAddMany={handleAddMany} onRemove={handleRemove} onClear={handleClear} selectedNode={selectedNode} realLength={realLength}/>}
             {activeTab === 1 && <RedBlackHistoryBar />}
             <div className="relative">
-                <RedBlackNodeCanvas selectedNode={selectedNode} onNodeClicked={onNodeClicked} centerX={420} topY={50} changeX={400} changeY={70}/>
+                <RedBlackNodeCanvas selectedIndex={selectedNode} onNodeClicked={onNodeClicked} width={containerWidth-22} height={containerHeight-20}/>
             </div>
         </RedBlackContainer>
     </>

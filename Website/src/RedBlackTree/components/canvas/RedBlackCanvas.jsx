@@ -13,13 +13,9 @@ export default function RedBlackCanvas({ selectedIndex, onNodeClicked, width, he
         return state.tree;
     });
     const { nodes, rootIndex } = tree;
-    let focusedIndex = selectedIndex;
     const activeHistoryStep = getActiveHistoryStep(tree);
-    if(activeHistoryStep){
-        if(activeHistoryStep.type === "compare"){
-            focusedIndex = activeHistoryStep.secondaryIndex;
-        }
-    }
+    let focusedIndex = getFocusedIndex(activeHistoryStep);
+    if(focusedIndex === null) focusedIndex = selectedIndex;
 
     //getTreeSection probably doesn't below in the tree
     //also need a better tree section. when showing the root, current behavior is fine
@@ -65,30 +61,71 @@ function getActiveHistoryStep(tree){
 
 function getDisplaySection(focusedIndex, nodes, rootIndex){
     let focusedNode = nodes[focusedIndex];
-    //for all the below cases, need to figure out how to position on the x axis
-    //want to have focused node as centered as possible
-    //right now the width can be considered 4, with a line from root be 1
-
-    //root is already centered
-
-    //child root will now have 1 less level on the sibling side
-    //if x moves based on how many more levels down, that will free up sibling side from need 2 to 1, with another 1 from root to focus to allow perfect center
-
-    //for a right-right child, it is currently positioned at 3.5
-    //if I remove 2 levels from the uncle side it will need .5 instead of 2, which would allow the focus to move over to 2
-
-    //a total of 6 possible heights
-    //root/grandparent sits at 2, with an off chart node at 1 if something is above that
-    //focused child of root sits at 3, other focused sit at 4
-    //5 is the last full level of children, 6 is off chart node if not null
-
     if(focusedIndex === rootIndex){
-        //root case, show all children 3 levels down 
+        //levelsAbove = 0;
+        let top = getChildrenBelow(focusedIndex, 1, 0, 4, nodes);
+        return top;
     } else if(focusedNode.parent === rootIndex){
-        //child root case, show 2 levels down, parent, sibling, and sibling children
+        //levelsAbove = 1;
+        let parentNode = nodes[focusedIndex.parent];
+        let focused = {index: focusedIndex, y:2, x:0, left:null, right:null};
+        let top = {index: parentNode.index, y:1, x:0, left:null, right:null};
+        if(parentNode.left === focusedIndex){
+            top.x = .5;
+            top.left = focused;
+            top.right = getChildrenBelow(parentNode.right, 2, .25, 2, nodes);
+        } else{
+            top.x = -.5;
+            top.right = focused;
+            top.left = getChildrenBelow(parentNode.left, 2, -.25, 2, nodes);
+        }
+        return top;
     } else{
-        //down at least 2 levels, show up to parent and over to uncle. also show children and nephews
+        //levelsAbove = 2;
+        let focused = {index: focusedIndex, y:3, x:0, left:null, right:null};
+        let parentNode = nodes[focusedIndex.parent];
+        let focusedParent = {index: parentNode.index, y:2, x:0, left:null, right:null};
+        if(parentNode.left === focusedIndex){
+            focusedParent.x = .25;
+            focusedParent.left = focused;
+            focusedParent.right = getChildrenBelow(parentNode.right, 3, .5, 2, nodes);
+        } else{
+            focusedParent.x = -.25;
+            focusedParent.right = focused;
+            focusedParent.left = getChildrenBelow(parentNode.left, 3, -.5, 2, nodes);
+        }
+        let topNode = nodes[parentNode.parent];
+        let top = {index: topNode.index, y:1, x:0, left:null, right:null};
+        if(topNode.left === parentNode.index){
+            top.x = focusedParent.x + .5;
+            top.left = focusedParent;
+            top.right = getChildrenBelow(topNode.right, 2, top.x + .125, 2, nodes);
+        } else{
+            top.x = focusedParent.x - .5;
+            top.right = focusedParent;
+            top.left = getChildrenBelow(topNode.left, 2, top.x - .125, 2, nodes);
+        }
     }
+}
+
+function getChildrenBelow(index, currentY, currentX, moreLevels, nodes){
+    if(index === -1) return null;
+    const node = nodes[index];
+    const value = {index: index, y:currentY, x:currentX, left:null, right:null};
+    if(moreLevels == 0){
+        value.out = true;
+        return value;
+    }
+    const xDiff = Math.pow(2,moreLevels-1)*0.0625;//3=.5 2=.25 1=.125
+    if(node.left !== -1){
+        value.left = getChildrenBelow(node.left, currentY+1, currentX-xDiff,moreLevels-1,nodes);
+    }
+    if(node.right !== -1){
+        value.right = getChildrenBelow(node.right, currentY+1, currentX+xDiff,moreLevels-1,nodes);
+    }
+
+    return value;
+
 }
 
 function addRenderNodes(baseIndex, previousX, previousY, changeX, changeY, onNodeClicked, depth, elements, nodes, selectedNode, leftChild, parentId){
@@ -113,4 +150,18 @@ function addRenderNodes(baseIndex, previousX, previousY, changeX, changeY, onNod
     addRenderNodes(baseNode.left, newX, newY, leftChangeX, changeY, onNodeClicked, depth-1, elements, nodes, selectedNode, true, baseNode.id);
     addRenderNodes(baseNode.right, newX, newY, rightChangeX, changeY, onNodeClicked, depth-1, elements, nodes, selectedNode, false, baseNode.id);
 
+}
+
+function getFocusedIndex(activeHistoryStep){
+    if(!activeHistoryStep) return null;
+    if(activeHistoryStep.type === "compare"){
+        return activeHistoryStep.secondaryIndex;
+    }
+    if(activeHistoryStep.type === "change"){
+        if(activeHistoryStep.attribute === "parent"){
+            return activeHistoryStep.value;
+        }
+        return activeHistoryStep.index;
+    }
+    return null
 }

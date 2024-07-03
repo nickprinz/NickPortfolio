@@ -6,6 +6,7 @@ import { getTreeSection } from "../../store/treeHelper";
 
 export default function RedBlackCanvas({ selectedIndex, onNodeClicked, width, height }) {
     const centerX = width/2;
+    const halfWidth = centerX - 20;
     const changeY = height/8;
     const changeX = (width-30)/2;
     const topY = 50;
@@ -19,7 +20,7 @@ export default function RedBlackCanvas({ selectedIndex, onNodeClicked, width, he
     const positionerTop = getDisplaySection(focusedIndex, nodes, rootIndex);
 
     const toCanvasSpace = ({x,y}) => {
-        let cx = centerX + (centerX*x);
+        let cx = centerX + (halfWidth*x);
         let cy = changeY * y;
         return {x: cx, y: cy};
     }
@@ -43,11 +44,15 @@ export default function RedBlackCanvas({ selectedIndex, onNodeClicked, width, he
 
     const displayThings = []
     const parentStack = [];
-    if(nodes[positionerTop?.index]?.parent !== -1){
+    const topParentNode = nodes[nodes[positionerTop?.index]?.parent];
+    if(topParentNode){
         //need to add an out node and line for top parent
-        let topNode = nodes[positionerTop?.index];
-        let topParentNode = nodes[topNode?.parent];
-        //displayThings.push(makeLine(`${topParentNode?.id}-line-to-left`, {x: positionerTop.x + .125, y: positionerTop.y + .5},  {x: positionerTop.x, y: positionerTop.y}));
+        let topNode = nodes[positionerTop.index];
+        const topLeftChild = topParentNode.left === topNode.index;
+        const topParentPositioner = {x:positionerTop.x + (topLeftChild?.2:-.2), y:positionerTop.y - .5, index:topParentNode.index, out:true}
+        displayThings.push(makeLine(`${topParentNode?.id}-line-to-${topLeftChild?"left":"right"}`, {x: topParentPositioner.x, y: topParentPositioner.y},  {x: positionerTop.x, y: positionerTop.y}));
+        //need to adjust depth and childcount being passed in to count all above instead of all below
+        displayThings.push(makeNode(topParentPositioner, topParentNode.id, {x: topParentPositioner.x, y: topParentPositioner.y}));
 
     }
 
@@ -139,42 +144,47 @@ function getDisplaySection(focusedIndex, nodes, rootIndex){
 
 function getDisplaySectionOneBelowRoot(focusedNode, nodes){
     let parentNode = nodes[focusedNode.parent];
-    let focused = getChildrenBelow(focusedNode.index, 2, 0, 3, nodes);
+    let isLeftChild = parentNode.left === focusedNode.index;
+    let focused = getChildrenBelow(focusedNode.index, 2, isLeftChild ? -.15 : .15, 3, nodes);
     let top = {index: parentNode.index, y:1, x:0, left:makeNull(), right:makeNull()};
-    if(parentNode.left === focusedNode.index){
-        top.x = .5;
+    if(isLeftChild){
+        top.x = focused.x + .5;
         top.left = focused;
-        top.right = getChildrenBelow(parentNode.right, 2, .75, 2, nodes);
+        top.right = getChildrenBelow(parentNode.right, 2, top.x + .25, 2, nodes);
     } else{
-        top.x = -.5;
+        top.x = focused.x + -.5;
         top.right = focused;
-        top.left = getChildrenBelow(parentNode.left, 2, -.75, 2, nodes);
+        top.left = getChildrenBelow(parentNode.left, 2, top.x - .25, 2, nodes);
     }
     return top;
 }
 function getDisplaySectionTwoOrMoreBelowRoot(focusedNode, nodes){
-    let focused = getChildrenBelow(focusedNode.index, 3, 0, 2, nodes);
     let parentNode = nodes[focusedNode.parent];
-    let focusedParent = {index: parentNode.index, y:2, x:0, left:makeNull(), right:makeNull()};
-    if(parentNode.left === focusedNode.index){
-        focusedParent.x = .25;
-        focusedParent.left = focused;
-        focusedParent.right = getChildrenBelow(parentNode.right, 3, .5, 2, nodes);
-    } else{
-        focusedParent.x = -.25;
-        focusedParent.right = focused;
-        focusedParent.left = getChildrenBelow(parentNode.left, 3, -.5, 2, nodes);
-    }
+    let isLeftChild = parentNode.left === focusedNode.index;
     let topNode = nodes[parentNode.parent];
-    let top = {index: topNode.index, y:1, x:0, left:makeNull(), right:makeNull()};
-    if(topNode.left === parentNode.index){
-        top.x = focusedParent.x + .4;
-        top.left = focusedParent;
-        top.right = getChildrenBelow(topNode.right, 2, top.x + .125, 1, nodes);
+    let isParentLeftChild = topNode.left === parentNode.index;
+    let focusedX = isParentLeftChild ? -.2 : .2;
+    focusedX += isLeftChild ? -.1 : .1;
+    let focused = getChildrenBelow(focusedNode.index, 3, focusedX, 2, nodes);
+    let focusedParent = {index: parentNode.index, y:2, x:0, left:makeNull(), right:makeNull()};
+    if(isLeftChild){
+        focusedParent.x = focused.x + .25;
+        focusedParent.left = focused;
+        focusedParent.right = getChildrenBelow(parentNode.right, 3, focused.x + .5, 2, nodes);
     } else{
-        top.x = focusedParent.x - .4;
+        focusedParent.x = focused.x + -.25;
+        focusedParent.right = focused;
+        focusedParent.left = getChildrenBelow(parentNode.left, 3, focused.x - .5, 2, nodes);
+    }
+    let top = {index: topNode.index, y:1, x:0, left:makeNull(), right:makeNull()};
+    if(isParentLeftChild){
+        top.x = focusedParent.x + .45;
+        top.left = focusedParent;
+        top.right = getChildrenBelow(topNode.right, 2, top.x + .32, 2, nodes);
+    } else{
+        top.x = focusedParent.x - .45;
         top.right = focusedParent;
-        top.left = getChildrenBelow(topNode.left, 2, top.x - .125, 1, nodes);
+        top.left = getChildrenBelow(topNode.left, 2, top.x - .32, 2, nodes);
     }
     return top;
 }

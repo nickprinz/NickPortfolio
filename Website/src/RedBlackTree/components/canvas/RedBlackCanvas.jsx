@@ -16,8 +16,73 @@ export default function RedBlackCanvas({ selectedIndex, onNodeClicked, width, he
     const activeHistoryStep = getActiveHistoryStep(tree);
     let focusedIndex = getFocusedIndex(activeHistoryStep);
     if(focusedIndex === null) focusedIndex = selectedIndex;
+    const positionerTop = getDisplaySection(focusedIndex, nodes, rootIndex);
 
-    //getTreeSection probably doesn't below in the tree
+    const toCanvasSpace = ({x,y}) => {
+        let cx = centerX + (centerX*x);
+        let cy = changeY * y;
+        return {x: cx, y: cy};
+    }
+
+    function makeLine(key, fromPoint, toPoint){
+        return <LineBetween key={key} fromPoint={toCanvasSpace(fromPoint)} toPoint={toCanvasSpace(toPoint)}/>
+    }
+
+    function makeNode(positioner, id, parentPoint){
+        const canvasPoint = toCanvasSpace({x: positioner.x, y: positioner.y});
+        const parentCanvasPoint = toCanvasSpace({x: parentPoint.x, y: parentPoint.y});
+        if(positioner.isNull){
+            return <RedBlackNodeElement key={id} x={canvasPoint.x} y={canvasPoint.y} originX={parentCanvasPoint.x} originY={parentCanvasPoint.y} value={""} isSmall/>;
+        }
+        const node = nodes[positioner.index];
+        if(positioner.out){
+            return <ExteriorNodeElement key={id} onClick={() => onNodeClicked(node.index)} x={canvasPoint.x} y={canvasPoint.y} originX={parentCanvasPoint.x} originY={parentCanvasPoint.y} childCount={node.childCount+1} depth={node.depthBelow+1} />;
+        }
+        return <RedBlackNodeElement key={id} onClick={() => onNodeClicked(node.index)} x={canvasPoint.x} y={canvasPoint.y} value={node.value} isRed={node.isRed} selected={node.index === focusedIndex}/>;
+    }
+
+    const displayThings = []
+    const parentStack = [];
+    if(nodes[positionerTop?.index]?.parent !== -1){
+        //need to add an out node and line for top parent
+        let topNode = nodes[positionerTop?.index];
+        let topParentNode = nodes[topNode?.parent];
+        //displayThings.push(makeLine(`${topParentNode?.id}-line-to-left`, {x: positionerTop.x + .125, y: positionerTop.y + .5},  {x: positionerTop.x, y: positionerTop.y}));
+
+    }
+
+    let nextPositioner = positionerTop;
+    let leftChild = true;
+    let lastParent = positionerTop;
+    while(nextPositioner !== null){
+        let nextNode = nodes[nextPositioner.index];
+        if(nextPositioner.isNull || nextPositioner.out){
+            //add nullNode display or out display
+            const endKeyText = nextNode ? nextNode.id : `${lastParent.index}-null-${leftChild?"left":"right"}`;
+            displayThings.push(makeNode(nextPositioner, endKeyText, {x: lastParent.x, y: lastParent.y}));
+            if(parentStack.length === 0){
+                break;
+            }
+            let stackedParent = parentStack.pop()
+            lastParent = stackedParent;
+            leftChild = false;
+            nextPositioner = stackedParent.right;
+            nextNode = nodes[nextPositioner.index];
+            if(nextPositioner.isNull || nextPositioner.out) continue;
+        }
+        //add displayTop
+        //add lines to children
+        const node = nodes[nextPositioner.index];
+        displayThings.push(makeNode(nextPositioner, nextNode.id,{x: nextPositioner.x, y: nextPositioner.y}));
+        displayThings.push(makeLine(`${node.id}-line-to-left`, {x:nextPositioner.x, y : nextPositioner.y},  {x:nextPositioner.left.x, y : nextPositioner.left.y}));
+        displayThings.push(makeLine(`${node.id}-line-to-right`, {x:nextPositioner.x, y : nextPositioner.y},  {x:nextPositioner.right.x, y : nextPositioner.right.y}));
+        parentStack.push(nextPositioner);
+        lastParent = nextPositioner;
+        leftChild = true;
+        nextPositioner = nextPositioner.left;
+    }
+
+    //getTreeSection probably doesn't belong in the tree
     //also need a better tree section. when showing the root, current behavior is fine
     //want to try to center the selected node better, which could be done when farther on the tree by not showing the cousin's children
     //removing that layer would allow the uncle's tree to take up less space, which could push the selected node closer to center
@@ -47,7 +112,7 @@ export default function RedBlackCanvas({ selectedIndex, onNodeClicked, width, he
     }
   
     return <div >
-            {nodeElements}
+            {displayThings}
         </div>
 }
 
@@ -60,63 +125,69 @@ function getActiveHistoryStep(tree){
 }
 
 function getDisplaySection(focusedIndex, nodes, rootIndex){
+    if(focusedIndex === -1) return null;
     let focusedNode = nodes[focusedIndex];
     if(focusedIndex === rootIndex){
-        //levelsAbove = 0;
         let top = getChildrenBelow(focusedIndex, 1, 0, 4, nodes);
         return top;
     } else if(focusedNode.parent === rootIndex){
-        //levelsAbove = 1;
-        let parentNode = nodes[focusedIndex.parent];
-        let focused = {index: focusedIndex, y:2, x:0, left:null, right:null};
-        let top = {index: parentNode.index, y:1, x:0, left:null, right:null};
-        if(parentNode.left === focusedIndex){
-            top.x = .5;
-            top.left = focused;
-            top.right = getChildrenBelow(parentNode.right, 2, .25, 2, nodes);
-        } else{
-            top.x = -.5;
-            top.right = focused;
-            top.left = getChildrenBelow(parentNode.left, 2, -.25, 2, nodes);
-        }
-        return top;
+        return getDisplaySectionOneBelowRoot(focusedNode, nodes);
     } else{
-        //levelsAbove = 2;
-        let focused = {index: focusedIndex, y:3, x:0, left:null, right:null};
-        let parentNode = nodes[focusedIndex.parent];
-        let focusedParent = {index: parentNode.index, y:2, x:0, left:null, right:null};
-        if(parentNode.left === focusedIndex){
-            focusedParent.x = .25;
-            focusedParent.left = focused;
-            focusedParent.right = getChildrenBelow(parentNode.right, 3, .5, 2, nodes);
-        } else{
-            focusedParent.x = -.25;
-            focusedParent.right = focused;
-            focusedParent.left = getChildrenBelow(parentNode.left, 3, -.5, 2, nodes);
-        }
-        let topNode = nodes[parentNode.parent];
-        let top = {index: topNode.index, y:1, x:0, left:null, right:null};
-        if(topNode.left === parentNode.index){
-            top.x = focusedParent.x + .5;
-            top.left = focusedParent;
-            top.right = getChildrenBelow(topNode.right, 2, top.x + .125, 2, nodes);
-        } else{
-            top.x = focusedParent.x - .5;
-            top.right = focusedParent;
-            top.left = getChildrenBelow(topNode.left, 2, top.x - .125, 2, nodes);
-        }
+        return getDisplaySectionTwoOrMoreBelowRoot(focusedNode, nodes);
     }
 }
 
+function getDisplaySectionOneBelowRoot(focusedNode, nodes){
+    let parentNode = nodes[focusedNode.parent];
+    let focused = getChildrenBelow(focusedNode.index, 2, 0, 3, nodes);
+    let top = {index: parentNode.index, y:1, x:0, left:makeNull(), right:makeNull()};
+    if(parentNode.left === focusedNode.index){
+        top.x = .5;
+        top.left = focused;
+        top.right = getChildrenBelow(parentNode.right, 2, .75, 2, nodes);
+    } else{
+        top.x = -.5;
+        top.right = focused;
+        top.left = getChildrenBelow(parentNode.left, 2, -.75, 2, nodes);
+    }
+    return top;
+}
+function getDisplaySectionTwoOrMoreBelowRoot(focusedNode, nodes){
+    let focused = getChildrenBelow(focusedNode.index, 3, 0, 2, nodes);
+    let parentNode = nodes[focusedNode.parent];
+    let focusedParent = {index: parentNode.index, y:2, x:0, left:makeNull(), right:makeNull()};
+    if(parentNode.left === focusedNode.index){
+        focusedParent.x = .25;
+        focusedParent.left = focused;
+        focusedParent.right = getChildrenBelow(parentNode.right, 3, .5, 2, nodes);
+    } else{
+        focusedParent.x = -.25;
+        focusedParent.right = focused;
+        focusedParent.left = getChildrenBelow(parentNode.left, 3, -.5, 2, nodes);
+    }
+    let topNode = nodes[parentNode.parent];
+    let top = {index: topNode.index, y:1, x:0, left:makeNull(), right:makeNull()};
+    if(topNode.left === parentNode.index){
+        top.x = focusedParent.x + .4;
+        top.left = focusedParent;
+        top.right = getChildrenBelow(topNode.right, 2, top.x + .125, 1, nodes);
+    } else{
+        top.x = focusedParent.x - .4;
+        top.right = focusedParent;
+        top.left = getChildrenBelow(topNode.left, 2, top.x - .125, 1, nodes);
+    }
+    return top;
+}
+
 function getChildrenBelow(index, currentY, currentX, moreLevels, nodes){
-    if(index === -1) return null;
+    if(index === -1) return makeNull(currentX, currentY);
     const node = nodes[index];
-    const value = {index: index, y:currentY, x:currentX, left:null, right:null};
+    const xDiff = Math.pow(2,moreLevels-1)*0.0625;//3=.5 2=.25 1=.125
+    const value = {index: index, y:currentY, x:currentX, left:makeNull(currentX-xDiff,currentY+1), right:makeNull(currentX+xDiff,currentY+1)};
     if(moreLevels == 0){
         value.out = true;
         return value;
     }
-    const xDiff = Math.pow(2,moreLevels-1)*0.0625;//3=.5 2=.25 1=.125
     if(node.left !== -1){
         value.left = getChildrenBelow(node.left, currentY+1, currentX-xDiff,moreLevels-1,nodes);
     }
@@ -125,7 +196,10 @@ function getChildrenBelow(index, currentY, currentX, moreLevels, nodes){
     }
 
     return value;
+}
 
+function makeNull(x,y){
+    return {isNull: true, x:x, y:y};
 }
 
 function addRenderNodes(baseIndex, previousX, previousY, changeX, changeY, onNodeClicked, depth, elements, nodes, selectedNode, leftChild, parentId){

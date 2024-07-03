@@ -53,21 +53,6 @@ export default class BinarySearchTree{
         }
         this._removeSingleNode(this._tree.nodes[index]);
     }
-    
-    getTreeSection(initialIndex, levelsUp, totalLevels){
-        if(this._tree.nodes.length === 0) return [];
-        if(!this._isConnectedToRoot(initialIndex)) initialIndex = this._tree.rootIndex;
-        let topIndex = this._getIndexUpTree(initialIndex, levelsUp);
-        return this._getNodeIndexesDown(topIndex, totalLevels);
-    }
-
-    _isConnectedToRoot(initialIndex){
-        let node = this._tree.nodes[initialIndex];
-        while(node.parent !== -1){
-            node = this._tree.nodes[node.parent];
-        }
-        return node.index === this._tree.rootIndex;
-    }
 
     getClosestReplacement(removeIndex){
         let removeNode = this._tree.nodes[removeIndex];
@@ -273,31 +258,6 @@ export default class BinarySearchTree{
         }
     
         throw new Error(`somehow tree could not find a parent node for ${node.value}`);
-    }
-
-    _getIndexUpTree(startIndex, levelsUp){
-        let currentIndex = startIndex;
-        for (let index = 0; index < levelsUp; index++) {
-            const node = this._tree.nodes[currentIndex];
-            if(!node) return -1;
-            if(node.parent === -1) return currentIndex;
-            currentIndex = node.parent;
-        }
-        return currentIndex;
-    }
-
-    _getNodeIndexesDown(startIndex, levelsDown){
-        let result = [startIndex];
-        if(levelsDown == 0) return result;
-        let currentNode = this._tree.nodes[startIndex];
-        if(!currentNode) return result;
-        if(currentNode.left !== -1){
-            result = [...result, ...this._getNodeIndexesDown(currentNode.left, levelsDown-1)];
-        }
-        if(currentNode.right !== -1){
-            result = [...result, ...this._getNodeIndexesDown(currentNode.right, levelsDown-1)];
-        }
-        return result;
     }
 
     _addNodeToArray(newNode){

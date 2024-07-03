@@ -2,14 +2,11 @@ import { useSelector } from "react-redux";
 import ExteriorNodeElement from "./ExteriorNodeElement";
 import LineBetween from "./LineBetween";
 import RedBlackNodeElement from "./RedBlackNodeElement";
-import { getTreeSection } from "../../store/treeHelper";
 
 export default function RedBlackCanvas({ selectedIndex, onNodeClicked, width, height }) {
     const centerX = width/2;
     const halfWidth = centerX - 20;
     const changeY = height/8;
-    const changeX = (width-30)/2;
-    const topY = 50;
     const tree = useSelector(state => {
         return state.tree;
     });
@@ -62,7 +59,6 @@ export default function RedBlackCanvas({ selectedIndex, onNodeClicked, width, he
     while(nextPositioner !== null){
         let nextNode = nodes[nextPositioner.index];
         if(nextPositioner.isNull || nextPositioner.out){
-            //add nullNode display or out display
             const endKeyText = nextNode ? nextNode.id : `${lastParent.index}-null-${leftChild?"left":"right"}`;
             displayThings.push(makeNode(nextPositioner, endKeyText, {x: lastParent.x, y: lastParent.y}));
             if(parentStack.length === 0){
@@ -75,8 +71,7 @@ export default function RedBlackCanvas({ selectedIndex, onNodeClicked, width, he
             nextNode = nodes[nextPositioner.index];
             if(nextPositioner.isNull || nextPositioner.out) continue;
         }
-        //add displayTop
-        //add lines to children
+        
         const node = nodes[nextPositioner.index];
         displayThings.push(makeNode(nextPositioner, nextNode.id,{x: nextPositioner.x, y: nextPositioner.y}));
         displayThings.push(makeLine(`${node.id}-line-to-left`, {x:nextPositioner.x, y : nextPositioner.y},  {x:nextPositioner.left.x, y : nextPositioner.left.y}));
@@ -85,35 +80,6 @@ export default function RedBlackCanvas({ selectedIndex, onNodeClicked, width, he
         lastParent = nextPositioner;
         leftChild = true;
         nextPositioner = nextPositioner.left;
-    }
-
-    //getTreeSection probably doesn't belong in the tree
-    //also need a better tree section. when showing the root, current behavior is fine
-    //want to try to center the selected node better, which could be done when farther on the tree by not showing the cousin's children
-    //removing that layer would allow the uncle's tree to take up less space, which could push the selected node closer to center
-    const nodesToShow = getTreeSection(focusedIndex === -1 ? rootIndex : focusedIndex , 2, 4, tree);
-
-    const nodeElements = [];
-    if(nodes.length > 0){
-        //if top node is not root it needs a line up
-        let leftChild = true;
-        let parentIndex = -1;
-        if(nodesToShow[0] !== rootIndex){
-            let topNode = nodes[nodesToShow[0]];
-            let firstParent = nodes[topNode.parent];
-            parentIndex = firstParent.index;
-            //should also add node indicating how many things are up there
-            if(firstParent.left == topNode.index){
-                nodeElements.push(<LineBetween key={firstParent.id+"-toLeft"} fromPoint={{x:centerX, y:topY+changeY-10}} toPoint={{x:centerX+(changeX/2), y:20}}/>);
-            }
-            else{
-                leftChild = false;
-                nodeElements.push(<LineBetween key={firstParent.id+"-toRight"} fromPoint={{x:centerX, y:topY+changeY-10}} toPoint={{x:centerX-(changeX/2), y:20}}/>);
-            }
-        }
-
-        //right now hardcode a center at 430, 300
-        addRenderNodes(nodesToShow[0], centerX-changeX, topY, changeX, changeY, onNodeClicked, 4, nodeElements, nodes, focusedIndex, leftChild, parentIndex);
     }
   
     return <div >
@@ -126,7 +92,6 @@ function getActiveHistoryStep(tree){
     if(!activeAction) return null;
     const activeStep = activeAction.steps[tree.currentHistoryStep];
     return activeStep;
-
 }
 
 function getDisplaySection(focusedIndex, nodes, rootIndex){
@@ -210,30 +175,6 @@ function getChildrenBelow(index, currentY, currentX, moreLevels, nodes){
 
 function makeNull(x,y){
     return {isNull: true, x:x, y:y};
-}
-
-function addRenderNodes(baseIndex, previousX, previousY, changeX, changeY, onNodeClicked, depth, elements, nodes, selectedNode, leftChild, parentId){
-    let baseNode = nodes[baseIndex];
-    const newX = previousX + changeX;
-    const newY = previousY + changeY;
-    if(!baseNode){
-        elements.push(<RedBlackNodeElement key={`${leftChild}-${parentId}`} x={newX} y={newY} originX={previousX} originY={previousY} value={""} isSmall/>);//need better key, for that need to know parent and if left or right null child
-        return;
-    }
-    if(depth <= 0) {
-        elements.push(<ExteriorNodeElement key={baseNode.id} x={newX} y={newY} originX={previousX} originY={previousY} childCount={baseNode.childCount+1} depth={baseNode.depthBelow+1} onClick={() => onNodeClicked(baseIndex)} />)
-        //baseNode.childCount;
-        //baseNode.depthBelow;
-        return;
-    }
-    elements.push(<RedBlackNodeElement key={baseNode.id} onClick={() => onNodeClicked(baseIndex)} x={newX} y={newY} value={baseNode.value} isRed={baseNode.isRed} selected={baseIndex === selectedNode}/>);
-    let leftChangeX = -Math.abs(changeX/2);
-    let rightChangeX = Math.abs(changeX/2);
-    elements.push(<LineBetween key={baseNode.id+"-toleft"} toPoint={{x:newX+leftChangeX, y:newY+changeY}} fromPoint={{x:newX, y:newY}}/>);
-    elements.push(<LineBetween key={baseNode.id+"-toright"} toPoint={{x:newX+rightChangeX, y:newY+changeY}} fromPoint={{x:newX, y:newY}}/>);
-    addRenderNodes(baseNode.left, newX, newY, leftChangeX, changeY, onNodeClicked, depth-1, elements, nodes, selectedNode, true, baseNode.id);
-    addRenderNodes(baseNode.right, newX, newY, rightChangeX, changeY, onNodeClicked, depth-1, elements, nodes, selectedNode, false, baseNode.id);
-
 }
 
 function getFocusedIndex(activeHistoryStep){

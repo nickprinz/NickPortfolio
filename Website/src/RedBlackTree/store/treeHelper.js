@@ -25,11 +25,6 @@ export function removeIndex(index, tree) {
     rbt.removeIndex(index);
 }
 
-export function getTreeSection(initialIndex, levelsUp, totalLevels, tree){
-    const rbt = new RedBlackTree(tree);
-    return rbt.getTreeSection(initialIndex, levelsUp, totalLevels);
-}
-
 export function getClosestReplacement(removeIndex, tree){
     const rbt = new RedBlackTree(tree);
     return rbt.getClosestReplacement(removeIndex);

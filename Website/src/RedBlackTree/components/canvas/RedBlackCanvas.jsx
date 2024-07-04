@@ -37,7 +37,6 @@ export default function RedBlackCanvas({ selectedIndex, onNodeClicked, width, he
         const topElements = [];
         const topParentNode = nodes[nodes[positionerTop?.index]?.parent];
         if(topParentNode){
-            //need to add an out node and line for top parent
             let topNode = nodes[positionerTop.index];
             const topLeftChild = topParentNode.left === topNode.index;
             const topParentPositioner = {x:positionerTop.x + (topLeftChild?.2:-.2), y:positionerTop.y - .5, index:topParentNode.index, out:true}
@@ -46,6 +45,17 @@ export default function RedBlackCanvas({ selectedIndex, onNodeClicked, width, he
             topElements.push(makeNode(topParentPositioner, topParentNode.id, {x: topParentPositioner.x, y: topParentPositioner.y}, nodes, focusedIndex));
         }
         return topElements;
+    }
+
+    const getHistoryStepElements = (currentPositioner) => {
+        const extraNode = getExtraNode(activeHistoryStep,tree);
+        const extraElements = [];
+        if(!extraNode) return extraElements;
+        //need to add notes for the active history step
+        //need to have a different node element type capable of repeating animations
+        extraElements.push(makeNode({index: extraNode.index, x: currentPositioner.x + .25, y: currentPositioner.y}, "extra-"+extraNode.id, {x: currentPositioner.x + .05, y: currentPositioner.y}, nodes, focusedIndex));
+        
+        return extraElements;
     }
 
     const displayThings = [...makeTopElements()];
@@ -72,6 +82,9 @@ export default function RedBlackCanvas({ selectedIndex, onNodeClicked, width, he
         
         const node = nodes[nextPositioner.index];
         displayThings.push(makeNode(nextPositioner, nextNode.id,{x: nextPositioner.x, y: nextPositioner.y}, nodes, focusedIndex));
+        if(nextPositioner.index === focusedIndex){
+            displayThings.push(...getHistoryStepElements(nextPositioner));
+        }
         displayThings.push(makeLine(`${node.id}-line-to-left`, {x:nextPositioner.x, y : nextPositioner.y},  {x:nextPositioner.left.x, y : nextPositioner.left.y}));
         displayThings.push(makeLine(`${node.id}-line-to-right`, {x:nextPositioner.x, y : nextPositioner.y},  {x:nextPositioner.right.x, y : nextPositioner.right.y}));
         parentStack.push(nextPositioner);
@@ -102,6 +115,17 @@ function getFocusedIndex(activeHistoryStep){
             return activeHistoryStep.value;
         }
         return activeHistoryStep.index;
+    }
+    return null
+}
+
+function getExtraNode(activeHistoryStep, tree){
+    if(!activeHistoryStep) return null;
+    if(activeHistoryStep.type === "compare"){
+        return tree.nodes[activeHistoryStep.primaryIndex];
+    }
+    if(activeHistoryStep.type === "change"){
+        return tree.nodes[activeHistoryStep.index];
     }
     return null
 }

@@ -12,7 +12,7 @@ export function addMany(values, tree) {
     values.forEach(value => {
         lastAddedIndex = rbt.add(value);
     });
-    return lastAddedIndex;
+    return tree.rootIndex;
 }
 
 export function remove(value, tree) {

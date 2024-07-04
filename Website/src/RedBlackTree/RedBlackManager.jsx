@@ -50,7 +50,8 @@ export default function RedBlackManager({}){
             for (let index = 0; index < LARGE_ADD_TOTAL/LARGE_ADD_ITERATIONS; index++) {
                 values.push(getRandomInt(0,1000000));
             }
-            dispatch(treeActions.add({value:values}));
+            const result = dispatch(treeActions.add({value:values}));
+            setSelectedNode(result.payload.index);
 
         },LARGE_ADD_ITERATIONS,50,700);
     }

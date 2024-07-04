@@ -7,7 +7,8 @@ const treeSlice = createSlice({
     reducers:{
         add(state, action){
             if(Array.isArray(action.payload.value)){
-                treeAddMany(action.payload.value, state);
+                const rootAfter = treeAddMany(action.payload.value, state);
+                action.payload.index = rootAfter;
                 return;
             }
             const addedIndex = treeAdd(action.payload.value, state);

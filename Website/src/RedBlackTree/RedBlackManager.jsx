@@ -9,8 +9,8 @@ import { useDistibuted } from "./hooks/useDistributed";
 import AddMultipleNodesModal from "./components/AddMultipleNodesModal";
 import RedBlackEditBar from "./components/RedBlackEditBar";
 import RedBlackHistoryBar from "./components/history/HistoryBar";
-import MenuTab from "./components/MenuTab";
 import MenuTabBar from "./components/MenuTabBar";
+import { useTranslation } from "react-i18next";
 
 const LARGE_ADD_TOTAL = 100000;
 const LARGE_ADD_ITERATIONS = 10;
@@ -24,6 +24,7 @@ function getRandomInt(min, max) {
 }
 
 export default function RedBlackManager({}){
+    const { t: translate } = useTranslation("red_black");
     const dispatch = useDispatch();
     const [selectedNode, setSelectedNode] = useState(-1);
     const [activeTab, setActiveTab] = useState(0);
@@ -74,7 +75,7 @@ export default function RedBlackManager({}){
     return <>
         <AddMultipleNodesModal open={isDistributing} max={LARGE_ADD_ITERATIONS} value={distCount} />
         <RedBlackContainer width={containerWidth} height={containerHeight}>
-            <MenuTabBar activeIndex={activeTab} tabNames={["Edit","History"]} onTabClicked={onTabClicked}/>
+            <MenuTabBar activeIndex={activeTab} tabNames={[translate("edit_tab"),translate("history_tab")]} onTabClicked={onTabClicked}/>
             {activeTab === 0 && <RedBlackEditBar onAdd={handleAdd} onAddMany={handleAddMany} onRemove={handleRemove} onClear={handleClear} selectedNode={selectedNode} realLength={realLength}/>}
             {activeTab === 1 && <RedBlackHistoryBar />}
             <div className="relative">

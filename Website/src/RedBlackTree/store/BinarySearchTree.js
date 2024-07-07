@@ -32,7 +32,7 @@ export default class BinarySearchTree{
 
     add(value) {
         this.moveHistoryToCurrent();
-        this._makeActionHistory(`Add ${value}`);
+        this._makeActionHistory(`Add`, value);
         const addedNode = this._performAdd(value);
         return addedNode.index;
     }
@@ -419,11 +419,12 @@ export default class BinarySearchTree{
         this._addHistoryStepChange(-1,BinarySearchTree.ROOT,newRootIndex,oldRoot);
     }
 
-    _makeActionHistory(name){
+    _makeActionHistory(name, value){
         if(this.#keepHistory){
             this._tree.history.splice(0,0,{
                 id: this._tree.nextHistoryId,
                 name: name,
+                value: value,
                 steps: [],
             });
             this._tree.nextHistoryId++;

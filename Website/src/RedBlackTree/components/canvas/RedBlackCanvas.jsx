@@ -99,10 +99,15 @@ export default function RedBlackCanvas({ selectedIndex, onNodeClicked, width, he
 }
 
 function getActiveHistoryStep(tree){
-    const activeAction = tree.history[tree.currentHistoryAction];
+    let activeAction = tree.history[tree.currentHistoryAction];
     if(!activeAction) return null;
-    const activeStep = activeAction.steps[tree.currentHistoryStep];
-    return activeStep;
+    let activeStep = activeAction.steps[tree.currentHistoryStep];
+    if(activeStep) return activeStep;
+    //below prevents actual errors, but I think a finished step needs to be added for each action
+    //moving to the next step just shows a preview too soon
+    activeAction = tree.history[tree.currentHistoryAction-1];
+    if(!activeAction) return null;
+    return activeAction.steps[0];
 }
 
 function getFocusedIndex(activeHistoryStep){

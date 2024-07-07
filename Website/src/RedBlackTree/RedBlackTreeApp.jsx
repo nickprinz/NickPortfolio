@@ -1,5 +1,4 @@
 
-
 import {Provider, } from "react-redux";
 import HomeIcon from "../Shared/HomeIcon";
 import { setBodyColor, setPageTitle } from "../Shared/utility";

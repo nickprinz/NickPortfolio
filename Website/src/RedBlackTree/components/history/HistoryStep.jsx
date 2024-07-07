@@ -3,6 +3,7 @@ import {useSelector, useDispatch,} from "react-redux";
 import { treeActions } from "../../store/tree";
 import HistoryEntry from "./HistoryEntry";
 import { useCallback } from "react";
+import { useTranslation } from "react-i18next";
 
 export default function HistoryStep({historyStep, historyStepIndex, historyActionIndex}){
     // {
@@ -23,6 +24,7 @@ export default function HistoryStep({historyStep, historyStepIndex, historyActio
     //     note:note,
     // }
     
+    const { t: translate } = useTranslation("red_black");
     const dispatch = useDispatch();
     
     const {currentHistoryStep, nodes} = useSelector(state => {
@@ -39,16 +41,16 @@ export default function HistoryStep({historyStep, historyStepIndex, historyActio
 
     return <>
         <HistoryEntry onClick={handleClick} isActive={isActiveStep}>
-            {getTextForStep(historyStep, nodes)}
+            {getTextForStep(historyStep, nodes, translate)}
         </HistoryEntry>
     </>
 }
-const getTextForStep = (step, nodes) => {
+const getTextForStep = (step, nodes, translate) => {
     if(!step) return "Finished";
     if(step.type === "compare"){
         const node1 = nodes[step.primaryIndex];
         const node2 = nodes[step.secondaryIndex];
-        return `Compare ${node1.value} to ${node2.value}`;
+        return translate("compare_values", {value1: node1.value, value2: node2.value})
     }
     if(step.type === "change"){
         const node = nodes[step.index];

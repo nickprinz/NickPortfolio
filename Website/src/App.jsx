@@ -5,6 +5,7 @@ import HomePage from './Home/HomePage';
 import RedBlackTreeApp from './RedBlackTree/RedBlackTreeApp';
 import PaletteMakerApp from './PaletteMaker/PaletteMakerApp';
 import ProjectsPage from './Home/ProjectsPage';
+import "./i18n/config.js";
 
 
 //home

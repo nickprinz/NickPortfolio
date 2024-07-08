@@ -1,3 +1,5 @@
+import TreeHistory from "./TreeHistory";
+
 const historyCount = 10;
 
 export default class BinarySearchTree{
@@ -13,32 +15,25 @@ export default class BinarySearchTree{
             nodes: [],
             rootIndex: -1,
             freeIndexes: [],
-            history: [],
+            history: TreeHistory.MakeInitialHistory(),
             nextId: 0,
-            nextHistoryId: 0,
-            currentHistoryAction:-1,
-            currentHistoryStep:-1,
         };
     }
 
-    #keepHistory = true;
     constructor(tree, keepHistory=true){
         this._tree = tree;
-        this.#keepHistory = keepHistory;
-        if(!this.#keepHistory){
-            this._clearHistory();
-        }
+        this._history = new TreeHistory(this._tree.history, (s) => this._undoHistoryStep(s), (s) => this._redoHistoryStep(s), keepHistory);
     }
 
     add(value) {
-        this.moveHistoryToCurrent();
+        this._history.moveHistoryToCurrent();
         this._makeActionHistory(`Add`, value);
         const addedNode = this._performAdd(value);
         return addedNode.index;
     }
 
     remove(value) {
-        this.moveHistoryToCurrent();
+        this._history.moveHistoryToCurrent();
         let removeNode = this._findFirstNode(value);
         if(!removeNode){
             throw new Error(`could not find node ${value} in tree`)
@@ -47,7 +42,7 @@ export default class BinarySearchTree{
     }
     
     removeIndex(index) {
-        this.moveHistoryToCurrent();
+        this._history.moveHistoryToCurrent();
         if(index < 0 || index >= this._tree.nodes.length || this._tree.nodes[index] === null){
             throw new Error(`could not find index ${index} in tree`)
         }
@@ -66,129 +61,24 @@ export default class BinarySearchTree{
     }
 
     moveHistory(amount){
-        const keepH = this.#keepHistory;
-        this.#keepHistory = false;
-        
-        const moveBack = amount < 0;
-        let totalSteps = Math.round(Math.abs(amount));
-        for (let index = 0; index < totalSteps; index++) {
-            if(moveBack){
-                this._moveHistoryBack();
-            }else{
-                this._moveHistoryForward();
-            }
-        }
-        this.#keepHistory = keepH;
+        this._history.moveHistory(amount);
     }
 
     moveHistoryToCurrent(){
-        while(this._tree.currentHistoryAction !== -1){
-            this.moveHistory(1);
-        }
+        this._history.moveHistoryToCurrent();
     }
 
     moveHistoryToLast(){
-        if(this._tree.history.length === 0) return;
-        while(this._tree.currentHistoryAction < this._tree.history.length){
-            this.moveHistory(-1);
-        }
+        this._history.moveHistoryToLast();
     }
 
     setHistoryToPosition(actionIndex, stepIndex){
-        if(this._tree.history.length === 0) return;
-        if(actionIndex < -1) {
-            actionIndex = -1;
-            stepIndex = -1;
-        }
-        if(actionIndex > this._tree.history.length) {
-            actionIndex = this._tree.history.length;
-            stepIndex = -1;
-        }
-        stepIndex = Math.max(stepIndex, -1);
-        const targetAction = this._tree.history[actionIndex];
-        if(!targetAction) {
-            stepIndex = -1;
-        }
-        else{
-            stepIndex = Math.min(stepIndex, targetAction.steps.length);
-        }
-        
-        let moveBack = true;
-        if(actionIndex === this._tree.currentHistoryAction)
-        {
-            if(stepIndex === this._tree.currentHistoryStep) return;//already there
-            moveBack = this._tree.currentHistoryStep > stepIndex;
-        } else{
-            moveBack = this._tree.currentHistoryAction < actionIndex;
-        }
-        const moveDir =  moveBack ? -1 : 1;
-        while(actionIndex !== this._tree.currentHistoryAction || stepIndex !== this._tree.currentHistoryStep){
-            this.moveHistory(moveDir);
-        }
-    }
-
-    _moveHistoryBack(){
-        if(!this._moveHistoryIndexBack()) return;
-        const activeStep = this._getCurrentHistoryStep();
-        if(!activeStep) return;
-        if(activeStep.type === BinarySearchTree.CHANGE){
-            this._undoHistoryStep(activeStep);
-        }
-    }
-
-    _moveHistoryForward(){
-        const activeStep = this._getCurrentHistoryStep();
-        if(activeStep && activeStep.type === BinarySearchTree.CHANGE){
-            this._redoHistoryStep(activeStep);
-        }
-        if(!this._moveHistoryIndexForward()) return;
-    }
-
-    _getCurrentHistoryStep(){
-        const activeAction = this._tree.history[this._tree.currentHistoryAction];
-        if(!activeAction) return null;
-        return activeAction.steps[this._tree.currentHistoryStep];
-    }
-
-    _moveHistoryIndexBack(){
-        if(this._tree.currentHistoryAction === this._tree.history.length || this._tree.history.length === 0){
-            this._tree.currentHistoryStep = -1;
-            return false;//already at back
-        }
-        if(this._tree.currentHistoryAction === -1 || this._tree.currentHistoryStep === -1){
-            this._tree.currentHistoryAction++;
-            if(this._tree.currentHistoryAction === this._tree.history.length){
-                return true;
-            }
-            this._tree.currentHistoryStep = this._tree.history[this._tree.currentHistoryAction].steps.length;
-            return true;
-        }
-
-        this._tree.currentHistoryStep--;
-        return true;
-    }
-
-    _moveHistoryIndexForward(){
-        if(this._tree.currentHistoryAction === -1){
-            this._tree.currentHistoryStep = -1;
-            return false;//already at front
-        }
-        if(this._tree.currentHistoryAction === this._tree.history.length){
-            this._tree.currentHistoryAction--;
-            this._tree.currentHistoryStep = 0;
-            return true;//at back, might display a message later, for now just start the first action
-
-        }
-        if(this._tree.currentHistoryStep === this._tree.history[this._tree.currentHistoryAction].steps.length){
-            this._tree.currentHistoryAction--;
-            this._tree.currentHistoryStep = 0;
-            return true;
-        }
-        this._tree.currentHistoryStep++;
-        return true;
+        this._history.setHistoryToPosition(actionIndex, stepIndex);
     }
 
     _undoHistoryStep(historyStep){
+        if(historyStep.type !== BinarySearchTree.CHANGE) return;
+
         if(historyStep.attribute === BinarySearchTree.ROOT){
             this._tree.rootIndex = historyStep.oldValue;
             return;
@@ -205,6 +95,8 @@ export default class BinarySearchTree{
     }
 
     _redoHistoryStep(historyStep){
+        if(historyStep.type !== BinarySearchTree.CHANGE) return;
+
         if(historyStep.attribute === BinarySearchTree.ROOT){
             this._tree.rootIndex = historyStep.value;
             return;
@@ -217,12 +109,6 @@ export default class BinarySearchTree{
         }
         const node = this._tree.nodes[historyStep.index];
         node[historyStep.attribute] = historyStep.value;
-    }
-
-    _clearHistory(){
-        this._tree.history = [];
-        this._tree.currentHistoryAction = -1;
-        this._tree.currentHistoryStep = -1;
     }
 
     _performAdd(value){
@@ -420,57 +306,37 @@ export default class BinarySearchTree{
     }
 
     _makeActionHistory(name, value){
-        if(this.#keepHistory){
-            this._tree.history.splice(0,0,{
-                id: this._tree.nextHistoryId,
-                name: name,
-                value: value,
-                steps: [],
-            });
-            this._tree.nextHistoryId++;
-            if(this._tree.history.length > historyCount){
-                this._tree.history = this._tree.history.slice(0,historyCount);
-            }
-        }
+        this._history.addAction({
+            name: name,
+            value: value,
+        })
     }
 
     _addHistoryStepChange(nodeIndex, attributeName, attributeValue, oldValue){
-        if(this.#keepHistory){
-            const actionHistory = this.#getCurrentHistory();
-            actionHistory.steps.push({
-                type:BinarySearchTree.CHANGE,
-                index:nodeIndex,
-                attribute:attributeName,
-                value:attributeValue,
-                oldValue: oldValue,
-            })
-        }
+        this._history.addStep({
+            type:BinarySearchTree.CHANGE,
+            index:nodeIndex,
+            attribute:attributeName,
+            value:attributeValue,
+            oldValue: oldValue,
+        });
     }
     
     _addHistoryStepCompare(primaryNodeIndex, SecondaryNodeIndex){
-        if(this.#keepHistory){
-            const actionHistory = this.#getCurrentHistory();
-            actionHistory.steps.push({
-                type:BinarySearchTree.COMPARE,
-                primaryIndex:primaryNodeIndex,
-                secondaryIndex:SecondaryNodeIndex,
-            })
-        }
+        this._history.addStep({
+            type:BinarySearchTree.COMPARE,
+            primaryIndex:primaryNodeIndex,
+            secondaryIndex:SecondaryNodeIndex,
+        });
     }
     
     _addHistoryStepNote(nodeIndex, note){
-        // if(this.#keepHistory){
-        //     const actionHistory = this.#getCurrentHistory();
-        //     actionHistory.steps.push({
-        //         type:BinarySearchTree.NOTE,
-        //         index:nodeIndex,
-        //         note:note,
-        //     })
-        // }
-    }
-
-    #getCurrentHistory(){
-        return this._tree.history[0];
+        return;
+        this._history.addStep({
+            type:BinarySearchTree.NOTE,
+            index:nodeIndex,
+            note:note,
+        });
     }
 
     _addToParent(newNode, parentNode){

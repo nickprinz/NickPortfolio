@@ -348,12 +348,12 @@ describe('red black tree', () => {
 
     it("should have a history action for each add", () => {
         const tree = makeFromValues([1,2,3]);
-        expect(tree.history.length).toBe(3);
+        expect(tree.history.actions.length).toBe(3);
     })
 
     it("should undo and redo 3 adds with a rotation needed", () => {
         const tree = makeFromValues([1,2,3]);
-        expect(tree.history.length).toBe(3);
+        expect(tree.history.actions.length).toBe(3);
         const rbt = new RedBlackTree(tree);
         rbt.moveHistory(-1);
 
@@ -363,7 +363,7 @@ describe('red black tree', () => {
             const rbt = new RedBlackTree(tree);
             let beforeValidResult = validateTree(tree);
             expect(beforeValidResult.isValid).toBeTruthy();
-            while(tree.currentHistoryAction < tree.history.length){
+            while(tree.history.currentHistoryAction < tree.history.actions.length){
                 rbt.moveHistory(-1);
             }
             rbt.moveHistory(-1);//extra undos to check for bugs
@@ -373,7 +373,7 @@ describe('red black tree', () => {
             expect(fullUndoValidResult.isValid).toBeTruthy();
             expect(fullUndoValidResult.firstBlackDepth).toBe(0);
             expect(tree.rootIndex).toBe(-1);
-            while(tree.currentHistoryAction !== -1){
+            while(tree.history.currentHistoryAction !== -1){
                 rbt.moveHistory(1);
             }
             rbt.moveHistory(1);//extra redos to check for bugs
@@ -392,16 +392,16 @@ describe('red black tree', () => {
 
     it("should set history to a specific spot", () => {
         const tree = makeFromValues([1,2,3,4,5]);
-        expect(tree.history.length).toBe(5);
+        expect(tree.history.actions.length).toBe(5);
         const rbt = new RedBlackTree(tree);
         rbt.setHistoryToPosition(3,0);
-        expect(tree.currentHistoryAction).toBe(3);
-        expect(tree.currentHistoryStep).toBe(0);
+        expect(tree.history.currentHistoryAction).toBe(3);
+        expect(tree.history.currentHistoryStep).toBe(0);
     })
 
     it("should not add history entries when move through history", () => {
         const tree = makeFromValues([1,2,3,4,5]);
-        expect(tree.history.length).toBe(5);
+        expect(tree.history.actions.length).toBe(5);
         const rbt = new RedBlackTree(tree);
         const beforeCount = getHistoryStepCount(tree);
         rbt.setHistoryToPosition(1,0);
@@ -428,7 +428,7 @@ function makeNegative(vals){
 
 function getHistoryStepCount(tree){
     let totalCount = 0;
-    tree.history.forEach(h => {
+    tree.history.actions.forEach(h => {
         totalCount += h.steps.length;
     })
     return totalCount;

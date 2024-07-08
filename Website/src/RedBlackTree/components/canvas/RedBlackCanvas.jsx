@@ -99,13 +99,13 @@ export default function RedBlackCanvas({ selectedIndex, onNodeClicked, width, he
 }
 
 function getActiveHistoryStep(tree){
-    let activeAction = tree.history[tree.currentHistoryAction];
+    let activeAction = tree.history.actions[tree.history.currentHistoryAction];
     if(!activeAction) return null;
-    let activeStep = activeAction.steps[tree.currentHistoryStep];
+    let activeStep = activeAction.steps[tree.history.currentHistoryStep];
     if(activeStep) return activeStep;
     //below prevents actual errors, but I think a finished step needs to be added for each action
     //moving to the next step just shows a preview too soon
-    activeAction = tree.history[tree.currentHistoryAction-1];
+    activeAction = tree.history.actions[tree.history.currentHistoryAction-1];
     if(!activeAction) return null;
     return activeAction.steps[0];
 }

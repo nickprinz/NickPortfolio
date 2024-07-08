@@ -1,6 +1,6 @@
 
 import {useSelector, useDispatch,} from "react-redux";
-import { treeActions } from "../../store/tree";
+import { treeActions, treeSelectors } from "../../store/tree";
 import HistoryEntry from "./HistoryEntry";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
@@ -9,9 +9,7 @@ export default function HistoryAction({historyAction, historyActionIndex}){
     const dispatch = useDispatch();
     const { t: translate } = useTranslation("red_black");
     
-    const {currentHistoryAction} = useSelector(state => {
-        return state.tree;
-    });
+    const currentHistoryAction = useSelector(treeSelectors.getActiveHistoryActionIndex);
     // {
     //     name: name,
     //     steps: [],

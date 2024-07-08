@@ -38,8 +38,28 @@ const treeSlice = createSlice({
                 state[k] = blankTree[k];
             })
         },
+    },
+    selectors:{
+        getActiveHistoryStep(state){
+            let activeAction = state.history.actions[state.history.currentHistoryAction];
+            if(!activeAction) return null;
+            let activeStep = activeAction.steps[state.history.currentHistoryStep];
+            if(activeStep) return activeStep;
+            //below prevents actual errors, but I think a finished step needs to be added for each action
+            //moving to the next step just shows a preview too soon
+            activeAction = state.history.actions[state.history.currentHistoryAction-1];
+            if(!activeAction) return null;
+            return activeAction.steps[0];
+        },
+        getActiveHistoryActionIndex(state){
+            return state.history.currentHistoryAction;
+        },
+        getActiveHistoryStepIndex(state){
+            return state.history.currentHistoryStep;
+        }
     }
 });
 
 export default treeSlice.reducer;
-export const treeActions = treeSlice.actions
+export const treeActions = treeSlice.actions;
+export const treeSelectors = treeSlice.selectors;

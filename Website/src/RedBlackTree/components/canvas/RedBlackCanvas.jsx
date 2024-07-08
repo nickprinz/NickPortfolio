@@ -3,13 +3,16 @@ import ExteriorNodeElement from "./ExteriorNodeElement";
 import LineBetween from "./LineBetween";
 import RedBlackNodeElement from "./RedBlackNodeElement";
 import { CanvasPositioner, getDisplaySection } from "./nodePositionHelper";
+import { treeSelectors } from "../../store/tree";
 
 export default function RedBlackCanvas({ selectedIndex, onNodeClicked, width, height }) {
     const tree = useSelector(state => {
         return state.tree;
     });
+    
     const { nodes, rootIndex } = tree;
-    const activeHistoryStep = getActiveHistoryStep(tree);
+    //const activeHistoryStep = getActiveHistoryStep(tree);
+    const activeHistoryStep = useSelector(treeSelectors.getActiveHistoryStep);
     let focusedIndex = getFocusedIndex(activeHistoryStep);
     if(focusedIndex === null) focusedIndex = selectedIndex;
 
@@ -96,18 +99,6 @@ export default function RedBlackCanvas({ selectedIndex, onNodeClicked, width, he
     return <div >
             {displayThings}
         </div>
-}
-
-function getActiveHistoryStep(tree){
-    let activeAction = tree.history.actions[tree.history.currentHistoryAction];
-    if(!activeAction) return null;
-    let activeStep = activeAction.steps[tree.history.currentHistoryStep];
-    if(activeStep) return activeStep;
-    //below prevents actual errors, but I think a finished step needs to be added for each action
-    //moving to the next step just shows a preview too soon
-    activeAction = tree.history.actions[tree.history.currentHistoryAction-1];
-    if(!activeAction) return null;
-    return activeAction.steps[0];
 }
 
 function getFocusedIndex(activeHistoryStep){

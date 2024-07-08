@@ -12,7 +12,7 @@ export default function RedBlackEditBar({onAddMany, selectedNode, onSelectedChan
     const realLength = useSelector(treeSelectors.getRealLength);
     const rootIndex = useSelector(treeSelectors.getRootIndex);
     const replacedIndex = useSelector((state) => {
-        treeSelectors.getClosestReplacement(state, selectedNode);
+        return treeSelectors.getClosestReplacement(state, selectedNode);
     })
     
     const handleAdd = (value) => {

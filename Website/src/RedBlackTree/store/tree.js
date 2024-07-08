@@ -75,6 +75,66 @@ const treeSlice = createSlice({
         getRootIndex(state){
             return state.rootIndex;
         },
+        getTextForHistoryStep(state, actionIndex, stepIndex){
+            const history = state.history;
+            const result = {textkey:"" , params:{}};
+            const action = history.actions[actionIndex];
+            if(!action) return result;
+            const step = action.steps[stepIndex];
+            if(!step){
+                result.textkey = "finished";
+                return result;
+            }
+            
+            if(step.type === "compare"){
+                result.textkey = "compare_values";
+                const node1 = state.nodes[step.primaryIndex];
+                const node2 = state.nodes[step.secondaryIndex];
+                result.params = {value1: node1.value, value2: node2.value};
+                return result;
+            }
+
+            if(step.type === "change"){
+                if(step.attribute === "root"){
+                    result.textkey = "set_root";
+                    const node1 = state.nodes[step.oldValue];
+                    const node2 = state.nodes[step.value];
+                    result.params = {value1: node1 ? node1.value : "empty", value2: node2 ? node2.value : "empty"};
+                    return result;
+                }
+                const node = state.nodes[step.index];
+                result.params = {value: node.value};
+                if(step.attribute === "rotateRight"){
+                    result.textkey = "rotate_right";
+                    if(step.value){
+                        result.textkey += "_color_swap";
+                    }
+                    return result;
+                }
+                if(step.attribute === "rotateLeft"){
+                    result.textkey = "rotate_left";
+                    if(step.value){
+                        result.textkey += "_color_swap";
+                    }
+                    return result;
+                }
+                if(step.attribute === "parent"){
+                    result.textkey = "set_parent";
+                    const parentNode = state.nodes[step.value];
+                    result.params.parent = parentNode ? parentNode.value : "empty";//actually need a new text key if empty
+                    return result;
+                }
+                if(step.attribute === "isRed"){
+                    result.textkey = step.value ? "set_red" : "set_black";
+                    return result;
+                }
+                result.textkey = step.attribute;
+                return result;
+
+            }
+            result.textkey = step.type;
+            return result;
+        },
     }
 });
 

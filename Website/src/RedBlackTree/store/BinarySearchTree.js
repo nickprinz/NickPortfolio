@@ -50,6 +50,7 @@ export default class BinarySearchTree{
     }
 
     getClosestReplacement(removeIndex){
+        if(removeIndex === -1) return -1;
         let removeNode = this._tree.nodes[removeIndex];
         if(removeNode.left === -1 && removeNode.right === -1) {
             if(removeNode.parent === -1) return -1;

@@ -1,5 +1,14 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { add as treeAdd, addMany as treeAddMany, remove as treeRemove, removeIndex as treeRemoveIndex, makeInitialTreeState, moveHistory as treeMoveHistory, moveHistoryToCurrent, moveHistoryToLast, setHistoryToPosition } from './treeHelper';
+import { add as treeAdd, 
+    addMany as treeAddMany, 
+    remove as treeRemove, 
+    removeIndex as treeRemoveIndex, 
+    makeInitialTreeState, 
+    moveHistory as treeMoveHistory, 
+    moveHistoryToCurrent, 
+    moveHistoryToLast, 
+    setHistoryToPosition, 
+    getClosestReplacement as treeGetClosestReplacement } from './treeHelper';
 
 const treeSlice = createSlice({
     name:"tree",
@@ -56,7 +65,16 @@ const treeSlice = createSlice({
         },
         getActiveHistoryStepIndex(state){
             return state.history.currentHistoryStep;
-        }
+        },
+        getClosestReplacement(state, removeIndex){
+            return treeGetClosestReplacement(removeIndex, state);
+        },
+        getRealLength(state){
+            return state.nodes.length - state.freeIndexes.length;
+        },
+        getRootIndex(state){
+            return state.rootIndex;
+        },
     }
 });
 

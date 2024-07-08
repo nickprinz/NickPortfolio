@@ -1,8 +1,7 @@
 
 import { useState, useCallback } from "react";
-import {useSelector, useDispatch,} from "react-redux";
+import { useDispatch } from "react-redux";
 import { treeActions } from "./store/tree";
-import { getClosestReplacement} from "./store/treeHelper"
 import RedBlackContainer from "./RedBlackContainer";
 import RedBlackCanvas from "./components/canvas/RedBlackCanvas";
 import { useDistibuted } from "./hooks/useDistributed";
@@ -29,18 +28,8 @@ export default function RedBlackManager({}){
     const [selectedNode, setSelectedNode] = useState(-1);
     const [activeTab, setActiveTab] = useState(0);
     const [isDistributing, distCount, beginDistributing] = useDistibuted();
-    const tree = useSelector(state => {
-        return state.tree;
-    });
-    const { nodes, rootIndex, freeIndexes } = tree;
-    
-    const realLength = nodes.length - freeIndexes.length;
-    const handleAdd = (value) => {
-        const result = dispatch(treeActions.add({value:value}));
-        setSelectedNode(result.payload.index);
-    }
 
-    const onNodeClicked = useCallback((clickedIndex) => {
+    const handleSelectedChanged = useCallback((clickedIndex) => {
         setSelectedNode(clickedIndex);
     },[])
     
@@ -56,16 +45,6 @@ export default function RedBlackManager({}){
 
         },LARGE_ADD_ITERATIONS,50,700);
     }
-    const handleRemove = () => {
-        if(rootIndex === -1) return;
-        const replacedIndex = getClosestReplacement(selectedNode, tree);
-        dispatch(treeActions.removeIndex({index:selectedNode}));
-        setSelectedNode(replacedIndex);
-    }
-    const handleClear = () => {
-        if(rootIndex === -1) return;
-        dispatch(treeActions.clear());
-    }
 
     const onTabClicked = (name,index) => {
         setActiveTab(index);
@@ -76,10 +55,10 @@ export default function RedBlackManager({}){
         <AddMultipleNodesModal open={isDistributing} max={LARGE_ADD_ITERATIONS} value={distCount} />
         <RedBlackContainer width={containerWidth} height={containerHeight}>
             <MenuTabBar activeIndex={activeTab} tabNames={[translate("edit_tab"),translate("history_tab")]} onTabClicked={onTabClicked}/>
-            {activeTab === 0 && <RedBlackEditBar onAdd={handleAdd} onAddMany={handleAddMany} onRemove={handleRemove} onClear={handleClear} selectedNode={selectedNode} realLength={realLength}/>}
+            {activeTab === 0 && <RedBlackEditBar onAddMany={handleAddMany} selectedNode={selectedNode} onSelectedChanged={handleSelectedChanged}/>}
             {activeTab === 1 && <RedBlackHistoryBar />}
             <div className="relative">
-                <RedBlackCanvas selectedIndex={selectedNode} onNodeClicked={onNodeClicked} width={containerWidth-22} height={containerHeight-20}/>
+                <RedBlackCanvas selectedIndex={selectedNode} onNodeClicked={handleSelectedChanged} width={containerWidth-22} height={containerHeight-20}/>
             </div>
         </RedBlackContainer>
     </>

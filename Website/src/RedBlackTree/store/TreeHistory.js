@@ -21,7 +21,7 @@ export default class TreeHistory{
         this.#onUndo = onUndo;
         this.#onRedo = onRedo;
         if(!this.#keepHistory){
-            this._clearHistory();
+            this.clearHistory();
         }
     }
 
@@ -38,7 +38,7 @@ export default class TreeHistory{
     }
 
     clearHistory(){
-        this.history = this.MakeInitialHistory();
+        this.history = TreeHistory.MakeInitialHistory();
     }
 
     moveHistory(amount){

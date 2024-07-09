@@ -10,7 +10,7 @@ import { add as treeAdd,
     setHistoryToPosition, 
     getClosestReplacement as treeGetClosestReplacement } from './treeHelper';
 
-import { getDisplaySection, getDisplaySection2 } from './getDisplaySection';
+import { getDisplaySection } from './getDisplaySection';
 
 const getActiveHistoryStep = (state) => {
     let activeAction = state.history.actions[state.history.currentHistoryAction];
@@ -157,9 +157,6 @@ const treeSlice = createSlice({
         },
         getDisplaySection(state, focusedIndex){
             return getDisplaySection(focusedIndex, state.nodes, state.rootIndex);
-        },
-        getDisplaySection2(state, focusedIndex){
-            return getDisplaySection2(focusedIndex, state.nodes, state.rootIndex);
         }
     }
 });

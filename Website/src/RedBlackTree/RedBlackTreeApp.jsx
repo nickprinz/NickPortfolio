@@ -1,9 +1,8 @@
 
-import {Provider, } from "react-redux";
 import HomeIcon from "../Shared/HomeIcon";
 import { setBodyColor, setPageTitle } from "../Shared/utility";
-import store from "./store/store";
 import RedBlackManager from "./RedBlackManager";
+import RedBlackProvider from "./RedBlackProvider";
 
 function RedBlackTreeApp() {
     setBodyColor("bg-gradient-to-r from-red-900 via-rose-950 to-red-900");
@@ -13,10 +12,8 @@ function RedBlackTreeApp() {
     return (
       <>
         <HomeIcon/>
-        <Provider store={store}>
-            <h1 className=" pt-6 pb-6 p-4 text-center text-6xl font-extrabold tracking-widest font-mono bg-zinc-950 text-rose-300">Red <span className="text-zinc-500 pl-6 pr-4">Black</span> Tree</h1>
-            <RedBlackManager/>
-        </Provider>
+        <h1 className=" pt-6 pb-6 p-4 text-center text-6xl font-extrabold tracking-widest font-mono bg-zinc-950 text-rose-300">Red <span className="text-zinc-500 pl-6 pr-4">Black</span> Tree</h1>
+        <RedBlackManager/>
       </>
     )
   }

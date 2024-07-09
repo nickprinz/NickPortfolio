@@ -10,6 +10,20 @@ import { add as treeAdd,
     setHistoryToPosition, 
     getClosestReplacement as treeGetClosestReplacement } from './treeHelper';
 
+import { getDisplaySection, getDisplaySection2 } from './getDisplaySection';
+
+const getActiveHistoryStep = (state) => {
+    let activeAction = state.history.actions[state.history.currentHistoryAction];
+    if(!activeAction) return null;
+    let activeStep = activeAction.steps[state.history.currentHistoryStep];
+    if(activeStep) return activeStep;
+    //below prevents actual errors, but I think a finished step needs to be added for each action
+    //moving to the next step just shows a preview too soon
+    activeAction = state.history.actions[state.history.currentHistoryAction-1];
+    if(!activeAction) return null;
+    return activeAction.steps[0];
+}
+
 const treeSlice = createSlice({
     name:"tree",
     initialState: makeInitialTreeState(),
@@ -50,15 +64,7 @@ const treeSlice = createSlice({
     },
     selectors:{
         getActiveHistoryStep(state){
-            let activeAction = state.history.actions[state.history.currentHistoryAction];
-            if(!activeAction) return null;
-            let activeStep = activeAction.steps[state.history.currentHistoryStep];
-            if(activeStep) return activeStep;
-            //below prevents actual errors, but I think a finished step needs to be added for each action
-            //moving to the next step just shows a preview too soon
-            activeAction = state.history.actions[state.history.currentHistoryAction-1];
-            if(!activeAction) return null;
-            return activeAction.steps[0];
+            return getActiveHistoryStep(state);
         },
         getActiveHistoryActionIndex(state){
             return state.history.currentHistoryAction;
@@ -135,6 +141,26 @@ const treeSlice = createSlice({
             result.textkey = step.type;
             return result;
         },
+        getHistoryFocusedIndex(state){
+            let activeHistoryStep = getActiveHistoryStep(state);
+            if(!activeHistoryStep) return null;
+            if(activeHistoryStep.type === "compare"){
+                return activeHistoryStep.secondaryIndex;
+            }
+            if(activeHistoryStep.type === "change"){
+                if(activeHistoryStep.attribute === "parent"){
+                    return activeHistoryStep.value;
+                }
+                return activeHistoryStep.index;
+            }
+            return null
+        },
+        getDisplaySection(state, focusedIndex){
+            return getDisplaySection(focusedIndex, state.nodes, state.rootIndex);
+        },
+        getDisplaySection2(state, focusedIndex){
+            return getDisplaySection2(focusedIndex, state.nodes, state.rootIndex);
+        }
     }
 });
 

@@ -2,21 +2,21 @@ import { useSelector } from "react-redux";
 import ExteriorNodeElement from "./ExteriorNodeElement";
 import LineBetween from "./LineBetween";
 import RedBlackNodeElement from "./RedBlackNodeElement";
-import { CanvasPositioner, getDisplaySection } from "./nodePositionHelper";
+import { CanvasPositioner } from "./nodePositionHelper";
 import { treeSelectors } from "../../store/tree";
 
 export default function RedBlackCanvas({ selectedIndex, onNodeClicked, width, height }) {
-    const tree = useSelector(state => {
+    const { nodes } = useSelector(state => {
         return state.tree;
     });
     
-    const { nodes, rootIndex } = tree;
     //const activeHistoryStep = getActiveHistoryStep(tree);
     const activeHistoryStep = useSelector(treeSelectors.getActiveHistoryStep);
-    let focusedIndex = getFocusedIndex(activeHistoryStep);
+    let focusedIndex = useSelector(treeSelectors.getHistoryFocusedIndex);
     if(focusedIndex === null) focusedIndex = selectedIndex;
 
-    const positionerTop = getDisplaySection(focusedIndex, nodes, rootIndex);
+    const positionerTop = useSelector((state) => treeSelectors.getDisplaySection(state, focusedIndex));
+    const positioners = useSelector((state) => treeSelectors.getDisplaySection2(state, focusedIndex));
     const canvasPositioner = new CanvasPositioner(width, height);
 
     const makeLine = (key, fromPoint, toPoint) => {
@@ -51,7 +51,7 @@ export default function RedBlackCanvas({ selectedIndex, onNodeClicked, width, he
     }
 
     const getHistoryStepElements = (currentPositioner) => {
-        const extraNode = getExtraNode(activeHistoryStep,tree);
+        const extraNode = getExtraNode(activeHistoryStep, nodes);
         const extraElements = [];
         if(!extraNode) return extraElements;
         //need to add notes for the active history step
@@ -101,27 +101,13 @@ export default function RedBlackCanvas({ selectedIndex, onNodeClicked, width, he
         </div>
 }
 
-function getFocusedIndex(activeHistoryStep){
+function getExtraNode(activeHistoryStep, nodes){
     if(!activeHistoryStep) return null;
     if(activeHistoryStep.type === "compare"){
-        return activeHistoryStep.secondaryIndex;
+        return nodes[activeHistoryStep.primaryIndex];
     }
     if(activeHistoryStep.type === "change"){
-        if(activeHistoryStep.attribute === "parent"){
-            return activeHistoryStep.value;
-        }
-        return activeHistoryStep.index;
-    }
-    return null
-}
-
-function getExtraNode(activeHistoryStep, tree){
-    if(!activeHistoryStep) return null;
-    if(activeHistoryStep.type === "compare"){
-        return tree.nodes[activeHistoryStep.primaryIndex];
-    }
-    if(activeHistoryStep.type === "change"){
-        return tree.nodes[activeHistoryStep.index];
+        return nodes[activeHistoryStep.index];
     }
     return null
 }

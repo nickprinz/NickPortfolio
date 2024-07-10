@@ -1,6 +1,6 @@
-export default function selectTextForHistoryStep(history, nodes, actionIndex, stepIndex){//use actionId to keep a consistent key
+export default function selectTextForHistoryStep(actions, nodes, actionIndex, stepIndex){//use actionId to keep a consistent key
     const result = {textkey:"" , params:{}};
-    const action = history.actions[actionIndex];
+    const action = actions[actionIndex];
     if(!action) return result;
     const step = action.steps[stepIndex];
     if(!step){

@@ -76,7 +76,14 @@ const treeSlice = createSlice({
                 const action = actions[currentHistoryAction];
                 if(!action) return null;
                 return {id: action.id, index: currentHistoryAction, stepCount: action.steps.length}
-            }),
+            }
+        ),
+        selectIsActiveHistoryStep: createSelector(
+            [((state) => state.history.currentHistoryStep), ((state, stepId) => stepId)],
+            (currentHistoryStep, stepId) => {
+                return currentHistoryStep === stepId;
+            }
+        ),
         selectActiveHistoryStepIndex(state){
             return state.history.currentHistoryStep;
         },
@@ -87,12 +94,12 @@ const treeSlice = createSlice({
             return state.nodes.length - state.freeIndexes.length;
         },
         selectTextForHistoryStep: createSelector([
-            ((state) => state.history), 
+            ((state) => state.history.actions), 
             ((state) => state.nodes), 
             ((state, actionIndex) => actionIndex), 
             ((state, actionIndex, stepIndex) => stepIndex)], //use actionId to keep a consistent key
-            (history, nodes, actionIndex, stepIndex) => {
-                return selectTextForHistoryStep(history, nodes, actionIndex, stepIndex);
+            (actions, nodes, actionIndex, stepIndex) => {
+                return selectTextForHistoryStep(actions, nodes, actionIndex, stepIndex);
             }
         ),
         selectHistoryFocusedIndex(state){

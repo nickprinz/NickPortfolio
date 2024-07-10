@@ -56,6 +56,7 @@ i18n
           set_parent: "Set Parent of {{value}} to {{parent}}",
           set_red: "Color {{value}} to Red",
           set_black: "Color {{value}} to Black",
+          finished: "Finished",
         },
       },
       // french

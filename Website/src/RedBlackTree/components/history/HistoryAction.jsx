@@ -8,10 +8,6 @@ import { useTranslation } from "react-i18next";
 export default function HistoryAction({historyAction, historyActionIndex, isActiveAction}){
     const dispatch = useDispatch();
     const { t: translate } = useTranslation("red_black");
-    // {
-    //     name: name,
-    //     steps: [],
-    // }
     
     const handleClick = useCallback(() => {
         if(isActiveAction){

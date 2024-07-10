@@ -9,10 +9,9 @@ export default function RedBlackEditBar({onAddMany, selectedNode, onSelectedChan
     const { t: translate } = useTranslation("red_black");
     const dispatch = useDispatch();
 
-    const realLength = useSelector(treeSelectors.getRealLength);
-    const rootIndex = useSelector(treeSelectors.getRootIndex);
+    const realLength = useSelector(treeSelectors.selectTreeLength);
     const replacedIndex = useSelector((state) => {
-        return treeSelectors.getClosestReplacement(state, selectedNode);
+        return treeSelectors.selectClosestReplacement(state, selectedNode);
     })
     
     const handleAdd = (value) => {
@@ -21,13 +20,12 @@ export default function RedBlackEditBar({onAddMany, selectedNode, onSelectedChan
     }
 
     const handleRemove = () => {
-        if(rootIndex === -1) return;
+        if(selectedNode === -1) return;
         dispatch(treeActions.removeIndex({index:selectedNode}));
         setSelectedNode(replacedIndex);
     }
     
     const handleClear = () => {
-        if(rootIndex === -1) return;
         dispatch(treeActions.clear());
     }
 

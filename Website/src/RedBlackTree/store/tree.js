@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSelector, createSlice } from '@reduxjs/toolkit';
 import { add as treeAdd, 
     addMany as treeAddMany, 
     remove as treeRemove, 
@@ -11,6 +11,7 @@ import { add as treeAdd,
     getClosestReplacement as treeGetClosestReplacement } from './treeHelper';
 
 import { getDisplaySection } from './getDisplaySection';
+import selectTextForHistoryStep from './selectors/selectTextForHistoryStep';
 
 const getActiveHistoryStep = (state) => {
     let activeAction = state.history.actions[state.history.currentHistoryAction];
@@ -63,85 +64,38 @@ const treeSlice = createSlice({
         },
     },
     selectors:{
-        getActiveHistoryStep(state){
+        selectActiveHistoryStep(state){
             return getActiveHistoryStep(state);
         },
-        getActiveHistoryActionIndex(state){
+        selectActiveHistoryActionIndex(state){
             return state.history.currentHistoryAction;
         },
-        getActiveHistoryStepIndex(state){
+        selectActiveHistoryAction: createSelector(
+            [((state) => state.history.actions), ((state) => state.history.currentHistoryAction)],
+            (actions, currentHistoryAction) => {
+                const action = actions[currentHistoryAction];
+                if(!action) return null;
+                return {id: action.id, index: currentHistoryAction, stepCount: action.steps.length}
+            }),
+        selectActiveHistoryStepIndex(state){
             return state.history.currentHistoryStep;
         },
-        getClosestReplacement(state, removeIndex){
+        selectClosestReplacement(state, removeIndex){
             return treeGetClosestReplacement(removeIndex, state);
         },
-        getRealLength(state){
+        selectTreeLength(state){
             return state.nodes.length - state.freeIndexes.length;
         },
-        getRootIndex(state){
-            return state.rootIndex;
-        },
-        getTextForHistoryStep(state, actionIndex, stepIndex){
-            const history = state.history;
-            const result = {textkey:"" , params:{}};
-            const action = history.actions[actionIndex];
-            if(!action) return result;
-            const step = action.steps[stepIndex];
-            if(!step){
-                result.textkey = "finished";
-                return result;
+        selectTextForHistoryStep: createSelector([
+            ((state) => state.history), 
+            ((state) => state.nodes), 
+            ((state, actionIndex) => actionIndex), 
+            ((state, actionIndex, stepIndex) => stepIndex)], //use actionId to keep a consistent key
+            (history, nodes, actionIndex, stepIndex) => {
+                return selectTextForHistoryStep(history, nodes, actionIndex, stepIndex);
             }
-            
-            if(step.type === "compare"){
-                result.textkey = "compare_values";
-                const node1 = state.nodes[step.primaryIndex];
-                const node2 = state.nodes[step.secondaryIndex];
-                result.params = {value1: node1.value, value2: node2.value};
-                return result;
-            }
-
-            if(step.type === "change"){
-                if(step.attribute === "root"){
-                    result.textkey = "set_root";
-                    const node1 = state.nodes[step.oldValue];
-                    const node2 = state.nodes[step.value];
-                    result.params = {value1: node1 ? node1.value : "empty", value2: node2 ? node2.value : "empty"};
-                    return result;
-                }
-                const node = state.nodes[step.index];
-                result.params = {value: node.value};
-                if(step.attribute === "rotateRight"){
-                    result.textkey = "rotate_right";
-                    if(step.value){
-                        result.textkey += "_color_swap";
-                    }
-                    return result;
-                }
-                if(step.attribute === "rotateLeft"){
-                    result.textkey = "rotate_left";
-                    if(step.value){
-                        result.textkey += "_color_swap";
-                    }
-                    return result;
-                }
-                if(step.attribute === "parent"){
-                    result.textkey = "set_parent";
-                    const parentNode = state.nodes[step.value];
-                    result.params.parent = parentNode ? parentNode.value : "empty";//actually need a new text key if empty
-                    return result;
-                }
-                if(step.attribute === "isRed"){
-                    result.textkey = step.value ? "set_red" : "set_black";
-                    return result;
-                }
-                result.textkey = step.attribute;
-                return result;
-
-            }
-            result.textkey = step.type;
-            return result;
-        },
-        getHistoryFocusedIndex(state){
+        ),
+        selectHistoryFocusedIndex(state){
             let activeHistoryStep = getActiveHistoryStep(state);
             if(!activeHistoryStep) return null;
             if(activeHistoryStep.type === "compare"){
@@ -155,9 +109,10 @@ const treeSlice = createSlice({
             }
             return null
         },
-        getDisplaySection(state, focusedIndex){
-            return getDisplaySection(focusedIndex, state.nodes, state.rootIndex);
-        }
+        selectDisplaySection : createSelector([((state) => state.nodes), ((state, focusedIndex) => focusedIndex), ((state) => state.rootIndex)], 
+        (nodes, focusedIndex, rootIndex) => {
+            return getDisplaySection(focusedIndex, nodes, rootIndex);
+        })
     }
 });
 

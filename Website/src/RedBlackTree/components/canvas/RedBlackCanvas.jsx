@@ -7,11 +7,11 @@ import { treeSelectors } from "../../store/tree";
 
 export default function RedBlackCanvas({ selectedIndex, onNodeClicked, width, height }) {
     
-    const activeHistoryStep = useSelector(treeSelectors.getActiveHistoryStep);
-    let focusedIndex = useSelector(treeSelectors.getHistoryFocusedIndex);
+    const activeHistoryStep = useSelector(treeSelectors.selectActiveHistoryStep);
+    let focusedIndex = useSelector(treeSelectors.selectHistoryFocusedIndex);
     if(focusedIndex === null) focusedIndex = selectedIndex;
 
-    const positioners = useSelector((state) => treeSelectors.getDisplaySection(state, focusedIndex));
+    const positioners = useSelector((state) => treeSelectors.selectDisplaySection(state, focusedIndex));
     //still need to get extra element for active history step
     //it should be positioned x+.25 from its target element and have an added "extra-" on its key
     const canvasPositioner = new CanvasPositioner(width, height);

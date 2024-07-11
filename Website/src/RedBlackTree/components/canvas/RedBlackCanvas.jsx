@@ -16,7 +16,7 @@ export default function RedBlackCanvas({ selectedIndex, onNodeClicked, width, he
     //it should be positioned x+.25 from its target element and have an added "extra-" on its key
     const canvasPositioner = new CanvasPositioner(width, height);
 
-    return <div >
+    return <div className="overflow-hidden" >
             {renderPositioners(positioners, canvasPositioner, focusedIndex, onNodeClicked)}
         </div>
 

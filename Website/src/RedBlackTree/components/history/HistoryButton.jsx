@@ -18,11 +18,16 @@ export default function HistoryButton({}){
 
     return <>
         <MenuButton onClick={toggleHistory} active={showHistory} image={historyIcon}/>
-        <AnimatePresence>
-            {showHistory && <motion.div className={`absolute z-30 ${showHistory ? "" : "pointer-events-none"}`} 
-            transition={{ duration:.3, }} initial={hideAnimation} exit={hideAnimation} animate={showAnimation} >
-                <HistoryMenu/>
-            </motion.div>}
-        </AnimatePresence>
+        <div className="inline-block">
+            <div className="relative w-0 h-5 bg-yellow-400">
+                <AnimatePresence>
+                    {showHistory && <motion.div className={`absolute z-0 -top-24 ${showHistory ? "" : "pointer-events-none"}`} 
+                    transition={{ duration:.3, }} initial={hideAnimation} exit={hideAnimation} animate={showAnimation} >
+                        <HistoryMenu/>
+                    </motion.div>}
+                </AnimatePresence>
+            </div>
+        </div>
+
     </>
 }

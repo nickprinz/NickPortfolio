@@ -35,7 +35,7 @@ class NodePositioner{
 }
 
 export default function selectDisplaySection(focusedIndex, nodes, rootIndex, activeHistoryStep){
-    if(!nodes[focusedIndex]) return [];
+    if(!nodes[focusedIndex] || rootIndex === -1) return [];
     const section = getSection(focusedIndex, nodes, rootIndex);
     addStepPositioners(section, nodes, activeHistoryStep);
     return section;

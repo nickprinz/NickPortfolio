@@ -22,11 +22,11 @@ export default function HistoryBar({}){
 
     return <RedBlackMenuBar>
         <div>
-            <HistoryButton/>
             <MenuButton onClick={handleHistoryAllBack}>{"<<"}</MenuButton>
             <MenuButton onClick={() => handleHistoryMove(-1)}>{"<"}</MenuButton>
             <MenuButton onClick={() => handleHistoryMove(1)}>{">"}</MenuButton>
             <MenuButton onClick={handleHistoryAllForward}>{">>"}</MenuButton>
+            <HistoryButton/>
         </div>
     </RedBlackMenuBar>
 }

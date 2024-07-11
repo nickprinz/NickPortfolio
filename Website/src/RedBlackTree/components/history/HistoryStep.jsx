@@ -7,14 +7,10 @@ import { useTranslation } from "react-i18next";
 
 export default function HistoryStep({historyStepIndex, historyActionIndex}){
 
-    const isActiveStep = useSelector((state) => treeSelectors.selectIsActiveHistoryStep(state, historyStepIndex))
-    
+    const isActiveStep = useSelector((state) => treeSelectors.selectIsActiveHistoryStep(state, historyStepIndex));
+    const stepTextInfo = useSelector(state => treeSelectors.selectTextForHistoryStep(state, historyActionIndex, historyStepIndex));
     const { t: translate } = useTranslation("red_black");
     const dispatch = useDispatch();
-    //need a selector to get isActiveStep
-    const stepTextInfo = useSelector(state => {
-        return treeSelectors.selectTextForHistoryStep(state, historyActionIndex, historyStepIndex);
-    })
 
     const stepText = translate(stepTextInfo.textkey, stepTextInfo.params);
     

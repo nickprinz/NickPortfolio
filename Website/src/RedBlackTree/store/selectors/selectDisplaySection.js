@@ -5,6 +5,8 @@
 //lines are {x, y}, will get id and frompos from its parent structure
 //those should probably be classes
 
+import BinarySearchTree from "../BinarySearchTree";
+
 class NodePositioner{
 
     constructor(node, x, y, isOut, nullId){
@@ -32,7 +34,43 @@ class NodePositioner{
     }
 }
 
-export function getDisplaySection(focusedIndex, nodes, rootIndex){
+export default function selectDisplaySection(focusedIndex, nodes, rootIndex, activeHistoryStep){
+    if(!nodes[focusedIndex]) return [];
+    const section = getSection(focusedIndex, nodes, rootIndex);
+    addStepPositioners(section, nodes, activeHistoryStep);
+    return section;
+}
+
+function addStepPositioners(section, nodes, activeHistoryStep){
+    if(!activeHistoryStep) return section;
+    if(activeHistoryStep.type === BinarySearchTree.COMPARE){
+        const compareTo = section.find(x => x.index === activeHistoryStep.secondaryIndex);
+        const stepNode = new NodePositioner(nodes[activeHistoryStep.primaryIndex],compareTo.x, compareTo.y);
+        const isLess = stepNode.value <= compareTo.value;
+        stepNode.x += (isLess ? -.25 : .25)
+        section.push(stepNode);
+        //find activeHistoryStep.secondaryIndex in section
+        //put a node .2 to the left or right of that display
+        //
+    }
+    if(activeHistoryStep.type === BinarySearchTree.CHANGE && activeHistoryStep.attribute === BinarySearchTree.PARENT){
+        const compareTo = section.find(x => x.index === activeHistoryStep.value);
+        if(compareTo){
+            const stepNode = new NodePositioner(nodes[activeHistoryStep.index],compareTo.x, compareTo.y);
+            const isLess = stepNode.value <= compareTo.value;
+            stepNode.x += (isLess ? -.25 : .25)
+            section.push(stepNode);
+
+        }
+        else{
+            //need logic for removing from tree
+        }
+
+    }
+
+}
+
+function getSection(focusedIndex, nodes, rootIndex){
     if(focusedIndex === -1) return [];
     let focusedNode = nodes[focusedIndex];
     if(focusedIndex === rootIndex){

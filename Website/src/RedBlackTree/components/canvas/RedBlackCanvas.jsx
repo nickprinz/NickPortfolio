@@ -7,7 +7,7 @@ import { treeSelectors } from "../../store/tree";
 
 export default function RedBlackCanvas({ selectedIndex, onNodeClicked, width, height }) {
     
-    const activeHistoryStep = useSelector(treeSelectors.selectActiveHistoryStep);
+    
     let focusedIndex = useSelector(treeSelectors.selectHistoryFocusedIndex);
     if(focusedIndex === null) focusedIndex = selectedIndex;
 

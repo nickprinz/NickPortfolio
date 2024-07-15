@@ -19,6 +19,19 @@ const getActiveHistoryStep = (history) => {
     if(!activeAction) return null;
     let activeStep = activeAction.steps[history.currentHistoryStep];
     if(activeStep) return activeStep;
+    if(history.currentHistoryStep === activeAction.steps.length){
+        if(activeAction.name === "Add")
+        return {
+            type:"change",
+            index:activeAction.steps[0].index || activeAction.steps[0].primaryIndex,
+            attribute:"",
+            value:"",
+            oldValue: "",
+        }
+    }
+    if(history.currentHistoryStep === -1){
+        return activeAction.steps[0];
+    }
     activeAction = history.actions[history.currentHistoryAction-1];
     if(!activeAction) return null;
     return activeAction.steps[0];
@@ -121,6 +134,7 @@ const treeSlice = createSlice({
         ),
         selectHistoryFocusedIndex(state){
             let activeHistoryStep = getActiveHistoryStep(state.history);
+            //if this is a finished step, need to find the best index to select
             if(!activeHistoryStep) return null;
             if(activeHistoryStep.type === "compare"){
                 return activeHistoryStep.secondaryIndex;

@@ -78,12 +78,12 @@ export default class TreeHistory{
         }
         if(actionIndex > this.history.actions.length) {
             actionIndex = this.history.actions.length;
-            stepIndex = -1;
+            stepIndex = 0;
         }
-        stepIndex = Math.max(stepIndex, -1);
+        stepIndex = Math.max(stepIndex, 0);
         const targetAction = this.history.actions[actionIndex];
         if(!targetAction) {
-            stepIndex = -1;
+            stepIndex = 0;
         }
         else{
             stepIndex = Math.min(stepIndex, targetAction.steps.length);
@@ -158,7 +158,7 @@ export default class TreeHistory{
             this.history.currentHistoryStep = -1;
             return false;//already at back
         }
-        if(this.history.currentHistoryAction === -1 || this.history.currentHistoryStep === -1){
+        if(this.history.currentHistoryAction === -1 || this.history.currentHistoryStep === 0){
             this.history.currentHistoryAction++;
             if(this.history.currentHistoryAction === this.history.actions.length){
                 return true;

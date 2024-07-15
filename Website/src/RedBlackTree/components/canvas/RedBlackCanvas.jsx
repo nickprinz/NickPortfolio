@@ -4,22 +4,26 @@ import LineBetween from "./LineBetween";
 import RedBlackNodeElement from "./RedBlackNodeElement";
 import { CanvasPositioner } from "./nodePositionHelper";
 import { treeSelectors } from "../../store/tree";
+import NoteText from "./NoteText";
 
 export default function RedBlackCanvas({ selectedIndex, onNodeClicked, width, height }) {
-    
-    
     let focusedIndex = useSelector(treeSelectors.selectHistoryFocusedIndex);
     if(focusedIndex === null) focusedIndex = selectedIndex;
 
     const positioners = useSelector((state) => treeSelectors.selectDisplaySection(state, focusedIndex));
-    //still need to get extra element for active history step
-    //it should be positioned x+.25 from its target element and have an added "extra-" on its key
     const canvasPositioner = new CanvasPositioner(width, height);
 
+    let noteOnRight = true;
+    positioners.forEach(x => {
+        if(x.y === 1 && x.x > 0){
+            noteOnRight = false
+        }
+    })
+
     return <div className="overflow-hidden" >
+            {<NoteText text={"some note text"} onRight={noteOnRight} width={width/2.5} height={height/6.5}></NoteText>}
             {renderPositioners(positioners, canvasPositioner, focusedIndex, onNodeClicked)}
         </div>
-
 }
 
 function renderPositioners(positioners, canvasPositioner, focusedIndex, onNodeClicked){

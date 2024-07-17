@@ -55,7 +55,7 @@ describe('red black tree', () => {
         expect(tree.rootIndex).toBe(-1);
     })
 
-    it("should reuse freed indexes", () => {
+    it("should not reuse deleted indexes", () => {
         const tree = RedBlackTree.MakeInitialTree();
         const rbt = new RedBlackTree(tree);
         rbt.add(10);
@@ -64,7 +64,7 @@ describe('red black tree', () => {
         rbt.remove(10);
         expect(tree.rootIndex).toBe(-1);
         rbt.add(5);
-        expect(tree.rootIndex).toBe(0);
+        expect(tree.rootIndex).toBe(1);
         expect(tree.nodes[tree.rootIndex].value).toBe(5);
     })
 
@@ -127,6 +127,24 @@ describe('red black tree', () => {
         expect(tree.nodes[2].childCount).toBe(2);
         expect(tree.nodes[0].childCount).toBe(0);
         expect(tree.nodes[1].childCount).toBe(0);
+    })
+
+    it("should handle a delete from root with one child", () => {
+        const actualTest = (vals) => {
+            const tree = makeFromValues(vals);
+            const rbt = new RedBlackTree(tree);
+            expect(tree.rootIndex).toBe(0);
+            let beforeValidResult = validateTree(tree);
+            expect(beforeValidResult.isValid).toBeTruthy();
+            rbt.remove(vals[0]);
+            expect(tree.rootIndex).toBe(1);
+            let validResult = validateTree(tree);
+            expect(validResult.isValid).toBeTruthy();
+        }
+
+        const inOrderValues = [1,2];
+        actualTest(inOrderValues);
+        actualTest(makeNegative(inOrderValues));
     })
 
     it("should handle a doubleblack delete with a red sibling", () => {

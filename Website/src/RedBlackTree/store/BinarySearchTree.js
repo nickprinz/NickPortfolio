@@ -14,7 +14,7 @@ export default class BinarySearchTree{
         return {
             nodes: [],
             rootIndex: -1,
-            freeIndexes: [],
+            deletedIndexes: [],
             history: TreeHistory.MakeInitialHistory(),
             nextId: 0,
         };
@@ -38,7 +38,7 @@ export default class BinarySearchTree{
         if(!removeNode){
             throw new Error(`could not find node ${value} in tree`)
         }
-        this._removeSingleNode(removeNode);
+        return this.#getReplacementIndex(this._removeSingleNode(removeNode));
     }
     
     removeIndex(index) {
@@ -46,7 +46,12 @@ export default class BinarySearchTree{
         if(index < 0 || index >= this._tree.nodes.length || this._tree.nodes[index] === null){
             throw new Error(`could not find index ${index} in tree`)
         }
-        this._removeSingleNode(this._tree.nodes[index]);
+        return this.#getReplacementIndex(this._removeSingleNode(this._tree.nodes[index]));
+    }
+
+    #getReplacementIndex(replacementObject){
+        if(replacementObject.replacementIndex !== -1) return replacementObject.replacementIndex;
+        return replacementObject.parentIndex;
     }
 
     getClosestReplacement(removeIndex){
@@ -148,25 +153,22 @@ export default class BinarySearchTree{
     }
 
     _addNodeToArray(newNode){
-        if(this._tree.freeIndexes.length > 0){
-            newNode.index = this._tree.freeIndexes.pop();
-            this._tree.nodes[newNode.index] = newNode;
-        }
-        else{
-            newNode.index = this._tree.nodes.length;
-            this._tree.nodes.push(newNode);
-        }
+        newNode.index = this._tree.nodes.length;
+        this._tree.nodes.push(newNode);
     
         newNode.id = this.#generateId();
     }
 
     _removeSingleNode(removeNode){
+        return this._baseRemoveSingleNode(removeNode);
+    }
+
+    _baseRemoveSingleNode(removeNode){
         if(removeNode.left !== -1 && removeNode.right !== -1){
             //both children exist, need to find leftmost child in right tree
             let swapChild = this._findMin(this._tree.nodes[removeNode.right], this._tree.nodes);
-            this._swapNodesInTree(removeNode, swapChild);
-            this._removeSingleNode(swapChild);
-            return undefined;
+            this.#swapNodesInTree(removeNode, swapChild);//problem: this changes removenode to have new value but old color. I want the opposite
+            return this._baseRemoveSingleNode(removeNode);//if swapchild is a leaf, it will say the node was replaced with nothing
         }
 
         const parentIndex = removeNode.parent;
@@ -180,12 +182,12 @@ export default class BinarySearchTree{
 
         this._adjustChildCount(parentIndex, -1, this._tree)
         this._removeNodeFromArray(removeNode, this._tree);
-        return replacedChild;
+        return {replacementIndex: replacedChild ? replacedChild.index : -1, parentIndex: parentIndex};
+
     }
     
     _removeNodeFromArray(removingNode){
-        this._tree.freeIndexes.push(removingNode.index);
-        this._tree.nodes[removingNode.index] = null;
+        this._tree.deletedIndexes.push(removingNode.index);
     }
 
     _findMin(startNode){
@@ -212,24 +214,33 @@ export default class BinarySearchTree{
         return null;
     }
 
-    _swapNodesInTree(node1, node2){
-        //for now this just swaps the values in the object at each index
-        let tempVal1 = node1.value;
-        let tempId1 = node1.id;
-        node1.value = node2.value;
-        node1.id = node2.id;
-        node2.value = tempVal1;
-        node2.id = tempId1;
+    #swapNodesInTree(node1, node2){
+        //change this so the memory object keeps its value and id but moves to a new position in the tree
+        let tempNode = {...node1};
+        Object.assign(node1, node2);
+        node1.value = tempNode.value;
+        node1.id = tempNode.id;
+        let tempVal2 = node2.value;
+        let tempId2 = node2.id;
+        Object.assign(node2, tempNode);
+        node2.value = tempVal2;
+        node2.id = tempId2;
+        this._tree.nodes[node1.index] = node1;
+        this._tree.nodes[node2.index] = node2;
+
     }
 
     _swapChildRelationship(parentIndex, childNode, newChildNode){
         if(parentIndex === -1){
             if(newChildNode === null){
+                //entering here means removing the last node from the tree
                 this._changeRoot(-1);
                 return;
             }
+            //when removing root with one child
+            console.log("code path found")
             this._changeRoot(newChildNode.index);//in this case, the parent change could be inferred
-            if(newChildNode) newChildNode.parent = -1;
+            newChildNode.parent = -1;//this should have been in a change function
             return;
         }
         this._removeParentRelationship(childNode.index, parentIndex);
@@ -299,10 +310,9 @@ export default class BinarySearchTree{
         this._addHistoryStepChange(node.index,attributeName,newValue,oldValue);
     }
 
-    _changeRoot(newRootIndex, noHistory){
+    _changeRoot(newRootIndex){
         const oldRoot = this._tree.rootIndex;
         this._tree.rootIndex = newRootIndex;
-        if(noHistory) return;
         this._addHistoryStepChange(-1,BinarySearchTree.ROOT,newRootIndex,oldRoot);//in order to group with a parent change, root might need to be a new type
     }
 
@@ -311,6 +321,16 @@ export default class BinarySearchTree{
             name: name,
             value: value,
         })
+    }
+
+    _addHistoryStepRootChange(nodeIndex, attributeValue, oldValue, oldParent){
+        this._history.addStep({
+            type:BinarySearchTree.CHANGE,
+            index:nodeIndex,
+            attribute:BinarySearchTree.ROOT,
+            value:attributeValue,
+            oldValue: oldValue,
+        });
     }
 
     _addHistoryStepChange(nodeIndex, attributeName, attributeValue, oldValue){

@@ -17,12 +17,12 @@ export function addMany(values, tree) {
 
 export function remove(value, tree) {
     const rbt = new RedBlackTree(tree);
-    rbt.remove(value);
+    return rbt.remove(value);
 }
 
 export function removeIndex(index, tree) {
     const rbt = new RedBlackTree(tree);
-    rbt.removeIndex(index);
+    return rbt.removeIndex(index);
 }
 
 export function getClosestReplacement(removeIndex, tree){

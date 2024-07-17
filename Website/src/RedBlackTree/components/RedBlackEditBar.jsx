@@ -10,9 +10,6 @@ export default function RedBlackEditBar({onAddMany, selectedNode, onSelectedChan
     const dispatch = useDispatch();
 
     const realLength = useSelector(treeSelectors.selectTreeLength);
-    const replacedIndex = useSelector((state) => {
-        return treeSelectors.selectClosestReplacement(state, selectedNode);
-    })
     
     const handleAdd = (value) => {
         const result = dispatch(treeActions.add({value:value}));
@@ -21,8 +18,8 @@ export default function RedBlackEditBar({onAddMany, selectedNode, onSelectedChan
 
     const handleRemove = () => {
         if(selectedNode === -1) return;
-        dispatch(treeActions.removeIndex({index:selectedNode}));
-        setSelectedNode(replacedIndex);
+        const result = dispatch(treeActions.removeIndex({index:selectedNode}));
+        onSelectedChanged(result.payload.index);
     }
     
     const handleClear = () => {

@@ -53,10 +53,12 @@ const treeSlice = createSlice({
             action.payload.index = addedIndex;
         },
         remove(state, action){
-            treeRemove(action.payload.value, state);
+            const removeReplacement = treeRemove(action.payload.value, state);
+            action.payload.index = removeReplacement;
         },
         removeIndex(state, action){
-            treeRemoveIndex(action.payload.index, state);
+            const removeReplacement = treeRemoveIndex(action.payload.index, state);
+            action.payload.index = removeReplacement;
         },
         moveHistory(state, action){
             treeMoveHistory(action.payload.amount, state);
@@ -105,7 +107,7 @@ const treeSlice = createSlice({
             return treeGetClosestReplacement(removeIndex, state);
         },
         selectTreeLength(state){
-            return state.nodes.length - state.freeIndexes.length;
+            return state.nodes.length - state.deletedIndexes.length;
         },
         selectTextForHistoryStep: createSelector([
             ((state) => state.history.actions), 

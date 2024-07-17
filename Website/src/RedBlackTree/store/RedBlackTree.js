@@ -47,15 +47,6 @@ export default class RedBlackTree extends BinarySearchTree{
             super._redoHistoryStep(historyStep);
         }
     }
-    
-    _removeSingleNode(removeNode){
-        const parentIndex = removeNode.parent;
-        const replacedChild = super._removeSingleNode(removeNode);
-        if(replacedChild === undefined) return;
-        if(removeNode.isRed) return replacedChild;
-        this._rebalanceRemove(replacedChild, parentIndex);
-        return replacedChild;
-    }
 
     _makeNewNode(v){
         return {
@@ -118,6 +109,14 @@ export default class RedBlackTree extends BinarySearchTree{
                 return;
             }
         }
+    }
+    
+    _removeSingleNode(removeNode){
+        const {replacementIndex, parentIndex} = super._removeSingleNode(removeNode);
+        const replacedChild = this._tree.nodes[replacementIndex];
+        if(removeNode.isRed) return {replacementIndex, parentIndex};
+        this._rebalanceRemove(replacedChild, parentIndex);
+        return {replacementIndex, parentIndex}
     }
 
     _rebalanceRemove(replacedChild, parentIndex){
@@ -237,7 +236,9 @@ export default class RedBlackTree extends BinarySearchTree{
         this._recalculateChildCount(pivotNode);
         this._recalculateChildCount(newParent);
         if(swapColors) this._swapNodeColors(pivotNode, newParent);
-        if(pivotNode.index === this._tree.rootIndex) this._changeRoot(newParent.index, true);//this is the one root change that does not require a parent change
+        if(pivotNode.index === this._tree.rootIndex) {
+            this._tree.rootIndex = newParent.index;
+        };
     }
 
     _isNodeRed(node){

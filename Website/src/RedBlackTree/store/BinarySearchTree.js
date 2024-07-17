@@ -34,7 +34,7 @@ export default class BinarySearchTree{
 
     remove(value) {
         this._history.moveHistoryToCurrent();
-        let removeNode = this._findFirstNode(value);
+        let removeNode = this.#findFirstNode(value);
         if(!removeNode){
             throw new Error(`could not find node ${value} in tree`)
         }
@@ -91,8 +91,8 @@ export default class BinarySearchTree{
         }
 
         if(historyStep.attribute === BinarySearchTree.PARENT){
-            this._removeParentRelationship(historyStep.index, historyStep.value);
-            this._addParentChildRelationship(historyStep.index, historyStep.oldValue);
+            this.#removeParentRelationship(historyStep.index, historyStep.value);
+            this.#addParentChildRelationship(historyStep.index, historyStep.oldValue);
             return;
         }
 
@@ -109,8 +109,8 @@ export default class BinarySearchTree{
         }
 
         if(historyStep.attribute === BinarySearchTree.PARENT){
-            this._removeParentRelationship(historyStep.index, historyStep.oldValue);
-            this._addParentChildRelationship(historyStep.index, historyStep.value);
+            this.#removeParentRelationship(historyStep.index, historyStep.oldValue);
+            this.#addParentChildRelationship(historyStep.index, historyStep.value);
             return;
         }
         const node = this._tree.nodes[historyStep.index];
@@ -119,19 +119,19 @@ export default class BinarySearchTree{
 
     _performAdd(value){
         const newNode = this._makeNewNode(value);
-        this._addNodeToArray(newNode);
+        this.#addNodeToArray(newNode);
         if(this._tree.rootIndex === -1)
         {
             this._changeRoot(newNode.index);//in this case, the parent change could be inferred
             this._changeValue(newNode, BinarySearchTree.PARENT, -1);
             return newNode;
         }
-        const addParent = this._findAddParent(newNode);
-        this._addToParent(newNode, addParent);
+        const addParent = this.#findAddParent(newNode);
+        this.#addToParent(newNode, addParent);
         return newNode;
     }
 
-    _findAddParent(node){
+    #findAddParent(node){
         let potentialParent = this._tree.nodes[this._tree.rootIndex];
         while(potentialParent !== null){
             this._addHistoryStepCompare(node.index, potentialParent.index);
@@ -152,7 +152,7 @@ export default class BinarySearchTree{
         throw new Error(`somehow tree could not find a parent node for ${node.value}`);
     }
 
-    _addNodeToArray(newNode){
+    #addNodeToArray(newNode){
         newNode.index = this._tree.nodes.length;
         this._tree.nodes.push(newNode);
     
@@ -160,15 +160,15 @@ export default class BinarySearchTree{
     }
 
     _removeSingleNode(removeNode){
-        return this._baseRemoveSingleNode(removeNode);
+        return this.#removeSingleNode(removeNode);
     }
 
-    _baseRemoveSingleNode(removeNode){
+    #removeSingleNode(removeNode){
         if(removeNode.left !== -1 && removeNode.right !== -1){
             //both children exist, need to find leftmost child in right tree
-            let swapChild = this._findMin(this._tree.nodes[removeNode.right], this._tree.nodes);
+            let swapChild = this.#findMin(this._tree.nodes[removeNode.right], this._tree.nodes);
             this.#swapNodesInTree(removeNode, swapChild);//problem: this changes removenode to have new value but old color. I want the opposite
-            return this._baseRemoveSingleNode(removeNode);//if swapchild is a leaf, it will say the node was replaced with nothing
+            return this.#removeSingleNode(removeNode);//if swapchild is a leaf, it will say the node was replaced with nothing
         }
 
         const parentIndex = removeNode.parent;
@@ -178,19 +178,19 @@ export default class BinarySearchTree{
         } else if(removeNode.left !== -1){
             replacedChild = this._tree.nodes[removeNode.left];
         }
-        this._swapChildRelationship(parentIndex, removeNode, replacedChild, this._tree);
+        this.#swapChildRelationship(parentIndex, removeNode, replacedChild, this._tree);
 
         this._adjustChildCount(parentIndex, -1, this._tree)
-        this._removeNodeFromArray(removeNode, this._tree);
+        this.#removeNodeFromArray(removeNode, this._tree);
         return {replacementIndex: replacedChild ? replacedChild.index : -1, parentIndex: parentIndex};
 
     }
     
-    _removeNodeFromArray(removingNode){
+    #removeNodeFromArray(removingNode){
         this._tree.deletedIndexes.push(removingNode.index);
     }
 
-    _findMin(startNode){
+    #findMin(startNode){
         let node = startNode;
         while(node.left >= 0){
             node = this._tree.nodes[node.left];
@@ -198,7 +198,7 @@ export default class BinarySearchTree{
         return node;
     }
     
-    _findFirstNode(value){
+    #findFirstNode(value){
         let possibleNode = this._tree.nodes[this._tree.rootIndex];
         while(possibleNode){
             if(value === possibleNode.value){
@@ -215,7 +215,7 @@ export default class BinarySearchTree{
     }
 
     #swapNodesInTree(node1, node2){
-        //change this so the memory object keeps its value and id but moves to a new position in the tree
+        //the memory object keeps its value and id but moves to a new position in the tree and new index in the array
         let tempNode = {...node1};
         Object.assign(node1, node2);
         node1.value = tempNode.value;
@@ -230,7 +230,7 @@ export default class BinarySearchTree{
 
     }
 
-    _swapChildRelationship(parentIndex, childNode, newChildNode){
+    #swapChildRelationship(parentIndex, childNode, newChildNode){
         if(parentIndex === -1){
             if(newChildNode === null){
                 //entering here means removing the last node from the tree
@@ -243,13 +243,13 @@ export default class BinarySearchTree{
             newChildNode.parent = -1;//this should have been in a change function
             return;
         }
-        this._removeParentRelationship(childNode.index, parentIndex);
+        this.#removeParentRelationship(childNode.index, parentIndex);
         if(newChildNode){
-            this._addParentChildRelationship(newChildNode.index, parentIndex);
+            this.#addParentChildRelationship(newChildNode.index, parentIndex);
         }
     }
 
-    _removeParentRelationship(childIndex, parentIndex){
+    #removeParentRelationship(childIndex, parentIndex){
         let childNode = this._tree.nodes[childIndex];
         childNode.parent = -1;
         if(parentIndex === -1){
@@ -265,7 +265,7 @@ export default class BinarySearchTree{
         }
     }
 
-    _addParentChildRelationship(childIndex, parentIndex){
+    #addParentChildRelationship(childIndex, parentIndex){
         let childNode = this._tree.nodes[childIndex];
         childNode.parent = parentIndex;
         if(parentIndex === -1){
@@ -360,7 +360,7 @@ export default class BinarySearchTree{
         });
     }
 
-    _addToParent(newNode, parentNode){
+    #addToParent(newNode, parentNode){
         this._changeValue(newNode, BinarySearchTree.PARENT, parentNode.index);
         if(newNode.value <= parentNode.value){
             if(parentNode.left !== -1) throw new Error(`tried to add left child in occupied spot p:${parentNode.index}`)
@@ -383,10 +383,10 @@ export default class BinarySearchTree{
     }
     
     _recalculateDepthBelow(node){
-        node.depthBelow = this._getHighestDepth(node.left, node.right) + 1;
+        node.depthBelow = this.#getHighestDepth(node.left, node.right) + 1;
     }
     
-    _getHighestDepth(index1, index2){
+    #getHighestDepth(index1, index2){
         const n1 = this._tree.nodes[index1];
         const n2 = this._tree.nodes[index2];
         return Math.max(n1 ? n1.depthBelow : -1, n2 ? n2.depthBelow : -1)

@@ -10,7 +10,7 @@ export default class RedBlackTree extends BinarySearchTree{
         if(this._tree.rootIndex === newNode.index){
             this._changeValue(newNode, RedBlackTree.ISRED, false);
         }
-        this._rebalanceAdd(newNode);
+        this.#rebalanceAdd(newNode);
         return newNode;
     }
 
@@ -22,11 +22,11 @@ export default class RedBlackTree extends BinarySearchTree{
         if(historyStep.attribute === RedBlackTree.ROTATELEFT){
             const node = this._tree.nodes[historyStep.index];
             const parent = this._tree.nodes[node.parent];
-            this._rotateRight(parent, historyStep.value);
+            this.#rotateRight(parent, historyStep.value);
         } else if(historyStep.attribute === RedBlackTree.ROTATERIGHT){
             const node = this._tree.nodes[historyStep.index];
             const parent = this._tree.nodes[node.parent];
-            this._rotateLeft(parent, historyStep.value);
+            this.#rotateLeft(parent, historyStep.value);
         } else{
             super._undoHistoryStep(historyStep);
         }
@@ -39,10 +39,10 @@ export default class RedBlackTree extends BinarySearchTree{
         }
         if(historyStep.attribute === RedBlackTree.ROTATELEFT){
             const node = this._tree.nodes[historyStep.index];
-            this._rotateLeft(node, historyStep.value);
+            this.#rotateLeft(node, historyStep.value);
         } else if(historyStep.attribute === RedBlackTree.ROTATERIGHT){
             const node = this._tree.nodes[historyStep.index];
-            this._rotateRight(node, historyStep.value);
+            this.#rotateRight(node, historyStep.value);
         } else{
             super._redoHistoryStep(historyStep);
         }
@@ -61,7 +61,7 @@ export default class RedBlackTree extends BinarySearchTree{
         }
     }
 
-    _rebalanceAdd(newNode){
+    #rebalanceAdd(newNode){
         let nodeToCheck = newNode;
         while(nodeToCheck){
             if(nodeToCheck.parent === -1) {
@@ -74,7 +74,7 @@ export default class RedBlackTree extends BinarySearchTree{
                 return
             };//no change in black depth
             const uncle = this._getSibling(parent.index, this._tree.nodes);
-            if(this._isNodeRed(uncle)){
+            if(this.#isNodeRed(uncle)){
                 this._addHistoryStepNote(uncle.index,"add red uncle");
                 this._changeValue(uncle, RedBlackTree.ISRED, false);
                 this._changeValue(parent, RedBlackTree.ISRED, false);
@@ -95,17 +95,17 @@ export default class RedBlackTree extends BinarySearchTree{
                 this._addHistoryStepNote(parent.index,"add parent left child");
                 if(parent.left !== nodeToCheck.index){
                     this._addHistoryStepNote(nodeToCheck.index,"add node right child");
-                    this._rotateLeft(parent, true);
+                    this.#rotateLeft(parent, true);
                 }
-                this._rotateRight(grandParent, true);
+                this.#rotateRight(grandParent, true);
                 return;
             } else {
                 this._addHistoryStepNote(parent.index,"add parent right child");
                 if(parent.right !== nodeToCheck.index){
                     this._addHistoryStepNote(nodeToCheck.index,"add node left child");
-                    this._rotateRight(parent, true);
+                    this.#rotateRight(parent, true);
                 }
-                this._rotateLeft(grandParent, true);
+                this.#rotateLeft(grandParent, true);
                 return;
             }
         }
@@ -115,16 +115,16 @@ export default class RedBlackTree extends BinarySearchTree{
         const {replacementIndex, parentIndex} = super._removeSingleNode(removeNode);
         const replacedChild = this._tree.nodes[replacementIndex];
         if(removeNode.isRed) return {replacementIndex, parentIndex};
-        this._rebalanceRemove(replacedChild, parentIndex);
+        this.#rebalanceRemove(replacedChild, parentIndex);
         return {replacementIndex, parentIndex}
     }
 
-    _rebalanceRemove(replacedChild, parentIndex){
+    #rebalanceRemove(replacedChild, parentIndex){
     
         if(parentIndex === -1){
             return;
         }
-        if(this._isNodeRed(replacedChild)){
+        if(this.#isNodeRed(replacedChild)){
             replacedChild.isRed = false;
             return;//removed child takes up the removed node's black position
         }
@@ -137,37 +137,37 @@ export default class RedBlackTree extends BinarySearchTree{
         }
     
         const parentNode = this._tree.nodes[parentIndex];
-        if(this._isNodeRed(siblingNode)){
+        if(this.#isNodeRed(siblingNode)){
             siblingNode.isRed = false;
             parentNode.isRed = true;
             if(parentNode.left === siblingNode.index){
-                this._rotateRight(parentNode, false);
+                this.#rotateRight(parentNode, false);
             }
             else{
-                this._rotateLeft(parentNode, false);
+                this.#rotateLeft(parentNode, false);
             }
-            this._rebalanceRemove(replacedChild, parentIndex);
+            this.#rebalanceRemove(replacedChild, parentIndex);
             return;
         }
     
-        if(!this._isNodeRed(this._tree.nodes[siblingNode.left]) && !this._isNodeRed(this._tree.nodes[siblingNode.right])){
+        if(!this.#isNodeRed(this._tree.nodes[siblingNode.left]) && !this.#isNodeRed(this._tree.nodes[siblingNode.right])){
             siblingNode.isRed = true;
             if(parentNode.isRed){
                 parentNode.isRed = false;
                 return;
             }
-            this._rebalanceRemove(parentNode, parentNode.parent);
+            this.#rebalanceRemove(parentNode, parentNode.parent);
             return;
         }
     
         //if down here, there is a black sibling of a doubleblack node and that sibling has at least 1 red child
         if(parentNode.left === siblingNode.index){
-            if(!this._isNodeRed(this._tree.nodes[siblingNode.left])){
+            if(!this.#isNodeRed(this._tree.nodes[siblingNode.left])){
                 this._tree.nodes[siblingNode.right].isRed = parentNode.isRed;
-                this._rotateLeft(siblingNode, true);
+                this.#rotateLeft(siblingNode, true);
             }
-            else if(this._isNodeRed(this._tree.nodes[siblingNode.left]) && this._isNodeRed(this._tree.nodes[siblingNode.right])){
-                this._swapNodeColors(siblingNode, this._tree.nodes[siblingNode.left]);
+            else if(this.#isNodeRed(this._tree.nodes[siblingNode.left]) && this.#isNodeRed(this._tree.nodes[siblingNode.right])){
+                this.#swapNodeColors(siblingNode, this._tree.nodes[siblingNode.left]);
                 if(parentNode.isRed){
                     parentNode.isRed = false;
                 }
@@ -177,15 +177,15 @@ export default class RedBlackTree extends BinarySearchTree{
             }else{
                 this._tree.nodes[siblingNode.left].isRed = parentNode.isRed;
             }
-            this._rotateRight(parentNode, false);
+            this.#rotateRight(parentNode, false);
         }
         else{
-            if(!this._isNodeRed(this._tree.nodes[siblingNode.right])){
+            if(!this.#isNodeRed(this._tree.nodes[siblingNode.right])){
                 this._tree.nodes[siblingNode.left].isRed = parentNode.isRed;
-                this._rotateRight(siblingNode, true);
+                this.#rotateRight(siblingNode, true);
             }
-            else if(this._isNodeRed(this._tree.nodes[siblingNode.left]) && this._isNodeRed(this._tree.nodes[siblingNode.right])){
-                this._swapNodeColors(siblingNode, this._tree.nodes[siblingNode.right]);
+            else if(this.#isNodeRed(this._tree.nodes[siblingNode.left]) && this.#isNodeRed(this._tree.nodes[siblingNode.right])){
+                this.#swapNodeColors(siblingNode, this._tree.nodes[siblingNode.right]);
                 if(parentNode.isRed){
                     parentNode.isRed = false;
                 }
@@ -195,32 +195,32 @@ export default class RedBlackTree extends BinarySearchTree{
             }else{
                 this._tree.nodes[siblingNode.right].isRed = parentNode.isRed;
             }
-            this._rotateLeft(parentNode, false);
+            this.#rotateLeft(parentNode, false);
         }
     
     }
 
-    _rotateRight(pivotNode, swapColors){
+    #rotateRight(pivotNode, swapColors){
         const newParent = this._tree.nodes[pivotNode.left];
         pivotNode.left = newParent.right;
         const newChild = this._tree.nodes[pivotNode.left];
         if(newChild) newChild.parent = pivotNode.index;
         newParent.right = pivotNode.index;
-        this._cleanupRotation(pivotNode, newParent, swapColors);
+        this.#cleanupRotation(pivotNode, newParent, swapColors);
         this._addHistoryStepChange(pivotNode.index, RedBlackTree.ROTATERIGHT, swapColors);
     }
     
-    _rotateLeft(pivotNode, swapColors){
+    #rotateLeft(pivotNode, swapColors){
         const newParent = this._tree.nodes[pivotNode.right];
         pivotNode.right = newParent.left;
         const newChild = this._tree.nodes[pivotNode.right];
         if(newChild) newChild.parent = pivotNode.index;
         newParent.left = pivotNode.index;
-        this._cleanupRotation(pivotNode, newParent, swapColors);
+        this.#cleanupRotation(pivotNode, newParent, swapColors);
         this._addHistoryStepChange(pivotNode.index, RedBlackTree.ROTATELEFT, swapColors);
     }
     
-    _cleanupRotation(pivotNode, newParent, swapColors){
+    #cleanupRotation(pivotNode, newParent, swapColors){
         const grandParent = this._tree.nodes[pivotNode.parent];
         if(grandParent){
             if(grandParent.left === pivotNode.index){
@@ -235,17 +235,17 @@ export default class RedBlackTree extends BinarySearchTree{
         this._recalculateDepthBelow(newParent);
         this._recalculateChildCount(pivotNode);
         this._recalculateChildCount(newParent);
-        if(swapColors) this._swapNodeColors(pivotNode, newParent);
+        if(swapColors) this.#swapNodeColors(pivotNode, newParent);
         if(pivotNode.index === this._tree.rootIndex) {
             this._tree.rootIndex = newParent.index;
         };
     }
 
-    _isNodeRed(node){
+    #isNodeRed(node){
         return node && node.isRed;
     }
 
-    _swapNodeColors(node1, node2){
+    #swapNodeColors(node1, node2){
         const tempRed = node1.isRed;
         node1.isRed = node2.isRed;
         node2.isRed = tempRed;

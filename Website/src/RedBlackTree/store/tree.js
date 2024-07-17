@@ -20,13 +20,15 @@ const getActiveHistoryStep = (history) => {
     let activeStep = activeAction.steps[history.currentHistoryStep];
     if(activeStep) return activeStep;
     if(history.currentHistoryStep === activeAction.steps.length){
-        if(activeAction.name === "Add")
-        return {
-            type:"change",
-            index:activeAction.steps[0].index || activeAction.steps[0].primaryIndex,
-            attribute:"",
-            value:"",
-            oldValue: "",
+        if(activeAction.name === "Add") {
+            //this fails for the first add because step0 is changing the root
+            return {
+                type:"change",
+                index:activeAction.steps[0].index || activeAction.steps[0].primaryIndex,
+                attribute:"",
+                value:"",
+                oldValue: "",
+            }
         }
     }
     if(history.currentHistoryStep === -1){
@@ -152,7 +154,8 @@ const treeSlice = createSlice({
         ], 
         (nodes, focusedIndex, rootIndex, history) => {
             let activeHistoryStep = getActiveHistoryStep(history);
-            return selectDisplaySection(focusedIndex, nodes, rootIndex, activeHistoryStep);
+            const section = selectDisplaySection(focusedIndex, nodes, rootIndex, activeHistoryStep);
+            return section;
         })
     }
 });

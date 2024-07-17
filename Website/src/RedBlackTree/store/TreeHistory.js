@@ -1,6 +1,11 @@
 const historyCount = 10;
 
 export default class TreeHistory{
+    //changes needed
+    //steps need to be able to bundle a few changes
+    //such as root change and parent adjustment
+    //also multiple color swaps for rebalance
+    //need steps to have their own note property to explain a change
 
     static MakeInitialHistory(){
         return {

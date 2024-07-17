@@ -117,7 +117,7 @@ export default class BinarySearchTree{
         this._addNodeToArray(newNode);
         if(this._tree.rootIndex === -1)
         {
-            this._changeRoot(newNode.index);
+            this._changeRoot(newNode.index);//in this case, the parent change could be inferred
             this._changeValue(newNode, BinarySearchTree.PARENT, -1);
             return newNode;
         }
@@ -228,7 +228,7 @@ export default class BinarySearchTree{
                 this._changeRoot(-1);
                 return;
             }
-            this._changeRoot(newChildNode.index);
+            this._changeRoot(newChildNode.index);//in this case, the parent change could be inferred
             if(newChildNode) newChildNode.parent = -1;
             return;
         }
@@ -303,7 +303,7 @@ export default class BinarySearchTree{
         const oldRoot = this._tree.rootIndex;
         this._tree.rootIndex = newRootIndex;
         if(noHistory) return;
-        this._addHistoryStepChange(-1,BinarySearchTree.ROOT,newRootIndex,oldRoot);
+        this._addHistoryStepChange(-1,BinarySearchTree.ROOT,newRootIndex,oldRoot);//in order to group with a parent change, root might need to be a new type
     }
 
     _makeActionHistory(name, value){

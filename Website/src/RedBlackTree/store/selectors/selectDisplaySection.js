@@ -7,12 +7,21 @@
 
 import BinarySearchTree from "../BinarySearchTree";
 
-class NodePositioner{
+class BasePositioner{
 
-    constructor(node, x, y, isOut, nullId){
-        //null nodes need some kind id that takes parent id and left/right position
+    constructor(x, y, id){
         this.x = x;
         this.y = y;
+        this.id = id;
+    }
+
+}
+
+class NodePositioner extends BasePositioner{
+
+    constructor(node, x, y, isOut, nullId){
+        super(x, y, null);
+        
         if(!node){
             this.value = null;
             this.index = null;
@@ -34,6 +43,14 @@ class NodePositioner{
     }
 }
 
+class CompareNodePositioner extends BasePositioner{
+    constructor(x, y, id, isGreater){
+        super(x, y, id);
+        this.isGreater = isGreater;
+    }
+
+}
+
 export default function selectDisplaySection(focusedIndex, nodes, rootIndex, activeHistoryStep){
     if(!nodes[focusedIndex] || rootIndex === -1) return [];
     const section = getSection(focusedIndex, nodes, rootIndex);
@@ -42,7 +59,7 @@ export default function selectDisplaySection(focusedIndex, nodes, rootIndex, act
 }
 
 function addStepPositioners(section, nodes, activeHistoryStep){
-    if(!activeHistoryStep) return section;
+    if(!activeHistoryStep) return 
     if(activeHistoryStep.type === BinarySearchTree.COMPARE){
         const compareTo = section.find(x => x.index === activeHistoryStep.secondaryIndex);
         const stepNode = new NodePositioner(nodes[activeHistoryStep.primaryIndex],compareTo.x, compareTo.y);

@@ -83,12 +83,15 @@ export default class BinarySearchTree{
     }
 
     _undoHistoryStep(historyStep){
-        if(historyStep.type !== BinarySearchTree.CHANGE) return;
-
-        if(historyStep.attribute === BinarySearchTree.ROOT){
+        if(historyStep.type === BinarySearchTree.ROOT){
             this._tree.rootIndex = historyStep.oldValue;
+            if(historyStep.oldValue === -1) return;
+            const newRootNode = this._tree.nodes[historyStep.oldValue];
+            newRootNode.parent = historyStep.oldRootParentIndex;
             return;
         }
+
+        if(historyStep.type !== BinarySearchTree.CHANGE) return;
 
         if(historyStep.attribute === BinarySearchTree.PARENT){
             this.#removeParentRelationship(historyStep.index, historyStep.value);
@@ -101,12 +104,15 @@ export default class BinarySearchTree{
     }
 
     _redoHistoryStep(historyStep){
-        if(historyStep.type !== BinarySearchTree.CHANGE) return;
-
-        if(historyStep.attribute === BinarySearchTree.ROOT){
+        if(historyStep.type === BinarySearchTree.ROOT){
             this._tree.rootIndex = historyStep.value;
+            if(historyStep.value === -1) return;
+            const newRootNode = this._tree.nodes[historyStep.value];
+            newRootNode.parent = -1;
             return;
         }
+
+        if(historyStep.type !== BinarySearchTree.CHANGE) return;
 
         if(historyStep.attribute === BinarySearchTree.PARENT){
             this.#removeParentRelationship(historyStep.index, historyStep.oldValue);
@@ -122,8 +128,7 @@ export default class BinarySearchTree{
         this.#addNodeToArray(newNode);
         if(this._tree.rootIndex === -1)
         {
-            this._changeRoot(newNode.index);//in this case, the parent change could be inferred
-            this._changeValue(newNode, BinarySearchTree.PARENT, -1);
+            this._changeRoot(newNode.index);
             return newNode;
         }
         const addParent = this.#findAddParent(newNode);
@@ -233,14 +238,10 @@ export default class BinarySearchTree{
     #swapChildRelationship(parentIndex, childNode, newChildNode){
         if(parentIndex === -1){
             if(newChildNode === null){
-                //entering here means removing the last node from the tree
                 this._changeRoot(-1);
                 return;
             }
-            //when removing root with one child
-            console.log("code path found")
-            this._changeRoot(newChildNode.index);//in this case, the parent change could be inferred
-            newChildNode.parent = -1;//this should have been in a change function
+            this._changeRoot(newChildNode.index);
             return;
         }
         this.#removeParentRelationship(childNode.index, parentIndex);
@@ -313,7 +314,14 @@ export default class BinarySearchTree{
     _changeRoot(newRootIndex){
         const oldRoot = this._tree.rootIndex;
         this._tree.rootIndex = newRootIndex;
-        this._addHistoryStepChange(-1,BinarySearchTree.ROOT,newRootIndex,oldRoot);//in order to group with a parent change, root might need to be a new type
+        if(newRootIndex === -1){
+            this._addHistoryStepRootChange(newRootIndex,oldRoot, -1);
+            return;
+        }
+        const newRootNode = this._tree.nodes[newRootIndex];
+        const oldRootParentIndex = newRootNode.parent;
+        newRootNode.parent = -1;
+        this._addHistoryStepRootChange(newRootIndex,oldRoot, oldRootParentIndex);//in order to group with a parent change, root might need to be a new type
     }
 
     _makeActionHistory(name, value){
@@ -323,13 +331,14 @@ export default class BinarySearchTree{
         })
     }
 
-    _addHistoryStepRootChange(nodeIndex, attributeValue, oldValue, oldParent){
+    _addHistoryStepRootChange(value, oldValue, oldRootParentIndex){
+        //outside of a rotate, which handles its own history, a node only stops being root if it is removed
+        //because of this, we don't need to track the parent of the old root
         this._history.addStep({
-            type:BinarySearchTree.CHANGE,
-            index:nodeIndex,
-            attribute:BinarySearchTree.ROOT,
-            value:attributeValue,
+            type:BinarySearchTree.ROOT,
+            value:value,
             oldValue: oldValue,
+            oldRootParentIndex: oldRootParentIndex
         });
     }
 

@@ -21,9 +21,8 @@ export default function RedBlackCanvas({ selectedIndex, onNodeClicked, width, he
             noteOnRight = false
         }
     })
-
     return <div className="overflow-hidden" >
-            <AnimatePresence>{stepNote && <NoteText text={stepNote} onRight={noteOnRight} width={width/2.4} height={height/6.2}></NoteText>}</AnimatePresence>
+            <AnimatePresence>{stepNote && stepNote.note && <NoteText text={stepNote.note} noteValues={stepNote.values} onRight={noteOnRight} width={width/2.4} height={height/6.2}></NoteText>}</AnimatePresence>
             {renderPositioners(positioners, canvasPositioner, focusedIndex, onNodeClicked)}
         </div>
 }

@@ -90,7 +90,7 @@ const treeSlice = createSlice({
             //in the case of compare step need value of nodes at primaryIndex and secondaryIndex
             //will also want to note if value is less or greater
             //add_compare_values_less or add_compare_values_greater
-            return step.note;
+            return {note: step.note, values: step.noteValues};
         },
         selectActiveHistoryActionIndex(state){
             return state.history.currentHistoryAction;

@@ -128,7 +128,7 @@ export default class BinarySearchTree{
         this.#addNodeToArray(newNode);
         if(this._tree.rootIndex === -1)
         {
-            this._changeRoot(newNode.index);
+            this._changeRoot(newNode.index, "first_root");
             return newNode;
         }
         const addParent = this.#findAddParent(newNode);
@@ -139,8 +139,9 @@ export default class BinarySearchTree{
     #findAddParent(node){
         let potentialParent = this._tree.nodes[this._tree.rootIndex];
         while(potentialParent !== null){
-            this._addHistoryStepCompare(node.index, potentialParent.index);
-            if(node.value <= potentialParent.value){
+            const isLess = node.value <= potentialParent.value;
+            this._addHistoryStepCompare(node.index, potentialParent.index, isLess ? "add_compare_values_less" : "add_compare_values_greater");
+            if(isLess){
                 if(potentialParent.left === -1) {
                     return potentialParent;
                 };
@@ -305,23 +306,23 @@ export default class BinarySearchTree{
         };
     }
 
-    _changeValue(node, attributeName, newValue){
+    _changeValue(node, attributeName, newValue, note){
         const oldValue = node[attributeName];
         node[attributeName] = newValue;
-        this._addHistoryStepChange(node.index,attributeName,newValue,oldValue);
+        this._addHistoryStepChange(node.index,attributeName,newValue, oldValue, note);
     }
 
-    _changeRoot(newRootIndex){
+    _changeRoot(newRootIndex, note){
         const oldRoot = this._tree.rootIndex;
         this._tree.rootIndex = newRootIndex;
         if(newRootIndex === -1){
-            this._addHistoryStepRootChange(newRootIndex,oldRoot, -1);
+            this._addHistoryStepRootChange(newRootIndex, oldRoot, -1, note);
             return;
         }
         const newRootNode = this._tree.nodes[newRootIndex];
         const oldRootParentIndex = newRootNode.parent;
         newRootNode.parent = -1;
-        this._addHistoryStepRootChange(newRootIndex,oldRoot, oldRootParentIndex);//in order to group with a parent change, root might need to be a new type
+        this._addHistoryStepRootChange(newRootIndex, oldRoot, oldRootParentIndex, note);//in order to group with a parent change, root might need to be a new type
     }
 
     _makeActionHistory(name, value){
@@ -331,32 +332,35 @@ export default class BinarySearchTree{
         })
     }
 
-    _addHistoryStepRootChange(value, oldValue, oldRootParentIndex){
+    _addHistoryStepRootChange(value, oldValue, oldRootParentIndex, note){
         //outside of a rotate, which handles its own history, a node only stops being root if it is removed
         //because of this, we don't need to track the parent of the old root
         this._history.addStep({
             type:BinarySearchTree.ROOT,
             value:value,
             oldValue: oldValue,
-            oldRootParentIndex: oldRootParentIndex
+            oldRootParentIndex: oldRootParentIndex,
+            note: note,
         });
     }
 
-    _addHistoryStepChange(nodeIndex, attributeName, attributeValue, oldValue){
+    _addHistoryStepChange(nodeIndex, attributeName, attributeValue, oldValue, note){
         this._history.addStep({
             type:BinarySearchTree.CHANGE,
             index:nodeIndex,
             attribute:attributeName,
             value:attributeValue,
             oldValue: oldValue,
+            note: note,
         });
     }
     
-    _addHistoryStepCompare(primaryNodeIndex, SecondaryNodeIndex){
+    _addHistoryStepCompare(primaryNodeIndex, SecondaryNodeIndex, note){
         this._history.addStep({
             type:BinarySearchTree.COMPARE,
             primaryIndex:primaryNodeIndex,
             secondaryIndex:SecondaryNodeIndex,
+            note: note,
         });
     }
     
@@ -370,8 +374,9 @@ export default class BinarySearchTree{
     }
 
     #addToParent(newNode, parentNode){
-        this._changeValue(newNode, BinarySearchTree.PARENT, parentNode.index);
-        if(newNode.value <= parentNode.value){
+        const isLess = newNode.value <= parentNode.value;
+        this._changeValue(newNode, BinarySearchTree.PARENT, parentNode.index, isLess ? "add_insert_less" : "add_insert_greater");
+        if(isLess){
             if(parentNode.left !== -1) throw new Error(`tried to add left child in occupied spot p:${parentNode.index}`)
             parentNode.left = newNode.index;
         }

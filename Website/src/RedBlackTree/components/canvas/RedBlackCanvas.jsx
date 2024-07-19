@@ -5,10 +5,12 @@ import RedBlackNodeElement from "./RedBlackNodeElement";
 import { CanvasPositioner } from "./nodePositionHelper";
 import { treeSelectors } from "../../store/tree";
 import NoteText from "./NoteText";
+import { AnimatePresence } from "framer-motion";
 
 export default function RedBlackCanvas({ selectedIndex, onNodeClicked, width, height }) {
     let focusedIndex = useSelector(treeSelectors.selectHistoryFocusedIndex);
     if(focusedIndex === null) focusedIndex = selectedIndex;
+    let stepNote = useSelector(treeSelectors.selectActiveHistoryStepNote);
 
     const positioners = useSelector((state) => treeSelectors.selectDisplaySection(state, focusedIndex));
     const canvasPositioner = new CanvasPositioner(width, height);
@@ -21,7 +23,7 @@ export default function RedBlackCanvas({ selectedIndex, onNodeClicked, width, he
     })
 
     return <div className="overflow-hidden" >
-            {<NoteText text={"some note text"} onRight={noteOnRight} width={width/2.5} height={height/6.5}></NoteText>}
+            <AnimatePresence>{stepNote && <NoteText text={stepNote} onRight={noteOnRight} width={width/2.4} height={height/6.2}></NoteText>}</AnimatePresence>
             {renderPositioners(positioners, canvasPositioner, focusedIndex, onNodeClicked)}
         </div>
 }

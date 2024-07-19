@@ -83,6 +83,15 @@ const treeSlice = createSlice({
         selectActiveHistoryStep(state){
             return getActiveHistoryStep(state.history);
         },
+        selectActiveHistoryStepNote(state){
+            const step = getActiveHistoryStep(state.history);
+            if(!step) return null;
+            //don't just return string, will need to add values for the translator
+            //in the case of compare step need value of nodes at primaryIndex and secondaryIndex
+            //will also want to note if value is less or greater
+            //add_compare_values_less or add_compare_values_greater
+            return step.note;
+        },
         selectActiveHistoryActionIndex(state){
             return state.history.currentHistoryAction;
         },

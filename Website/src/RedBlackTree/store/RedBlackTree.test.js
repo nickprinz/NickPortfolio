@@ -428,7 +428,42 @@ describe('red black tree', () => {
         rbt.setHistoryToPosition(5,7);
         const afterCount = getHistoryStepCount(tree);
         expect(beforeCount).toBe(afterCount);
-    })
+    });
+
+    it("should undo a delete", () => {
+        const tree = makeFromValues([1]);
+        expect(tree.history.actions.length).toBe(1);
+        const rbt = new RedBlackTree(tree);
+        rbt.removeIndex(0);
+        expect(tree.history.actions.length).toBe(2);
+        expect(tree.rootIndex).toBe(-1);
+        rbt.setHistoryToPosition(0,0);
+        expect(tree.rootIndex).toBe(0);
+    });
+
+    it("should undo a delete with 2 children", () => {
+        const tree = makeFromValues([2,1,3]);
+        expect(tree.history.actions.length).toBe(3);
+        const rbt = new RedBlackTree(tree);
+        rbt.removeIndex(0);
+        expect(tree.history.actions.length).toBe(4);
+        expect(tree.nodes[tree.rootIndex].value).toBe(3);
+        rbt.setHistoryToPosition(0,0);
+        expect(tree.nodes[tree.rootIndex].value).toBe(2);
+    });
+
+    it("should redo a delete with 2 children", () => {
+        const tree = makeFromValues([2,1,3]);
+        expect(tree.history.actions.length).toBe(3);
+        const rbt = new RedBlackTree(tree);
+        rbt.removeIndex(0);
+        expect(tree.history.actions.length).toBe(4);
+        expect(tree.nodes[tree.rootIndex].value).toBe(3);
+        rbt.setHistoryToPosition(0,0);
+        expect(tree.nodes[tree.rootIndex].value).toBe(2);
+        rbt.moveHistoryToCurrent();
+        expect(tree.nodes[tree.rootIndex].value).toBe(3);
+    });
 });
 
 function makeFromValues(vals){

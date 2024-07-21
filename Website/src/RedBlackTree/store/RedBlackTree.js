@@ -112,21 +112,16 @@ export default class RedBlackTree extends BinarySearchTree{
     }
     
     _removeSingleNode(removeNode){
-        const {replacementIndex, parentIndex} = super._removeSingleNode(removeNode);
-        const replacedChild = this._tree.nodes[replacementIndex];
-        if(removeNode.isRed) return {replacementIndex, parentIndex};
-        this.#rebalanceRemove(replacedChild, parentIndex);
-        return {replacementIndex, parentIndex}
+        const parentIndex = super._removeSingleNode(removeNode);
+        if(removeNode.isRed) return parentIndex;
+        this.#rebalanceRemove(null, parentIndex);
+        return parentIndex;
     }
 
     #rebalanceRemove(replacedChild, parentIndex){
     
         if(parentIndex === -1){
             return;
-        }
-        if(this.#isNodeRed(replacedChild)){
-            replacedChild.isRed = false;
-            return;//removed child takes up the removed node's black position
         }
         
         let replacedChildIndex = replacedChild ? replacedChild.index : -1;

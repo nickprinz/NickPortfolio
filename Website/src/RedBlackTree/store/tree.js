@@ -115,8 +115,8 @@ const treeSlice = createSlice({
         selectClosestReplacement(state, removeIndex){
             return treeGetClosestReplacement(removeIndex, state);
         },
-        selectTreeLength(state){
-            return state.nodes.length - state.deletedIndexes.length;
+        selectTreeHasAtLeastOne(state){
+            return state.rootIndex !== -1;
         },
         selectTextForHistoryStep: createSelector([
             ((state) => state.history.actions), 

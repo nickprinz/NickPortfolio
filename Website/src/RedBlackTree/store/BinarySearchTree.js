@@ -14,7 +14,6 @@ export default class BinarySearchTree{
         return {
             nodes: [],
             rootIndex: -1,
-            deletedIndexes: [],
             history: TreeHistory.MakeInitialHistory(),
             nextId: 0,
         };
@@ -27,7 +26,7 @@ export default class BinarySearchTree{
 
     add(value) {
         this._history.moveHistoryToCurrent();
-        this._makeActionHistory(`Add`, value);
+        this._makeActionHistory(`add`, value);
         const addedNode = this._performAdd(value);
         return addedNode.index;
     }
@@ -167,15 +166,16 @@ export default class BinarySearchTree{
     }
 
     _removeSingleNode(removeNode){
+        this._makeActionHistory(`remove`, removeNode.value);
         return this.#removeSingleNode(removeNode);
     }
 
     #removeSingleNode(removeNode){
         if(removeNode.left !== -1 && removeNode.right !== -1){
             //both children exist, need to find leftmost child in right tree
-            let swapChild = this.#findMin(this._tree.nodes[removeNode.right], this._tree.nodes);
-            this.#swapNodesInTree(removeNode, swapChild);//problem: this changes removenode to have new value but old color. I want the opposite
-            return this.#removeSingleNode(removeNode);//if swapchild is a leaf, it will say the node was replaced with nothing
+            let swapChild = this.#findMin(this._tree.nodes[removeNode.right]);
+            this.#swapNodesInTree(removeNode, swapChild);//needs history
+            return this.#removeSingleNode(removeNode);
         }
 
         const parentIndex = removeNode.parent;
@@ -185,16 +185,11 @@ export default class BinarySearchTree{
         } else if(removeNode.left !== -1){
             replacedChild = this._tree.nodes[removeNode.left];
         }
-        this.#swapChildRelationship(parentIndex, removeNode, replacedChild, this._tree);
+        this.#swapChildRelationship(parentIndex, removeNode, replacedChild);//needs history
 
         this._adjustChildCount(parentIndex, -1, this._tree)
-        this.#removeNodeFromArray(removeNode, this._tree);
         return {replacementIndex: replacedChild ? replacedChild.index : -1, parentIndex: parentIndex};
 
-    }
-    
-    #removeNodeFromArray(removingNode){
-        this._tree.deletedIndexes.push(removingNode.index);
     }
 
     #findMin(startNode){

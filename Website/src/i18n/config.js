@@ -47,6 +47,7 @@ i18n
           edit_tab: "Edit",
           history_tab: "History",
           add_history: "Add {{value}}",
+          remove_history: "Remove {{value}}",
           now_history: "Now",
           root: "Insert as Root",
           set_root: "Change root value from {{value1}} to {{value2}}",

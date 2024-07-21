@@ -30,8 +30,10 @@ export default function HistoryAction({historyAction, historyActionIndex, isActi
 
 const getTextKey = (actionName) => {
     switch (actionName) {
-        case "Add":
+        case "add":
             return "add_history";
+            case "remove":
+                return "remove_history";
         default:
             break;
     }

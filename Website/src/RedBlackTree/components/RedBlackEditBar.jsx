@@ -9,7 +9,7 @@ export default function RedBlackEditBar({onAddMany, selectedNode, onSelectedChan
     const { t: translate } = useTranslation("red_black");
     const dispatch = useDispatch();
 
-    const realLength = useSelector(treeSelectors.selectTreeLength);
+    const hasNodes = useSelector(treeSelectors.selectTreeHasAtLeastOne);
     
     const handleAdd = (value) => {
         const result = dispatch(treeActions.add({value:value}));
@@ -33,7 +33,7 @@ export default function RedBlackEditBar({onAddMany, selectedNode, onSelectedChan
         </div>
         <div>
             <MenuButton onClick={handleRemove} disabled={selectedNode === -1}>{translate("remove_node")}</MenuButton>
-            <MenuButton onClick={handleClear} dim disabled={realLength <= 0}>{translate("clear_all_nodes")}</MenuButton>
+            <MenuButton onClick={handleClear} dim disabled={!hasNodes}>{translate("clear_all_nodes")}</MenuButton>
         </div>
     </RedBlackMenuBar>
 }

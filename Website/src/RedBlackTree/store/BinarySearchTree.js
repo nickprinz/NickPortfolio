@@ -90,6 +90,7 @@ export default class BinarySearchTree{
             const node1 = this._tree.nodes[historyStep.primaryIndex];
             const node2 = this._tree.nodes[historyStep.secondaryIndex];
             this.#swapNodesInTree(node1, node2);
+            return;
         }
 
         if(historyStep.type === BinarySearchTree.PARENT){
@@ -119,6 +120,7 @@ export default class BinarySearchTree{
             const node1 = this._tree.nodes[historyStep.primaryIndex];
             const node2 = this._tree.nodes[historyStep.secondaryIndex];
             this.#swapNodesInTree(node1, node2);
+            return;
         }
 
         if(historyStep.type === BinarySearchTree.PARENT){

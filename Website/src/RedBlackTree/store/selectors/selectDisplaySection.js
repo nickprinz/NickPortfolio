@@ -90,6 +90,10 @@ function addStepPositioners(section, nodes, activeHistoryStep){
 function getSection(focusedIndex, nodes, rootIndex){
     if(focusedIndex === -1) return [];
     let focusedNode = nodes[focusedIndex];
+    if(focusedNode.parent === -1 && focusedIndex !== rootIndex){
+        return [];
+    }
+
     if(focusedIndex === rootIndex){
         let positioners = getChildrenBelow(focusedIndex, 1, 0, 4, nodes);
         return positioners;

@@ -153,10 +153,10 @@ const treeSlice = createSlice({
                 return activeHistoryStep.secondaryIndex;
             }
             if(activeHistoryStep.type === "change"){
-                if(activeHistoryStep.attribute === "parent"){
-                    return activeHistoryStep.value;
-                }
                 return activeHistoryStep.index;
+            }
+            if(activeHistoryStep.type === "parent"){
+                return activeHistoryStep.parentIndex;
             }
             return null
         },

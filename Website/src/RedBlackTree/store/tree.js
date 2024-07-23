@@ -156,6 +156,7 @@ const treeSlice = createSlice({
                 return activeHistoryStep.index;
             }
             if(activeHistoryStep.type === "parent"){
+                if(activeHistoryStep.parentIndex === -1) return activeHistoryStep.oldParentIndex;
                 return activeHistoryStep.parentIndex;
             }
             return null

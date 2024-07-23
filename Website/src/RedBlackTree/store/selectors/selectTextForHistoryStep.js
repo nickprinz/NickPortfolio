@@ -15,6 +15,16 @@ export default function selectTextForHistoryStep(actions, nodes, actionIndex, st
         result.params = {value1: node1.value, value2: node2.value};
         return result;
     }
+    
+    if(step.type === "swap"){
+        //swap exposes a problem. swaps make recorded indexes unreliable
+        //I might need to change swap so relationship indexes get changed but a node keeps its index
+        result.textkey = "swap_nodes";
+        const node1 = nodes[step.primaryIndex];
+        const node2 = nodes[step.secondaryIndex];
+        result.params = {value1: node1.value, value2: node2.value};
+        return result;
+    }
 
     if(step.type === "change"){
         if(step.attribute === "root"){

@@ -38,7 +38,8 @@ export default class BinarySearchTree{
         if(!removeNode){
             throw new Error(`could not find node ${value} in tree`)
         }
-        return this._removeSingleNode(removeNode);
+        const parentIndex = this._removeSingleNode(removeNode).initialParent;
+        return this.#getParentAfterRemove(parentIndex);
     }
     
     removeIndex(index) {
@@ -46,7 +47,8 @@ export default class BinarySearchTree{
         if(index < 0 || index >= this._tree.nodes.length || this._tree.nodes[index] === null){
             throw new Error(`could not find index ${index} in tree`)
         }
-        return this._removeSingleNode(this._tree.nodes[index]);
+        const parentIndex = this._removeSingleNode(this._tree.nodes[index]).initialParent;
+        return this.#getParentAfterRemove(parentIndex);
     }
 
     getClosestReplacement(removeIndex){
@@ -182,7 +184,9 @@ export default class BinarySearchTree{
 
     _removeSingleNode(removeNode){
         this._makeActionHistory(`remove`, removeNode.value);
-        return this.#removeSingleNode(removeNode);
+        let initialParent = removeNode.parent;
+        let finalParent = this.#removeSingleNode(removeNode);
+        return {initialParent, finalParent};
     }
 
     #removeSingleNode(removeNode){
@@ -211,6 +215,11 @@ export default class BinarySearchTree{
         
         return parentIndex;
 
+    }
+
+    #getParentAfterRemove(parentIndex){
+        if(parentIndex === -1) return this._tree.rootIndex;
+        return parentIndex;
     }
 
     #findMin(startNode){
@@ -250,7 +259,7 @@ export default class BinarySearchTree{
         node2.id = tempId2;
         this._tree.nodes[node1.index] = node1;
         this._tree.nodes[node2.index] = node2;
-        this._addHistoryStepSwap(node1.index, node2.index, note, noteValues);
+        this._addHistoryStepSwap(node2.index, node1.index, note, noteValues);
 
     }
 

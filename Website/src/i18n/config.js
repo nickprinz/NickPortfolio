@@ -58,6 +58,7 @@ i18n
           set_parent: "Set Parent of {{value}} to {{parent}}",
           set_red: "Color {{value}} to Red",
           set_black: "Color {{value}} to Black",
+          swap_nodes: "Swap {{value1}} with {{value2}}",
           finished: "Finished",
           first_root: "No other values exist in the tree, this value is just added to the root",
           add_root_black: "Values are usually added as red. By convention, the root is added as black.",

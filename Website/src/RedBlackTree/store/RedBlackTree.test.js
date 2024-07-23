@@ -137,7 +137,7 @@ describe('red black tree', () => {
             let beforeValidResult = validateTree(tree);
             expect(beforeValidResult.isValid).toBeTruthy();
             rbt.remove(vals[0]);
-            expect(tree.rootIndex).toBe(0);
+            expect(tree.rootIndex).toBe(1);
             let validResult = validateTree(tree);
             expect(validResult.isValid).toBeTruthy();
         }

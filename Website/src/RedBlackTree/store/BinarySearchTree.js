@@ -247,20 +247,53 @@ export default class BinarySearchTree{
     }
 
     #swapNodesInTree(node1, node2, note, noteValues){
-        //the memory object keeps its value and id but moves to a new position in the tree and new index in the array
-        let tempNode = {...node1};
-        Object.assign(node1, node2);
-        node1.value = tempNode.value;
-        node1.id = tempNode.id;
-        let tempVal2 = node2.value;
-        let tempId2 = node2.id;
-        Object.assign(node2, tempNode);
-        node2.value = tempVal2;
-        node2.id = tempId2;
-        this._tree.nodes[node1.index] = node1;
-        this._tree.nodes[node2.index] = node2;
-        this._addHistoryStepSwap(node2.index, node1.index, note, noteValues);
+        //keeps nodes in position, swaps everything that isnt id, index, and value
+        const node1Values = this.#getPartialNode(node1);
+        const node2Values = this.#getPartialNode(node2);
+        this.#reassignAssociatedRelationships(node1, node2.index);
+        this.#reassignAssociatedRelationships(node2, node1.index);
+        Object.assign(node1, node2Values);
+        Object.assign(node2, node1Values);
+        this.#fixSelfReference(node1, node2.index);
+        this.#fixSelfReference(node2, node1.index);
+        if(this._tree.rootIndex === node1.index){
+            this._tree.rootIndex = node2.index;
+        } else if (this._tree.rootIndex === node2.index){
+            this._tree.rootIndex = node1.index;
+        } 
+        this._addHistoryStepSwap(node1.index, node2.index, note, noteValues);
+    }
 
+    #getPartialNode(node){
+        const values = {...node};
+        delete values.index;
+        delete values.value;
+        delete values.id;
+        return values;
+    }
+
+    #reassignAssociatedRelationships(node, newIndex){
+        if(node.parent !== -1){
+            const parent = this._tree.nodes[node.parent];
+            if(parent.left === node.index) parent.left = newIndex;
+            if(parent.right === node.index) parent.right = newIndex;
+        }
+
+        if(node.left !== -1){
+            const leftChild = this._tree.nodes[node.left];
+            leftChild.parent = newIndex;
+        }
+
+        if(node.right !== -1){
+            const rightChild = this._tree.nodes[node.right];
+            rightChild.parent = newIndex;
+        }
+    }
+
+    #fixSelfReference(node, swappedIndex){
+        if(node.parent === node.index) node.parent = swappedIndex;
+        if(node.left === node.index) node.left = swappedIndex;
+        if(node.right === node.index) node.right = swappedIndex;
     }
 
     #removeParentRelationship(childIndex, parentIndex){
@@ -427,15 +460,6 @@ export default class BinarySearchTree{
             oldIsLeftChild: oldIsLeftChild,
             note: note,
             noteValues: noteValues,
-        });
-    }
-    
-    _addHistoryStepNote(nodeIndex, note){
-        return;
-        this._history.addStep({
-            type:BinarySearchTree.NOTE,
-            index:nodeIndex,
-            note:note,
         });
     }
 

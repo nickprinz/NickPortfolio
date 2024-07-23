@@ -159,6 +159,9 @@ const treeSlice = createSlice({
                 if(activeHistoryStep.parentIndex === -1) return activeHistoryStep.oldParentIndex;
                 return activeHistoryStep.parentIndex;
             }
+            if(activeHistoryStep.type === "swap"){
+                return activeHistoryStep.primaryIndex;
+            }
             return null
         },
         selectDisplaySection : createSelector([((state) => state.nodes), ((state, focusedIndex) => focusedIndex), ((state) => state.rootIndex),

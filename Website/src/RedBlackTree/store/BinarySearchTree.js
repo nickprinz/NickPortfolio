@@ -299,12 +299,12 @@ export default class BinarySearchTree{
     #removeParentRelationship(childIndex, parentIndex){
         let childNode = this._tree.nodes[childIndex];
         if(parentIndex === -1){
-            this.#changeParent(childNode, -1, true, "remove_parent_null", 
+            this.#changeParent(childNode, -1, true, "remove_from_tree", 
                 {value1: childNode.value, value2: "null"});
             return;
         }
         let parentNode = this._tree.nodes[parentIndex];
-        this.#changeParent(childNode, -1, true, "remove_from", 
+        this.#changeParent(childNode, -1, true, "remove_from_tree", 
             {value1: childNode.value, value2: parentNode.value});
         
         this._adjustChildCount(parentNode.index, -1);

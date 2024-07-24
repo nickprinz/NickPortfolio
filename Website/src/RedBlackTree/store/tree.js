@@ -156,8 +156,9 @@ const treeSlice = createSlice({
                 return activeHistoryStep.index;
             }
             if(activeHistoryStep.type === "parent"){
-                if(activeHistoryStep.parentIndex === -1) return activeHistoryStep.oldParentIndex;
-                return activeHistoryStep.parentIndex;
+                if(activeHistoryStep.parentIndex !== -1) return activeHistoryStep.parentIndex;
+                if(activeHistoryStep.oldParentIndex !== -1) return activeHistoryStep.oldParentIndex;
+                return activeHistoryStep.index;
             }
             if(activeHistoryStep.type === "swap"){
                 return activeHistoryStep.primaryIndex;

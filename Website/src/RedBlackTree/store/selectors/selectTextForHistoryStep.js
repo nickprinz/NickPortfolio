@@ -17,12 +17,18 @@ export default function selectTextForHistoryStep(actions, nodes, actionIndex, st
     }
     
     if(step.type === "swap"){
-        //swap exposes a problem. swaps make recorded indexes unreliable
-        //I might need to change swap so relationship indexes get changed but a node keeps its index
         result.textkey = "swap_nodes";
         const node1 = nodes[step.primaryIndex];
         const node2 = nodes[step.secondaryIndex];
         result.params = {value1: node1.value, value2: node2.value};
+        return result;
+    }
+    
+    if(step.type === "parent"){
+        result.textkey = step.parentIndex === -1 ? "remove_parent" : "set_parent";
+        const parentNode = nodes[step.parentIndex];
+        result.params.value = nodes[step.index].value
+        result.params.parent = parentNode ? parentNode.value : "empty";//actually need a new text key if empty
         return result;
     }
 
@@ -48,12 +54,6 @@ export default function selectTextForHistoryStep(actions, nodes, actionIndex, st
             if(step.value){
                 result.textkey += "_color_swap";
             }
-            return result;
-        }
-        if(step.attribute === "parent"){
-            result.textkey = "set_parent";
-            const parentNode = nodes[step.value];
-            result.params.parent = parentNode ? parentNode.value : "empty";//actually need a new text key if empty
             return result;
         }
         if(step.attribute === "isRed"){

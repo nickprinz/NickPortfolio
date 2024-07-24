@@ -53,14 +53,3 @@ function renderLines(positioner, canvasPositioner){
         return <LineBetween key={`${positioner.id}-${line.key}`} fromPoint={canvasPositioner.toCanvasSpace(positioner)} toPoint={canvasPositioner.toCanvasSpace(line)}/>
     });
 }
-
-function getExtraNode(activeHistoryStep, nodes){
-    if(!activeHistoryStep) return null;
-    if(activeHistoryStep.type === "compare"){
-        return nodes[activeHistoryStep.primaryIndex];
-    }
-    if(activeHistoryStep.type === "change"){
-        return nodes[activeHistoryStep.index];
-    }
-    return null
-}

@@ -133,18 +133,16 @@ export default class RedBlackTree extends BinarySearchTree{
     
         const parentNode = this._tree.nodes[parentIndex];
         if(this.#isNodeRed(siblingNode)){
-            const noteKey = "remove_black_node_red_sibling";
             const noteValues = {value1: siblingNode.value, value2: parentNode.value}
-            this._changeValue(siblingNode, RedBlackTree.ISRED, false, noteKey, noteValues);
-            this._changeValue(parentNode, RedBlackTree.ISRED, true, noteKey, noteValues);
             if(parentNode.left === siblingNode.index){
-                this.#rotateRight(parentNode, false, noteKey, noteValues);
+                let noteKey = "remove_black_node_red_sibling_right";
+                this.#rotateRight(parentNode, true, noteKey, noteValues);
             }
             else{
-                this.#rotateLeft(parentNode, false, noteKey, noteValues);
+                let noteKey = "remove_black_node_red_sibling_left";
+                this.#rotateLeft(parentNode, true, noteKey, noteValues);
             }
-            //need test to make sure this is recurring. i might not need to do this recur at all, according to refs
-            //tests do fail if recursion is removed
+            //in this case, the recursion is because the above steps tranform the problem into a black sibling case
             this.#rebalanceRemove(replacedChild, parentIndex);
             return;
         }
@@ -168,46 +166,54 @@ export default class RedBlackTree extends BinarySearchTree{
         //if down here, there is a black sibling of a doubleblack node and that sibling has at least 1 red child
         if(parentNode.left === siblingNode.index){
             //need more adjustments to notes
-            const noteKey = "remove_black_node_black_sibling_with_red_children";
-            const noteValues = {value1: siblingNode.value, value2: parentNode.value};
+            let noteKey = "remove_black_node_black_sibling_with_red_children_right";
+            const noteValues = {
+                value1: siblingNode.value, 
+                value2: parentNode.value, 
+                value3: siblingLeft ? siblingLeft.value : "null", 
+                value4: siblingRight ? siblingRight.value : "null", 
+            };
             if(this.#isNodeRed(siblingLeft) && this.#isNodeRed(siblingRight)){
-                const sibColor = siblingNode.isRed;
-                const sibLeftColor = siblingLeft.isRed;
-                this._changeValue(siblingLeft, RedBlackTree.ISRED, sibColor, noteKey, noteValues);
-                this._changeValue(siblingNode, RedBlackTree.ISRED, sibLeftColor, noteKey, noteValues);
+                noteKey = "remove_black_node_black_sibling_with_red_children_right_two_red_children";
+                this._changeValue(siblingLeft, RedBlackTree.ISRED, false, noteKey, noteValues);
                 if(parentNode.isRed){
+                    noteKey = "remove_black_node_black_sibling_with_red_children_right_two_red_children_red_parent";
                     this._changeValue(parentNode, RedBlackTree.ISRED, false, noteKey, noteValues);
-                }
-                else{
-                    this._changeValue(siblingNode, RedBlackTree.ISRED, false, noteKey, noteValues);
+                    this._changeValue(siblingNode, RedBlackTree.ISRED, true, noteKey, noteValues);
                 }
             } else if(this.#isNodeRed(siblingRight)){
+                noteKey = "remove_black_node_black_sibling_with_red_children_right_inner_red_child";
                 this._changeValue(siblingRight, RedBlackTree.ISRED, parentNode.isRed, noteKey, noteValues);
                 this.#rotateLeft(siblingNode, true, noteKey, noteValues);
             } else{
+                noteKey = "remove_black_node_black_sibling_with_red_children_right_outer_red_child";
                 this._changeValue(siblingLeft, RedBlackTree.ISRED, parentNode.isRed, noteKey, noteValues);
             }
             this.#rotateRight(parentNode, false, noteKey, noteValues);
         }
         else{
             //need more adjustments to notes
-            const noteKey = "remove_black_node_black_sibling_with_red_children";
-            const noteValues = {value1: siblingNode.value, value2: parentNode.value};
+            let noteKey = "remove_black_node_black_sibling_with_red_children_left";
+            const noteValues = {
+                value1: siblingNode.value, 
+                value2: parentNode.value, 
+                value3: siblingRight ? siblingRight.value : "null", 
+                value4: siblingLeft ? siblingLeft.value : "null", 
+            };
             if(this.#isNodeRed(siblingLeft) && this.#isNodeRed(siblingRight)){
-                const sibColor = siblingNode.isRed;
-                const sibRightColor = siblingRight.isRed;
-                this._changeValue(siblingRight, RedBlackTree.ISRED, sibColor, noteKey, noteValues);
-                this._changeValue(siblingNode, RedBlackTree.ISRED, sibRightColor, noteKey, noteValues);
+                noteKey = "remove_black_node_black_sibling_with_red_children_left_two_red_children";
+                this._changeValue(siblingRight, RedBlackTree.ISRED, false, noteKey, noteValues);
                 if(parentNode.isRed){
+                    noteKey = "remove_black_node_black_sibling_with_red_children_left_two_red_children_red_parent";
                     this._changeValue(parentNode, RedBlackTree.ISRED, false, noteKey, noteValues);
-                }
-                else{
-                    this._changeValue(siblingNode, RedBlackTree.ISRED, false, noteKey, noteValues);
+                    this._changeValue(siblingNode, RedBlackTree.ISRED, true, noteKey, noteValues);
                 }
             } else if(this.#isNodeRed(siblingLeft)){
+                noteKey = "remove_black_node_black_sibling_with_red_children_left_inner_red_child";
                 this._changeValue(siblingLeft, RedBlackTree.ISRED, parentNode.isRed, noteKey, noteValues);
                 this.#rotateRight(siblingNode, true, noteKey, noteValues);
             } else{
+                noteKey = "remove_black_node_black_sibling_with_red_children_left_outer_red_child";
                 this._changeValue(siblingRight, RedBlackTree.ISRED, parentNode.isRed, noteKey, noteValues);
             }
             this.#rotateLeft(parentNode, false, noteKey, noteValues);

@@ -1,8 +1,7 @@
 import { afterEach, describe, expect, it } from 'vitest'
 import { cleanup } from '@testing-library/react';
-import { makeInitialTreeState } from './tree';
-import { add as treeAdd, remove as treeRemove, removeIndex as treeRemoveIndex } from './treeHelper';
 import validateTree from "./redBlackTreeValidator";
+import RedBlackTree from './RedBlackTree';
 
 describe('red black tree', () => {
     afterEach(() => {
@@ -11,10 +10,7 @@ describe('red black tree', () => {
 
 
     it("should find red-red violation", () => {
-        const tree = makeInitialTreeState();
-        treeAdd(10, tree);
-        treeAdd(5, tree);
-        treeAdd(15, tree);
+        const tree = makeFromValues([10,5,15]);
 
         let validResult = validateTree(tree);
         expect(validResult.isValid).toBeTruthy();
@@ -27,10 +23,7 @@ describe('red black tree', () => {
 
 
     it("should find black depth violation", () => {
-        const tree = makeInitialTreeState();
-        treeAdd(10, tree);
-        treeAdd(5, tree);
-        treeAdd(15, tree);
+        const tree = makeFromValues([10,5,15]);
 
         let validResult = validateTree(tree);
         expect(validResult.isValid).toBeTruthy();
@@ -43,10 +36,7 @@ describe('red black tree', () => {
 
 
     it("should not allow left child to be more than parent", () => {
-        const tree = makeInitialTreeState();
-        treeAdd(10, tree);
-        treeAdd(5, tree);
-        treeAdd(15, tree);
+        const tree = makeFromValues([10,5,15]);
 
         let validResult = validateTree(tree);
         expect(validResult.isValid).toBeTruthy();
@@ -58,11 +48,7 @@ describe('red black tree', () => {
     })
 
     it("should not allow left child to be more than grandparent", () => {
-        const tree = makeInitialTreeState();
-        treeAdd(10, tree);
-        treeAdd(5, tree);
-        treeAdd(15, tree);
-        treeAdd(7, tree);
+        const tree = makeFromValues([10,5,15,7]);
 
         let validResult = validateTree(tree);
         expect(validResult.isValid).toBeTruthy();
@@ -73,11 +59,7 @@ describe('red black tree', () => {
     })
 
     it("should detect children with the wrong parent listed", () => {
-        const tree = makeInitialTreeState();
-        treeAdd(10, tree);
-        treeAdd(5, tree);
-        treeAdd(15, tree);
-        treeAdd(7, tree);
+        const tree = makeFromValues([10,5,15,7]);
 
         let validResult = validateTree(tree);
         expect(validResult.isValid).toBeTruthy();
@@ -88,4 +70,11 @@ describe('red black tree', () => {
     })
 });
 
+
+function makeFromValues(vals){
+    const tree = RedBlackTree.MakeInitialTree();
+    const rbt = new RedBlackTree(tree);
+    vals.forEach(x => rbt.add(x))
+    return tree
+}
 

@@ -4,6 +4,7 @@ export default function selectTextForHistoryAction(action){
         result.textkey = "now_history";
         return result;
     }
+    
     result.textkey = getTextKey(action.name);
     result.params = {value: action.value};
     return result;
@@ -11,8 +12,10 @@ export default function selectTextForHistoryAction(action){
 
 const getTextKey = (actionName) => {
     switch (actionName) {
-        case "Add":
+        case "add":
             return "add_history";
+        case "remove":
+            return "remove_history";
         default:
             break;
     }

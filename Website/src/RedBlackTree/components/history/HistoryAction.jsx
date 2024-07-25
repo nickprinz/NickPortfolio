@@ -1,13 +1,16 @@
 
-import { useDispatch,} from "react-redux";
-import { treeActions } from "../../store/tree";
+import { useDispatch, useSelector,} from "react-redux";
+import { treeActions, treeSelectors } from "../../store/tree";
 import HistoryEntry from "./HistoryEntry";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 
-export default function HistoryAction({historyAction, historyActionIndex, isActiveAction}){
+export default function HistoryAction({historyActionIndex}){
     const dispatch = useDispatch();
+    const isActiveAction = useSelector((state) => treeSelectors.selectIsActiveHistoryAction(state, historyActionIndex));
+    const actionTextInfo = useSelector((state) => treeSelectors.selectTextForHistoryAction(state, historyActionIndex));
     const { t: translate } = useTranslation("red_black");
+    const actionText = translate(actionTextInfo.textkey, actionTextInfo.params);
     
     const handleClick = useCallback(() => {
         if(isActiveAction){
@@ -17,24 +20,9 @@ export default function HistoryAction({historyAction, historyActionIndex, isActi
         dispatch(treeActions.setHistoryPosition({actionIndex: historyActionIndex, stepIndex:0}));
     }, [isActiveAction]);
 
-    const actionText = historyAction ? 
-        translate(getTextKey(historyAction.name), {value: historyAction.value}) :
-        translate("now_history");
-
     return <>
-        <HistoryEntry onClick={handleClick} isActive={isActiveAction} hasMore={historyAction && true}>
+        <HistoryEntry onClick={handleClick} isActive={isActiveAction} hasMore={historyActionIndex !== -1}>
             {actionText}
         </HistoryEntry>
     </>
-}
-
-const getTextKey = (actionName) => {
-    switch (actionName) {
-        case "add":
-            return "add_history";
-            case "remove":
-                return "remove_history";
-        default:
-            break;
-    }
 }

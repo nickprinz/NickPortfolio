@@ -103,15 +103,26 @@ const treeSlice = createSlice({
                 return {id: action.id, index: currentHistoryAction, stepCount: action.steps.length}
             }
         ),
+        selectHistoryActionList: createSelector(
+            [((state) => state.history.actions),],
+            (actions) => {
+                const result = actions.map((x,i) => {return {id:x.id, index:i}})
+                result.splice(0,0,{id:-1, index:-1});
+                return result;
+            }
+        ),
         selectIsActiveHistoryStep: createSelector(
             [((state) => state.history.currentHistoryStep), ((state, stepId) => stepId)],
             (currentHistoryStep, stepId) => {
                 return currentHistoryStep === stepId;
             }
         ),
-        selectActiveHistoryStepIndex(state){
-            return state.history.currentHistoryStep;
-        },
+        selectIsActiveHistoryAction: createSelector(
+            [((state) => state.history.currentHistoryAction), ((state, actionIndex) => actionIndex)],
+            (currentHistoryAction, actionIndex) => {
+                return currentHistoryAction === actionIndex;
+            }
+        ),
         selectClosestReplacement(state, removeIndex){
             return treeGetClosestReplacement(removeIndex, state);
         },
@@ -125,18 +136,6 @@ const treeSlice = createSlice({
             ((state, actionIndex, stepIndex) => stepIndex)], //use actionId to keep a consistent key
             (actions, nodes, actionIndex, stepIndex) => {
                 return selectTextForHistoryStep(actions, nodes, actionIndex, stepIndex);
-            }
-        ),
-        selectHistoryAction: createSelector([
-            ((state, actionIndex) => state.history.actions[actionIndex]),
-            ((state, actionIndex) => actionIndex)], //use actionId to keep a consistent key
-            (action, actionIndex) => {
-                let result = selectTextForHistoryAction(action);
-                if(!action){
-                    return result;
-                }
-                result = {...result, id: action.id, index: actionIndex}
-                return result;
             }
         ),
         selectTextForHistoryAction: createSelector([

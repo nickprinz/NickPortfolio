@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it } from 'vitest'
 import { cleanup } from '@testing-library/react';
-import validateTree from "./redBlackTreeValidator";
-import RedBlackTree from './RedBlackTree';
+import validateTree from "../redBlackTreeValidator";
+import RedBlackTree from '../RedBlackTree';
 
 describe('red black tree', () => {
     afterEach(() => {

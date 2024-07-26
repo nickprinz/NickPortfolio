@@ -43,7 +43,7 @@ export default class TreeHistory{
     }
 
     clearHistory(){
-        this.history = TreeHistory.MakeInitialHistory();
+        Object.assign(this.history, TreeHistory.MakeInitialHistory());
     }
 
     moveHistory(amount){

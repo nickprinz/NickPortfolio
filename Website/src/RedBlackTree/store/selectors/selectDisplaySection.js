@@ -5,7 +5,7 @@
 //lines are {x, y}, will get id and frompos from its parent structure
 //those should probably be classes
 
-import BinarySearchTree from "../BinarySearchTree";
+import BinarySearchTree from "../SearchTree/BinarySearchTree";
 
 class BasePositioner{
 
@@ -64,18 +64,17 @@ function addStepPositioners(section, nodes, activeHistoryStep){
         const compareTo = section.find(x => x.index === activeHistoryStep.secondaryIndex);
         const stepNode = new NodePositioner(nodes[activeHistoryStep.primaryIndex],compareTo.x, compareTo.y);
         const isLess = stepNode.value <= compareTo.value;
-        stepNode.x += (isLess ? -.25 : .25)
+        stepNode.x += (isLess ? -.25 : .25);
         section.push(stepNode);
-        //find activeHistoryStep.secondaryIndex in section
-        //put a node .2 to the left or right of that display
-        //
     }
-    if(activeHistoryStep.type === BinarySearchTree.CHANGE && activeHistoryStep.attribute === BinarySearchTree.PARENT){
-        const compareTo = section.find(x => x.index === activeHistoryStep.value);
+    if(activeHistoryStep.type === BinarySearchTree.PARENT){
+        const compareTo = section.find(x => x.index === activeHistoryStep.parentIndex);
         if(compareTo){
             const stepNode = new NodePositioner(nodes[activeHistoryStep.index],compareTo.x, compareTo.y);
             const isLess = stepNode.value <= compareTo.value;
-            stepNode.x += (isLess ? -.25 : .25)
+            stepNode.x += (isLess ? -.25 : .25);
+            stepNode.y += 1;
+            console.log("adding thing",stepNode)
             section.push(stepNode);
 
         }

@@ -1,8 +1,8 @@
 
 import { afterEach, describe, expect, it } from 'vitest'
 import { cleanup } from '@testing-library/react';
-import RedBlackTree from './RedBlackTree';
-import validateTree from "./redBlackTreeValidator";
+import RedBlackTree from '../RedBlackTree';
+import validateTree from "../redBlackTreeValidator";
 //need to add history tests
 describe('red black tree', () => {
     afterEach(() => {
@@ -463,6 +463,15 @@ describe('red black tree', () => {
         expect(tree.nodes[tree.rootIndex].value).toBe(2);
         rbt.moveHistoryToCurrent();
         expect(tree.nodes[tree.rootIndex].value).toBe(3);
+    });
+
+    it("should clear history when created to not keep history", () => {
+        const tree = makeFromValues([2,1,3]);
+        const rbt = new RedBlackTree(tree);
+        rbt.removeIndex(0);
+        expect(tree.history.actions.length).toBe(4);
+        new RedBlackTree(tree,false);
+        expect(tree.history.actions.length).toBe(0);
     });
 });
 

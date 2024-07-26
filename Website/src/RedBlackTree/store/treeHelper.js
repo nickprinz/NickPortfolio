@@ -1,4 +1,4 @@
-import RedBlackTree from "./RedBlackTree";
+import RedBlackTree from "./SearchTree/RedBlackTree";
 
 export function add(value, tree) {
     const rbt = new RedBlackTree(tree);

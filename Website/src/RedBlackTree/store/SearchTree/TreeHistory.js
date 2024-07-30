@@ -91,7 +91,7 @@ export default class TreeHistory{
             stepIndex = 0;
         }
         else{
-            stepIndex = Math.min(stepIndex, targetAction.steps.length);
+            stepIndex = Math.min(stepIndex, targetAction.steps.length-1);
         }
         
         let moveBack = true;
@@ -168,7 +168,7 @@ export default class TreeHistory{
             if(this.history.currentHistoryAction === this.history.actions.length){
                 return true;
             }
-            this.history.currentHistoryStep = this.history.actions[this.history.currentHistoryAction].steps.length;
+            this.history.currentHistoryStep = this.history.actions[this.history.currentHistoryAction].steps.length - 1;
             return true;
         }
 
@@ -187,7 +187,7 @@ export default class TreeHistory{
             return true;//at back, might display a message later, for now just start the first action
 
         }
-        if(this.history.currentHistoryStep === this.history.actions[this.history.currentHistoryAction].steps.length){
+        if(this.history.currentHistoryStep === this.history.actions[this.history.currentHistoryAction].steps.length - 1){
             this.history.currentHistoryAction--;
             this.history.currentHistoryStep = 0;
             return true;

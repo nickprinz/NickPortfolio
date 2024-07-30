@@ -10,6 +10,7 @@ export default class BinarySearchTree{
     static NOTE = "note";
     static ROOT = "root";
     static SWAP = "swap";
+    static FINISH = "finished";
 
     static MakeInitialTree(){
         return {
@@ -29,6 +30,7 @@ export default class BinarySearchTree{
         this._history.moveHistoryToCurrent();
         this._makeActionHistory(`add`, value);
         const addedNode = this._performAdd(value);
+        this._addHistoryStepFinished(addedNode.index);
         return addedNode.index;
     }
 
@@ -38,8 +40,10 @@ export default class BinarySearchTree{
         if(!removeNode){
             throw new Error(`could not find node ${value} in tree`)
         }
-        const parentIndex = this._removeSingleNode(removeNode).initialParent;
-        return this.#getParentAfterRemove(parentIndex);
+        let parentIndex = this._removeSingleNode(removeNode).initialParent;
+        parentIndex = this.#getParentAfterRemove(parentIndex)
+        this._addHistoryStepFinished(parentIndex);
+        return parentIndex;
     }
     
     removeIndex(index) {
@@ -47,8 +51,10 @@ export default class BinarySearchTree{
         if(index < 0 || index >= this._tree.nodes.length || this._tree.nodes[index] === null){
             throw new Error(`could not find index ${index} in tree`)
         }
-        const parentIndex = this._removeSingleNode(this._tree.nodes[index]).initialParent;
-        return this.#getParentAfterRemove(parentIndex);
+        let parentIndex = this._removeSingleNode(this._tree.nodes[index]).initialParent;
+        parentIndex = this.#getParentAfterRemove(parentIndex)
+        this._addHistoryStepFinished(parentIndex);
+        return parentIndex;
     }
 
     getClosestReplacement(removeIndex){
@@ -458,6 +464,15 @@ export default class BinarySearchTree{
             oldParentIndex:oldParentIndex,
             isLeftChild: isLeftChild,
             oldIsLeftChild: oldIsLeftChild,
+            note: note,
+            noteValues: noteValues,
+        });
+    }
+    
+    _addHistoryStepFinished(index, note, noteValues){
+        this._history.addStep({
+            type:BinarySearchTree.FINISH,
+            index:index,
             note: note,
             noteValues: noteValues,
         });

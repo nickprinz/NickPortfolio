@@ -20,6 +20,7 @@ const getActiveHistoryStep = (history) => {
     let activeStep = activeAction.steps[history.currentHistoryStep];
     if(activeStep) return activeStep;
     if(history.currentHistoryStep === activeAction.steps.length){
+        //need to add a finish step instead
         if(activeAction.name === "Add") {
             //this fails for the first add because step0 is changing the root
             return {
@@ -161,6 +162,9 @@ const treeSlice = createSlice({
             }
             if(activeHistoryStep.type === "swap"){
                 return activeHistoryStep.primaryIndex;
+            }
+            if(activeHistoryStep.type === "finished"){
+                return activeHistoryStep.index;
             }
             return null
         },

@@ -4,7 +4,6 @@ export default function selectTextForHistoryStep(actions, nodes, actionIndex, st
     if(!action) return result;
     const step = action.steps[stepIndex];
     if(!step){
-        result.textkey = "finished";
         return result;
     }
     

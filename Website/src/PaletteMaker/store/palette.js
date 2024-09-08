@@ -1,5 +1,6 @@
 import { createSelector, createSlice } from '@reduxjs/toolkit';
-import { HSVtoRGBHex } from './colorHelpers';
+import { HSVtoRGBHex } from './colorHelpers.ts';
+import { thing } from './typetest';
 
 const makeDefaultState = () => {
     return {colors: makeNewGrid(0,4,5,100,30,40,90)}
@@ -24,7 +25,7 @@ const makeNewRow = (startHue, columns, lowSat, lowValue, highSat, highValue) => 
     for (let i = 0; i < columns; i++) {
         const sat = lerp(lowSat, highSat, perColumn*i);
         const val = lerp(lowValue, highValue, perColumn*i);
-        row.push(HSVtoRGBHex(startHue,sat,val));
+        row.push(HSVtoRGBHex({h: startHue,s: sat,v: val}));
     }
     return row;
 }

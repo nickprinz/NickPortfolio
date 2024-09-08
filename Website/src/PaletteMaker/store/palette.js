@@ -8,12 +8,10 @@ const makeDefaultState = () => {
 const makeNewGrid = (startHue, rows, columns, lowSat, lowValue, highSat, highValue) => {
     
     const rowHueChange = 360/rows;
-    console.log("rowHueChange",rowHueChange)
 
     const grid = [];
     for (let i = 0; i < rows; i++) {
         const hue = (startHue + rowHueChange*i)%360;
-        console.log("hue",hue)
         grid.push(makeNewRow(hue, columns, lowSat, lowValue, highSat, highValue));
     }
 

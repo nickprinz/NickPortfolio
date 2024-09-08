@@ -7,21 +7,28 @@ export default function ColorCellGrid(){
 
     let [selectedId, setSelected] = useState(null);
 
+    let gridWidth = 50;
+    let gridHeight = 30;
+
     let colors = useSelector(paletteSelectors.selectStuff);
 
     let handleCellClicked = (cellId) => {
+        if(selectedId === cellId){
+            setSelected(-1);
+            return;
+        }
         setSelected(cellId);
     }
 
-    return <div className="m-4 w-[50rem] h-[50rem] relative">
-        {colorsToCells(colors, selectedId, handleCellClicked)}
+    return <div className="m-4 relative" style={{width:(gridWidth+"rem"), height:(gridHeight+"rem")}}>
+        {colorsToCells(colors, selectedId, gridWidth, gridHeight, handleCellClicked)}
     </div>
 }
 
-let colorsToCells = (colors, selectedId, handleCellClicked) => {
+let colorsToCells = (colors, selectedId, gridWidth, gridHeight, handleCellClicked) => {
     if(colors.length === 0 || colors[0].length === 0) return [];
-    let width = 50 / colors[0].length;
-    let height = 50 / colors.length;
+    let width = gridWidth / colors[0].length;
+    let height = gridHeight / colors.length;
     
     let cells = colors.map((row, j) => {
         return row.map((color, i) => {

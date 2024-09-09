@@ -1,16 +1,20 @@
 import { createSelector, createSlice } from '@reduxjs/toolkit';
-import { HSVtoRGBHex } from './colorHelpers.ts';
-import { thing } from './typetest';
+import { HSVtoRGBHex } from './colorHelpers';
 
-const makeDefaultState = () => {
+
+export interface ColorGrid{
+    colors: string[][],
+}
+
+const makeDefaultState = (): ColorGrid => {
     return {colors: makeNewGrid(0,4,5,100,30,40,90)}
 }
 
-const makeNewGrid = (startHue, rows, columns, lowSat, lowValue, highSat, highValue) => {
+const makeNewGrid = (startHue: number, rows: number, columns: number, lowSat: number, lowValue: number, highSat: number, highValue: number): string[][] => {
     
     const rowHueChange = 360/rows;
 
-    const grid = [];
+    const grid: string[][] = [];
     for (let i = 0; i < rows; i++) {
         const hue = (startHue + rowHueChange*i)%360;
         grid.push(makeNewRow(hue, columns, lowSat, lowValue, highSat, highValue));
@@ -19,8 +23,8 @@ const makeNewGrid = (startHue, rows, columns, lowSat, lowValue, highSat, highVal
     return grid;
 }
 
-const makeNewRow = (startHue, columns, lowSat, lowValue, highSat, highValue) => {
-    let row = [];
+const makeNewRow = (startHue: number, columns: number, lowSat: number, lowValue: number, highSat: number, highValue: number): string[] => {
+    let row: string[] = [];
     const perColumn = 1/Math.max(columns-1,1);
     for (let i = 0; i < columns; i++) {
         const sat = lerp(lowSat, highSat, perColumn*i);
@@ -30,7 +34,7 @@ const makeNewRow = (startHue, columns, lowSat, lowValue, highSat, highValue) => 
     return row;
 }
 
-const lerp = ( a, b, t ) => {
+const lerp = ( a: number, b: number, t: number ): number => {
     return a + t * ( b - a );
 }
 
@@ -38,8 +42,8 @@ const paletteSlice = createSlice({
     name:"palette",
     initialState: makeDefaultState(),
     reducers:{
-        clear(state, action){
-            return {};
+        clear(state: ColorGrid, action){
+            return {colors: []};
         },
     },
     selectors:{

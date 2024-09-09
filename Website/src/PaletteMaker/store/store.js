@@ -1,5 +1,5 @@
 import { configureStore, } from '@reduxjs/toolkit';
-import paletteReducer from "./palette.js";
+import paletteReducer from "./palette.ts";
 
 //the middleware entry can be deleted, but will cause warnings with large sets of nodes
 const store = configureStore({

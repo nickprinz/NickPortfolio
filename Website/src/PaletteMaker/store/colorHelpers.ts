@@ -1,4 +1,6 @@
-import { Color, Hsv } from "./paletteValue";
+import { Color } from "../interfaces/color";
+import { Hsv } from "../interfaces/hsv";
+
 
 function hsvTo01(hsv: Hsv): Hsv{
     return {h: hsv.h/360,s: hsv.s/100,v: hsv.v/100};
@@ -13,7 +15,7 @@ export function HSVtoRGB(hsv: Hsv): Color {
     return HSVZeroOnetoRGB(hsvTo01(hsv))
 }
 
-export function HSVZeroOnetoRGB(hsv: Hsv) : Color {
+function HSVZeroOnetoRGB(hsv: Hsv) : Color {
     const i = Math.floor(hsv.h * 6);
     const f = hsv.h * 6 - i;
     const p = hsv.v * (1 - hsv.s);

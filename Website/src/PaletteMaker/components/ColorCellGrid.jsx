@@ -10,7 +10,7 @@ export default function ColorCellGrid(){
     let gridWidth = 50;
     let gridHeight = 30;
 
-    let colors = useSelector(paletteSelectors.selectStuff);
+    let colors = useSelector(paletteSelectors.getColorGrid);
 
     let handleCellClicked = (cellId) => {
         if(selectedId === cellId){

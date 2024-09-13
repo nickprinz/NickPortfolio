@@ -33,7 +33,8 @@ let colorsToCells = (colors, selectedId, gridWidth, gridHeight, handleCellClicke
     let cells = colors.map((row, j) => {
         return row.map((color, i) => {
             let id = `${i}:${j}`;
-            return <ColorCell key={id} id={id} position={{X:i*width, Y:j*height}} size={{X:width, Y:height}} color={color} isSelected={selectedId===id} onCellClicked={handleCellClicked}></ColorCell>
+            const xPos = (i*width)-.1;
+            return <ColorCell key={id} id={id} position={{X:xPos, Y:j*height}} size={{X:(width+.1), Y:height}} color={color} isSelected={selectedId===id} onCellClicked={handleCellClicked}></ColorCell>
         })
     }).flat();
 

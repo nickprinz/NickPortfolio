@@ -90,3 +90,19 @@ export function RBGtoHex(color: Color): string{
 function toHex(num: number): string {
     return num.toString(16).padStart(2,"0")
 }
+
+export function HexToRGB(hexValue: string): Color{
+    if(!hexValue || hexValue.length !== 7){
+        return {r:0, g:0, b:0};
+    }
+
+    const r = parseInt(hexValue.substring(1,3),16);
+    const g = parseInt(hexValue.substring(3,5),16);
+    const b = parseInt(hexValue.substring(5,7),16);
+
+    if(isNaN(r) || isNaN(g) || isNaN(b)){
+        return {r:0, g:0, b:0};
+    }
+
+    return {r, g, b};
+}

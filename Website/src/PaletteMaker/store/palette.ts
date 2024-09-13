@@ -1,5 +1,5 @@
 import { Action, PayloadAction, createSelector, createSlice } from '@reduxjs/toolkit';
-import { HSVtoRGB, HSVtoRGBHex, RGBtoHSV } from './colorHelpers';
+import { HSVtoRGB, HSVtoRGBHex, RBGtoHex, RGBtoHSV } from './colorHelpers';
 import { PaletteValue } from '../interfaces/paletteValue';
 import { Color } from '../interfaces/color';
 import { Hsv } from '../interfaces/hsv';
@@ -35,6 +35,9 @@ const paletteSlice = createSlice({
         setColumnCount(state: PaletteState, action: PayloadAction<number>){
             state.shadeCount = action.payload;//add safety checks
         },
+        setSeedColor(state: PaletteState, action: PayloadAction<Color>){
+            state.seed = action.payload;//add safety checks
+        },
     },
     selectors:{
         getColorGrid: createSelector(
@@ -47,6 +50,12 @@ const paletteSlice = createSlice({
         },
         getColumnCount: (state) => {
             return state.shadeCount;
+        },
+        getSeedColor: (state) => {
+            return state.seed;
+        },
+        getSeedColorHex: (state) => {
+            return RBGtoHex(state.seed) ;
         },
     }
 });

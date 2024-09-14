@@ -1,31 +1,25 @@
 
-import { useDispatch, useSelector } from "react-redux";
-import { paletteActions, paletteSelectors } from "../store/palette";
-import NumberInput from "./NumberInput";
-import ColorInput from "./ColorInput";
+import ColorInput from "./Inputs/ColorInput";
+import RowCountInput from "./Inputs/RowCountInput";
+import ColumnCountInput from "./Inputs/ColumnCountInput";
+import HueShiftInput from "./Inputs/HueShiftInput";
+import LowInput from "./Inputs/LowInput";
+import HighInput from "./Inputs/HighInput";
 
 export default function PaletteInputHolder(){
 
-    const rowCount = useSelector(paletteSelectors.getRowCount);
-    const columnCount = useSelector(paletteSelectors.getColumnCount);
-    const seedColor = useSelector(paletteSelectors.getSeedColorHex);
-    const dispatch = useDispatch();
-
-    const handleRowsChange = (rowCount) => {
-        const result = dispatch(paletteActions.setRowCount(rowCount));
-    }
-
-    const handleColumnsChange = (columnCount) => {
-        const result = dispatch(paletteActions.setColumnCount(columnCount));
-    }
-
-    const handleSeedColorChange = (seedColor) => {
-        const result = dispatch(paletteActions.setSeedColor(seedColor));
-    }
-
-    return <div className="m-6 flex flex-row" >
-        <ColorInput labelText={"xStart Colorxx"} onValueChange={handleSeedColorChange} value={seedColor}></ColorInput>
-        <NumberInput onValueChange={handleRowsChange} labelText={"xRowsx"} value={rowCount} max={40}/>
-        <NumberInput onValueChange={handleColumnsChange} labelText={"xColumnsx"} value={columnCount} max={40}/>
-    </div>
+    return <>
+        <div className="flex flex-col mt-4 gap-3 w-[50rem]">
+            <div className="flex flex-row gap-4 justify-center" >
+                <ColorInput ></ColorInput>
+                <RowCountInput />
+                <ColumnCountInput />
+                <HueShiftInput/>
+            </div>
+            <div className="flex flex-row justify-between gap-4" >
+                <LowInput />
+                <HighInput />
+            </div>
+        </div>
+    </> 
 }

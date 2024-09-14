@@ -14,13 +14,24 @@ export interface PaletteState{
     rowCount: number,
     shadeCount: number,
     hueShift: number,
+    highSat: number,
+    highValue: number,
+    lowSat: number,
+    lowValue: number,
 }
 
 const makeDefaultState = (): PaletteState => {
-    return {seed:HSVtoRGB({h:0,s:60,v:55}), rowCount:4, shadeCount:5, hueShift:20};
+    return {
+        seed:HSVtoRGB({h:0,s:60,v:55}), 
+        rowCount:4, 
+        shadeCount:5, 
+        hueShift:20,
+        highSat:30,
+        highValue:80,
+        lowSat:60,
+        lowValue:30,
+    };
 }
-
-
 
 const paletteSlice = createSlice({
     name:"palette",
@@ -37,6 +48,21 @@ const paletteSlice = createSlice({
         },
         setSeedColor(state: PaletteState, action: PayloadAction<Color>){
             state.seed = action.payload;//add safety checks
+        },
+        setHueShift(state: PaletteState, action: PayloadAction<number>){
+            state.hueShift = action.payload;//add safety checks
+        },
+        setLowSat(state: PaletteState, action: PayloadAction<number>){
+            state.lowSat = action.payload;//add safety checks
+        },
+        setLowVal(state: PaletteState, action: PayloadAction<number>){
+            state.lowValue = action.payload;//add safety checks
+        },
+        setHighSat(state: PaletteState, action: PayloadAction<number>){
+            state.highSat = action.payload;//add safety checks
+        },
+        setHighVal(state: PaletteState, action: PayloadAction<number>){
+            state.highValue = action.payload;//add safety checks
         },
     },
     selectors:{
@@ -56,6 +82,21 @@ const paletteSlice = createSlice({
         },
         getSeedColorHex: (state) => {
             return RBGtoHex(state.seed) ;
+        },
+        getHueShift: (state) => {
+            return state.hueShift;
+        },
+        getLowSat: (state) => {
+            return state.lowSat;
+        },
+        getLowVal: (state) => {
+            return state.lowValue;
+        },
+        getHighSat: (state) => {
+            return state.highSat;
+        },
+        getHighVal: (state) => {
+            return state.highValue;
         },
     }
 });

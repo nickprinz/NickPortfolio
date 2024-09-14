@@ -10,7 +10,7 @@ export const createGridFromState = (state: PaletteState): string[][] => {
     for (let i = 0; i < state.rowCount; i++) {
         const hue = (seed.h + rowHueChange*i)%360;
         const rowCenter: Hsv = {h: hue, s:seed.s, v:seed.v};
-        grid.push(makeNewRowFromCenter(rowCenter, state.shadeCount, 75, 30, 40, 80, state.hueShift));//need to split row across seed
+        grid.push(makeNewRowFromCenter(rowCenter, state.shadeCount, state.lowSat, state.lowValue, state.highSat, state.highValue, state.hueShift));//need to split row across seed
     }
 
     return grid;

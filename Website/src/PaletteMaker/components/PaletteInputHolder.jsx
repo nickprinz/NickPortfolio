@@ -5,11 +5,12 @@ import ColumnCountInput from "./Inputs/ColumnCountInput";
 import HueShiftInput from "./Inputs/HueShiftInput";
 import LowInput from "./Inputs/LowInput";
 import HighInput from "./Inputs/HighInput";
+import ResetButton from "./Inputs/ResetButton";
 
 export default function PaletteInputHolder(){
 
     return <>
-        <div className="flex flex-col mt-4 gap-3 w-[50rem]">
+        <div className="flex flex-col mt-4 gap-3 w-[50rem] relative">
             <div className="flex flex-row gap-4 justify-center" >
                 <ColorInput ></ColorInput>
                 <RowCountInput />
@@ -20,6 +21,7 @@ export default function PaletteInputHolder(){
                 <LowInput />
                 <HighInput />
             </div>
+            <ResetButton/>
         </div>
     </> 
 }

@@ -38,7 +38,11 @@ const paletteSlice = createSlice({
     initialState: makeDefaultState(),
     reducers:{
         reset(state: PaletteState, action){
-            state = makeDefaultState();
+            const defaultState = makeDefaultState();
+            //redux does not persist assigning a new state, so instead iterate through keys
+            Object.keys(defaultState).forEach((key) => {
+                state[key] = defaultState[key];
+            });
         },
         setRowCount(state: PaletteState, action: PayloadAction<number>){
             state.rowCount = action.payload;//add safety checks
@@ -100,8 +104,6 @@ const paletteSlice = createSlice({
         },
     }
 });
-
-
 
 export default paletteSlice.reducer;
 export const paletteActions = paletteSlice.actions;

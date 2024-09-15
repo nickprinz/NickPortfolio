@@ -36,7 +36,7 @@ let colorsToCells = (colors, selectedId, gridWidth, gridHeight, handleCellClicke
             let id = `${i}:${j}`;
             const xPos = (i*width)-.1;
             return <ColorCell key={color.id} id={color.id} position={{X:xPos, Y:j*height}} size={{X:(width+.1), Y:height}} color={color} isSelected={selectedId===id} onCellClicked={handleCellClicked}
-            showLum={showText === ShowText.Lum}></ColorCell>
+            infoType={showText}></ColorCell>
         })
     }).flat();
 

@@ -1,19 +1,27 @@
 import { motion } from "framer-motion";
+import { ShowText } from "../store/palette";
+import CellInfo from "./CellInfo";
 
-export default function ColorCell({position, size, color = {hexColor: "#ffffff", lum: 0}, id, isSelected, onCellClicked, showLum = false}){
+export default function ColorCell({position, size, color = {hexColor: "#ffffff", lum: 0, hue: 0}, id, isSelected, onCellClicked, infoType = ShowText.None}){
 
     const selectedScale = 1.3;//eventually want to math out a more constant or at least max scale
 
     const selectedAnimate = {scale:[selectedScale-.03, selectedScale], zIndex:10};
 
-    const lumText = showLum && <div className="text-center flex flex-col items-center select-none" style={{width:toRem(size.X),}}>
-            <div className="bg-white rounded-md px-2 py-1 select-none">
+    let infoText = <></>;
+    if(infoType === ShowText.Lum){
+        infoText = <CellInfo>
                 {Math.round(color.lum)}
-            </div>
-        </div>
-    
+        </CellInfo>
+    }
+    else if(infoType === ShowText.Hue){
+        infoText = <CellInfo>
+                {Math.round(color.hue)}
+        </CellInfo>
+    }
+
     return <>
-        <motion.div className="absolute cursor-pointer flex flex-row items-center" onClick={() => {onCellClicked(id)}} style={ 
+        <motion.div className="absolute cursor-pointer flex" onClick={() => {onCellClicked(id)}} style={ 
         {
             width:toRem(size.X), 
             height:toRem(size.Y),
@@ -27,7 +35,7 @@ export default function ColorCell({position, size, color = {hexColor: "#ffffff",
             animate={isSelected ? selectedAnimate : {scale:1, zIndex:[9,8,1],}}//z is not properly animating down yet
             whileHover={isSelected ? selectedAnimate : {scale:selectedScale-.14, zIndex:20} }
         >
-            {lumText}
+            {infoText}
         </motion.div>
     </>
 }

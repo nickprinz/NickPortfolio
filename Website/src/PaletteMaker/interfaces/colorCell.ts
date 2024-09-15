@@ -4,4 +4,5 @@ export interface ColorCell{
     id: string,
     rowNum: number,
     colNum: number,
+    hue: number,
 }

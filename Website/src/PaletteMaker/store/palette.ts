@@ -5,6 +5,11 @@ import { Color } from '../interfaces/color';
 import { Hsv } from '../interfaces/hsv';
 import { createGridFromState } from './createGridFromState';
 
+export enum ShowText{
+    None = "none",
+    Lum = "lum",
+    Hue = "hue",
+}
 
 export interface ColorGrid{
     colors: string[][],
@@ -18,6 +23,7 @@ export interface PaletteState{
     highValue: number,
     lowSat: number,
     lowValue: number,
+    showText: ShowText,
 }
 
 const makeDefaultState = (): PaletteState => {
@@ -30,6 +36,7 @@ const makeDefaultState = (): PaletteState => {
         highValue:80,
         lowSat:60,
         lowValue:30,
+        showText: ShowText.None,
     };
 }
 
@@ -68,6 +75,9 @@ const paletteSlice = createSlice({
         setHighVal(state: PaletteState, action: PayloadAction<number>){
             state.highValue = action.payload;//add safety checks
         },
+        setShowText(state: PaletteState, action: PayloadAction<ShowText>){
+            state.showText = action.payload;
+        },
     },
     selectors:{
         getColorGrid: createSelector(
@@ -101,6 +111,9 @@ const paletteSlice = createSlice({
         },
         getHighVal: (state) => {
             return state.highValue;
+        },
+        getShowText: (state) => {
+            return state.showText;
         },
     }
 });

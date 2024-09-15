@@ -1,10 +1,11 @@
+import { ColorCell } from "../interfaces/colorCell";
 import { Hsv } from "../interfaces/hsv";
-import { HSVtoRGBHex, RGBtoHSV } from "./colorHelpers";
+import { GetCellFromHSV, RGBtoHSV } from "./colorHelpers";
 import { PaletteState } from "./palette";
 
-export const createGridFromState = (state: PaletteState): string[][] => {
+export const createGridFromState = (state: PaletteState): ColorCell[][] => {
     const rowHueChange = 360/state.rowCount;
-    const grid: string[][] = [];
+    const grid: ColorCell[][] = [];
     const seed: Hsv = RGBtoHSV(state.seed);
 
     for (let i = 0; i < state.rowCount; i++) {
@@ -17,7 +18,7 @@ export const createGridFromState = (state: PaletteState): string[][] => {
 
 }
 
-const makeNewRowFromCenter = (centerColor: Hsv, columns: number, lowSat: number, lowValue: number, highSat: number, highValue: number, hueShift: number): string[] => {
+const makeNewRowFromCenter = (centerColor: Hsv, columns: number, lowSat: number, lowValue: number, highSat: number, highValue: number, hueShift: number): ColorCell[] => {
     
     const middleIndex = Math.ceil(columns/2);
     const lowHue = (middleIndex-1) * -hueShift + centerColor.h;
@@ -28,7 +29,7 @@ const makeNewRowFromCenter = (centerColor: Hsv, columns: number, lowSat: number,
     let hsvs = fillColors(lowHsv, centerColor, middleIndex);
     hsvs.pop();//remove centerColor, second half will also have it
     hsvs = hsvs.concat(fillColors(centerColor, highHsv, (columns - middleIndex + 1)));
-    const row = hsvs.map(x => HSVtoRGBHex(x));
+    const row = hsvs.map(x => GetCellFromHSV(x));
 
     return row;
 }

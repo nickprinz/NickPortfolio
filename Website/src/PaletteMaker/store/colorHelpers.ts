@@ -1,4 +1,5 @@
 import { Color } from "../interfaces/color";
+import { ColorCell } from "../interfaces/colorCell";
 import { Hsv } from "../interfaces/hsv";
 
 
@@ -77,6 +78,11 @@ function RGBtoHSVZeroOne (color: Color) : Hsv {
     }
 
     return hsv;
+}
+
+export function GetCellFromHSV(hsv: Hsv): ColorCell{
+    const rgb = HSVtoRGB(hsv);
+    return { lum: Lum(rgb), hexColor: RBGtoHex(rgb) };
 }
 
 export function Lum(color: Color): number{

@@ -1,6 +1,6 @@
 import { ColorCell } from "../interfaces/colorCell";
 import { Hsv } from "../interfaces/hsv";
-import { GetCellFromHSV, RGBtoHSV } from "./colorHelpers";
+import { HSVtoRGBHex, LumFromHsv, RGBtoHSV } from "./colorHelpers";
 import { PaletteState } from "./palette";
 
 export const createGridFromState = (state: PaletteState): ColorCell[][] => {
@@ -11,14 +11,14 @@ export const createGridFromState = (state: PaletteState): ColorCell[][] => {
     for (let i = 0; i < state.rowCount; i++) {
         const hue = (seed.h + rowHueChange*i)%360;
         const rowCenter: Hsv = {h: hue, s:seed.s, v:seed.v};
-        grid.push(makeNewRowFromCenter(rowCenter, state.shadeCount, state.lowSat, state.lowValue, state.highSat, state.highValue, state.hueShift));//need to split row across seed
+        grid.push(makeNewRowFromCenter(rowCenter, i, state.shadeCount, state.lowSat, state.lowValue, state.highSat, state.highValue, state.hueShift));//need to split row across seed
     }
 
     return grid;
 
 }
 
-const makeNewRowFromCenter = (centerColor: Hsv, columns: number, lowSat: number, lowValue: number, highSat: number, highValue: number, hueShift: number): ColorCell[] => {
+const makeNewRowFromCenter = (centerColor: Hsv, rowNum: number, columns: number, lowSat: number, lowValue: number, highSat: number, highValue: number, hueShift: number): ColorCell[] => {
     
     const middleIndex = Math.ceil(columns/2);
     const lowHue = (middleIndex-1) * -hueShift + centerColor.h;
@@ -29,7 +29,13 @@ const makeNewRowFromCenter = (centerColor: Hsv, columns: number, lowSat: number,
     let hsvs = fillColors(lowHsv, centerColor, middleIndex);
     hsvs.pop();//remove centerColor, second half will also have it
     hsvs = hsvs.concat(fillColors(centerColor, highHsv, (columns - middleIndex + 1)));
-    const row = hsvs.map(x => GetCellFromHSV(x));
+    const row = hsvs.map((x, i) => {return {
+        hexColor: HSVtoRGBHex(x),
+        lum: LumFromHsv(x),
+        id: `i-${rowNum}-${i}`,
+        rowNum: rowNum,
+        colNum: i,
+    }});
 
     return row;
 }

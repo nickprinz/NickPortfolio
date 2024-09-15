@@ -80,13 +80,12 @@ function RGBtoHSVZeroOne (color: Color) : Hsv {
     return hsv;
 }
 
-export function GetCellFromHSV(hsv: Hsv): ColorCell{
-    const rgb = HSVtoRGB(hsv);
-    return { lum: Lum(rgb), hexColor: RBGtoHex(rgb) };
-}
-
 export function Lum(color: Color): number{
     return 0.2126 * color.r + 0.7152 * color.g + 0.0722 * color.b;
+}
+
+export function LumFromHsv(hsv: Hsv): number{
+    return Lum(HSVtoRGB(hsv));
 }
 
 export function RBGtoHex(color: Color): string{

@@ -35,7 +35,7 @@ let colorsToCells = (colors, selectedId, gridWidth, gridHeight, handleCellClicke
         return row.map((color, i) => {
             let id = `${i}:${j}`;
             const xPos = (i*width)-.1;
-            return <ColorCell key={id} id={id} position={{X:xPos, Y:j*height}} size={{X:(width+.1), Y:height}} color={color} isSelected={selectedId===id} onCellClicked={handleCellClicked}
+            return <ColorCell key={color.id} id={color.id} position={{X:xPos, Y:j*height}} size={{X:(width+.1), Y:height}} color={color} isSelected={selectedId===id} onCellClicked={handleCellClicked}
             showLum={showText === ShowText.Lum}></ColorCell>
         })
     }).flat();
@@ -43,3 +43,9 @@ let colorsToCells = (colors, selectedId, gridWidth, gridHeight, handleCellClicke
     return cells;
 }
 
+
+// hexColor: string,
+// lum: number,
+// id: string,
+// rowNum: number,
+// colNum: number,

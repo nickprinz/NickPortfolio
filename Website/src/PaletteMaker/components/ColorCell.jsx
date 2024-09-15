@@ -6,8 +6,8 @@ export default function ColorCell({position, size, color = {hexColor: "#ffffff",
 
     const selectedAnimate = {scale:[selectedScale-.03, selectedScale], zIndex:10};
 
-    const lumText = showLum && <div className="text-center flex flex-col items-center" style={{width:toRem(size.X),}}>
-            <div className="bg-white rounded-md px-2 py-1">
+    const lumText = showLum && <div className="text-center flex flex-col items-center select-none" style={{width:toRem(size.X),}}>
+            <div className="bg-white rounded-md px-2 py-1 select-none">
                 {Math.round(color.lum)}
             </div>
         </div>

@@ -32,7 +32,7 @@ const makeNewRowFromCenter = (centerColor: Hsv, rowNum: number, columns: number,
     const row = hsvs.map((x, i) => {return {
         hexColor: HSVtoRGBHex(x),
         lum: LumFromHsv(x),
-        id: `i-${rowNum}-${i}`,
+        id: `id#${rowNum}#${i}`,
         rowNum: rowNum,
         colNum: i,
         hue: x.h,

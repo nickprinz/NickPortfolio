@@ -26,6 +26,7 @@ export interface PaletteState{
     columnAdjustments: Hsv[],
     rowAdjustments: Hsv[],
     cellAdjustments: Hsv[][],
+    activeCell: string|null,
 }
 
 const makeDefaultState = (): PaletteState => {
@@ -44,6 +45,7 @@ const makeDefaultState = (): PaletteState => {
         columnAdjustments: makeBlanks(columnCount),
         rowAdjustments: makeBlanks(rowCount),
         cellAdjustments: makeBlankGrid(rowCount,columnCount),
+        activeCell: null,
     };
 }
 
@@ -91,6 +93,13 @@ const paletteSlice = createSlice({
         setShowText(state: PaletteState, action: PayloadAction<ShowText>){
             state.showText = action.payload;
         },
+        setActiveCell(state: PaletteState, action: PayloadAction<string>){
+            if(state.activeCell === action.payload){
+                state.activeCell = null;
+                return;
+            }
+            state.activeCell = action.payload;
+        },
     },
     selectors:{
         getColorGrid: createSelector(
@@ -128,6 +137,15 @@ const paletteSlice = createSlice({
         getShowText: (state) => {
             return state.showText;
         },
+        getActiveCell: (state) => {
+            return state.activeCell;
+        },
+        getIsCellActive: createSelector(
+            [((state) => state.activeCell), ((state, cellId) => cellId)],
+            (activeCell, cellId) => {
+                return activeCell === cellId;
+            }
+        ),
     }
 });
 

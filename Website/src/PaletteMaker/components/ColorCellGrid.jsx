@@ -1,7 +1,7 @@
 import { useState } from "react";
 import ColorCell from "./ColorCell";
 import { useSelector } from "react-redux";
-import { paletteSelectors, ShowText } from "../store/palette";
+import { paletteSelectors } from "../store/palette";
 
 export default function ColorCellGrid(){
 

@@ -18,5 +18,5 @@ export default function IncrementButton({onValueChange, amount = 1}){
     }
 
     const buttonText = amount > 0 ? "+" : "-";
-    return <button className="hover:bg-slate-400 rounded-md size-8"  onPointerDown={startPress} onPointerUp={stopPress}>{buttonText}</button>
+    return <button className="hover:bg-slate-400 rounded-md size-8"  onPointerDown={startPress} onPointerUp={stopPress} onMouseLeave={stopPress}>{buttonText}</button>
 }

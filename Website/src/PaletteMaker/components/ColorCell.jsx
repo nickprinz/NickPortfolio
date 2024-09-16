@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { ShowText } from "../store/palette";
+import { ShowText } from "../store/showText";
 import CellInfo from "./CellInfo";
 
 export default function ColorCell({position, size, color = {hexColor: "#ffffff", lum: 0, hue: 0}, id, isSelected, onCellClicked, infoType = ShowText.None}){

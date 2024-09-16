@@ -8,6 +8,7 @@ export default function Dropdown({label, selectedValue, choices, onSelect}){
     const handleOutsideClick = () => {
         setIsOpen(false);
     }
+    const selfRef = useOutsideClick(handleOutsideClick);
 
     const handleClickMain = () => {
         setIsOpen((oldState) => {
@@ -21,8 +22,6 @@ export default function Dropdown({label, selectedValue, choices, onSelect}){
             onSelect(v);
         }
     }
-
-    const selfRef = useOutsideClick(handleOutsideClick);
 
     const selectedIndex = choices?.find(x => x.value === selectedValue);
     const displayText = selectedIndex?.text || "";

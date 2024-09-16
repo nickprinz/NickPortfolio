@@ -1,5 +1,3 @@
-import { motion } from "framer-motion";
-import { ShowText } from "../store/palette";
 
 export default function CellInfo({children}){
 

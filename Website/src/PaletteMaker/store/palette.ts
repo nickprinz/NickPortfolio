@@ -4,16 +4,15 @@ import { PaletteValue } from '../interfaces/paletteValue';
 import { Color } from '../interfaces/color';
 import { Hsv } from '../interfaces/hsv';
 import { createGridFromState } from './createGridFromState';
-
-export enum ShowText{
-    None = "none",
-    Lum = "lum",
-    Hue = "hue",
-}
+import { ShowText } from './showText';
+import { fillAdjustments, fillGridColumnAdjustments, fillGridRowAdjustments, makeBlankGrid } from './gridAdjustments';
+import { makeBlanks } from './gridAdjustments';
 
 export interface ColorGrid{
     colors: string[][],
 }
+
+//need to add cell, row, and column adjustments
 export interface PaletteState{
     seed: Color,
     rowCount: number,
@@ -24,19 +23,27 @@ export interface PaletteState{
     lowSat: number,
     lowValue: number,
     showText: ShowText,
+    columnAdjustments: Hsv[],
+    rowAdjustments: Hsv[],
+    cellAdjustments: Hsv[][],
 }
 
 const makeDefaultState = (): PaletteState => {
+    const rowCount = 4;
+    const columnCount = 5;
     return {
         seed:HSVtoRGB({h:0,s:60,v:55}), 
-        rowCount:4, 
-        shadeCount:5, 
+        rowCount:rowCount, 
+        shadeCount:columnCount, 
         hueShift:20,
         highSat:30,
         highValue:80,
         lowSat:60,
         lowValue:30,
         showText: ShowText.None,
+        columnAdjustments: makeBlanks(columnCount),
+        rowAdjustments: makeBlanks(rowCount),
+        cellAdjustments: makeBlankGrid(rowCount,columnCount),
     };
 }
 
@@ -52,10 +59,16 @@ const paletteSlice = createSlice({
             });
         },
         setRowCount(state: PaletteState, action: PayloadAction<number>){
-            state.rowCount = action.payload;//add safety checks
+            if(action.payload < 0 || action.payload > 50) return;
+            state.rowCount = action.payload;
+            state.rowAdjustments = fillAdjustments(state.rowAdjustments, action.payload);
+            state.cellAdjustments = fillGridRowAdjustments(state.cellAdjustments, action.payload, state.shadeCount);
         },
         setColumnCount(state: PaletteState, action: PayloadAction<number>){
-            state.shadeCount = action.payload;//add safety checks
+            if(action.payload < 0 || action.payload > 50) return;
+            state.shadeCount = action.payload;
+            state.columnAdjustments = fillAdjustments(state.columnAdjustments, action.payload);
+            state.cellAdjustments = fillGridColumnAdjustments(state.cellAdjustments, action.payload);
         },
         setSeedColor(state: PaletteState, action: PayloadAction<Color>){
             state.seed = action.payload;//add safety checks

@@ -39,6 +39,8 @@ const makeNewRowFromCenter = (centerColor: Hsv, rowNum: number, columns: number,
         rowNum: rowNum,
         colNum: i,
         hue: x.h,
+        sat: x.s,
+        val: x.v,
     }});
 
     return row;

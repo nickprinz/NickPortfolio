@@ -4,6 +4,8 @@ export enum ShowText{
     None = "none",
     Lum = "lum",
     Hue = "hue",
+    Sat = "sat",
+    Val = "val",
     Adjust = "adjustments",
 }
 

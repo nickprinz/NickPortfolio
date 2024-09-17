@@ -5,4 +5,6 @@ export interface ColorCell{
     rowNum: number,
     colNum: number,
     hue: number,
+    sat: number,
+    val: number,
 }

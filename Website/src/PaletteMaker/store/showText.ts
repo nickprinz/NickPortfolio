@@ -4,6 +4,7 @@ export enum ShowText{
     None = "none",
     Lum = "lum",
     Hue = "hue",
+    Adjust = "adjustments",
 }
 
 export function GetAllShowTextOptions(){

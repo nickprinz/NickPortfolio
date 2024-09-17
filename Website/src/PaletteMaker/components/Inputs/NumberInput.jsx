@@ -3,7 +3,7 @@ import IncrementButton from "./IncrementButton";
 import InputContainer from "./InputContainer";
 import InputLabel from "./InputLabel";
 
-export default function NumberInput({onValueChange, labelText, value, max = 100, min = 0}){
+export default function NumberInput({onValueChange, labelText, value, max = 100, min = 0, disabled=false}){
     
     const handleChange = (e) =>{
         let num = Math.round(e.target.value);
@@ -25,12 +25,12 @@ export default function NumberInput({onValueChange, labelText, value, max = 100,
     }
 
     return <>
-        <InputContainer>
+        <InputContainer disabled={disabled}>
             <InputLabel>{labelText}</InputLabel>
             <div className="flex flex-row">
-                <IncrementButton onValueChange={adjust} amount={-1} />
-                <input value={value} className="px-2 mx-1 my-0.5 w-12 text-center tracking-wide" onChange={handleChange}></input>
-                <IncrementButton onValueChange={adjust} amount={1} />
+                <IncrementButton onValueChange={adjust} amount={-1} disabled={disabled} />
+                <input value={value} className="px-2 mx-1 my-0.5 w-12 text-center tracking-wide" onChange={handleChange} disabled={disabled}></input>
+                <IncrementButton onValueChange={adjust} amount={1} disabled={disabled} />
             </div>
         </InputContainer>
     </>

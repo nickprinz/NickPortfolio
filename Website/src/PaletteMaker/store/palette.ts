@@ -7,10 +7,7 @@ import { createGridFromState } from './createGridFromState';
 import { ShowText } from './showText';
 import { fillAdjustments, fillGridColumnAdjustments, fillGridRowAdjustments, makeBlankGrid } from './gridAdjustments';
 import { makeBlanks } from './gridAdjustments';
-
-export interface ColorGrid{
-    colors: string[][],
-}
+import ColorCell from '../components/ColorCell';
 
 //need to add cell, row, and column adjustments
 export interface PaletteState{
@@ -27,6 +24,16 @@ export interface PaletteState{
     rowAdjustments: Hsv[],
     cellAdjustments: Hsv[][],
     activeCell: string|null,
+}
+
+interface Position{
+    X: number,
+    Y: number,
+}
+
+const getIndexesFromId = (id: string) : Position => {
+    const parts: string[] = id.split("#");
+    return {X: parseInt(parts[1]), Y: parseInt(parts[2])};
 }
 
 const makeDefaultState = (): PaletteState => {
@@ -100,48 +107,60 @@ const paletteSlice = createSlice({
             }
             state.activeCell = action.payload;
         },
+        setActiveCellAdjustments(state: PaletteState, action: PayloadAction<Hsv>){
+            if(!state.activeCell) return;
+            const activeIndexes = getIndexesFromId(state.activeCell);
+            state.cellAdjustments[activeIndexes.X][activeIndexes.Y] = action.payload;
+        },
     },
     selectors:{
         getColorGrid: createSelector(
-            [((state) => state)],
+            [((state: PaletteState) => state)],
             (state) => {
             return createGridFromState(state);
         }),
-        getRowCount: (state) => {
+        getRowCount: (state: PaletteState) => {
             return state.rowCount;
         },
-        getColumnCount: (state) => {
+        getColumnCount: (state: PaletteState) => {
             return state.shadeCount;
         },
-        getSeedColor: (state) => {
+        getSeedColor: (state: PaletteState) => {
             return state.seed;
         },
-        getSeedColorHex: (state) => {
+        getSeedColorHex: (state: PaletteState) => {
             return RBGtoHex(state.seed) ;
         },
-        getHueShift: (state) => {
+        getHueShift: (state: PaletteState) => {
             return state.hueShift;
         },
-        getLowSat: (state) => {
+        getLowSat: (state: PaletteState) => {
             return state.lowSat;
         },
-        getLowVal: (state) => {
+        getLowVal: (state: PaletteState) => {
             return state.lowValue;
         },
-        getHighSat: (state) => {
+        getHighSat: (state: PaletteState) => {
             return state.highSat;
         },
-        getHighVal: (state) => {
+        getHighVal: (state: PaletteState) => {
             return state.highValue;
         },
-        getShowText: (state) => {
+        getShowText: (state: PaletteState): ShowText => {
             return state.showText;
         },
-        getActiveCell: (state) => {
+        getActiveCell: (state: PaletteState) => {
             return state.activeCell;
         },
+        getActiveCellAdjustments: createSelector(
+            [((state: PaletteState) => state)],
+            (state: PaletteState) => {
+                if(!state.activeCell) return null;
+                const activeIndexes = getIndexesFromId(state.activeCell);
+                return state.cellAdjustments[activeIndexes.X][activeIndexes.Y];
+        }),
         getIsCellActive: createSelector(
-            [((state) => state.activeCell), ((state, cellId) => cellId)],
+            [((state: PaletteState) => state.activeCell), ((state: PaletteState, cellId) => cellId)],
             (activeCell, cellId) => {
                 return activeCell === cellId;
             }

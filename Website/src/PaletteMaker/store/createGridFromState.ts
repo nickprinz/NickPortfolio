@@ -11,14 +11,14 @@ export const createGridFromState = (state: PaletteState): ColorCell[][] => {
     for (let i = 0; i < state.rowCount; i++) {
         const hue = (seed.h + rowHueChange*i)%360;
         const rowCenter: Hsv = {h: hue, s:seed.s, v:seed.v};
-        grid.push(makeNewRowFromCenter(rowCenter, i, state.shadeCount, state.lowSat, state.lowValue, state.highSat, state.highValue, state.hueShift));//need to split row across seed
+        grid.push(makeNewRowFromCenter(rowCenter, i, state.shadeCount, state.lowSat, state.lowValue, state.highSat, state.highValue, state.hueShift, state.cellAdjustments[i]));//need to split row across seed
     }
 
     return grid;
 
 }
 
-const makeNewRowFromCenter = (centerColor: Hsv, rowNum: number, columns: number, lowSat: number, lowValue: number, highSat: number, highValue: number, hueShift: number): ColorCell[] => {
+const makeNewRowFromCenter = (centerColor: Hsv, rowNum: number, columns: number, lowSat: number, lowValue: number, highSat: number, highValue: number, hueShift: number, cellAdjustments: Hsv[]): ColorCell[] => {
     
     const middleIndex = Math.ceil(columns/2);
     const lowHue = (middleIndex-1) * -hueShift + centerColor.h;
@@ -29,6 +29,9 @@ const makeNewRowFromCenter = (centerColor: Hsv, rowNum: number, columns: number,
     let hsvs = fillColors(lowHsv, centerColor, middleIndex);
     hsvs.pop();//remove centerColor, second half will also have it
     hsvs = hsvs.concat(fillColors(centerColor, highHsv, (columns - middleIndex + 1)));
+    hsvs = hsvs.map((x,i) => {
+        return addHsv(x,cellAdjustments[i])
+    });
     const row = hsvs.map((x, i) => {return {
         hexColor: HSVtoRGBHex(x),
         lum: LumFromHsv(x),
@@ -71,4 +74,12 @@ const wrap = ( num: number, max: number): number => {
 
 const lerp = ( a: number, b: number, t: number ): number => {
     return a + t * ( b - a );
+}
+
+const addHsv = (a:Hsv, b:Hsv): Hsv => {
+    const result = {h: a.h+b.h, s:a.s+b.s, v:a.v+b.v}
+    result.h = wrap(result.h,360);
+    result.s = Math.min(Math.max(result.s,0), 100);
+    result.v = Math.min(Math.max(result.v,0), 100);
+    return result;
 }

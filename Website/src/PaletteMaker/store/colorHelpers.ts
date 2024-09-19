@@ -6,6 +6,9 @@ import { Hsv } from "../interfaces/hsv";
 function hsvTo01(hsv: Hsv): Hsv{
     return {h: hsv.h/360,s: hsv.s/100,v: hsv.v/100};
 }
+function rgbTo01(color: Color): Color{
+    return {r: color.r/255,g: color.g/255,b: color.b/255};
+}
 
 export function HSVtoRGBHex(hsv: Hsv): string {
     const rgb = HSVZeroOnetoRGB(hsvTo01(hsv));
@@ -80,16 +83,56 @@ function RGBtoHSVZeroOne (color: Color) : Hsv {
     return hsv;
 }
 
-export function Lum(color: Color): number{
+function simpleLum(color: Color): number{
     return 0.2126 * color.r + 0.7152 * color.g + 0.0722 * color.b;
 }
 
+function goodLum(color: Color): number{
+    const color01 = rgbTo01(color);
+    const lin = rgbToLin(color01);
+    const y = simpleLum(lin);
+    const lStar = ytoLstar(y);
+    return lStar;
+}
+
+function rgbToLin(color: Color): Color{
+    return {r: channeltoLin(color.r), g: channeltoLin(color.g),b: channeltoLin(color.b)};
+}
+
+function channeltoLin(colorChannel: number): number {
+    // Send this function a decimal sRGB gamma encoded color value
+    // between 0.0 and 1.0, and it returns a linearized value.
+    if ( colorChannel <= 0.04045 ) {
+        return colorChannel / 12.92;
+    }
+    return Math.pow((( colorChannel + 0.055)/1.055),2.4);
+}
+
+function ytoLstar(y: number): number {
+    // Send this function a luminance value between 0.0 and 1.0,
+    // and it returns L* which is "perceptual lightness"
+    if ( y <= (216/24389)) {       // The CIE standard states 0.008856 but 216/24389 is the intent for 0.008856451679036
+        return y * (24389/27);
+    }  // The CIE standard states 903.3, but 24389/27 is the intent, making 903.296296296296296
+    return Math.pow(y,(1/3)) * 116 - 16;
+}
+
 export function LumFromHsv(hsv: Hsv): number{
-    return Lum(HSVtoRGB(hsv));
+    return goodLum(HSVtoRGB(hsv));
 }
 
 export function RBGtoHex(color: Color): string{
     return "#" + toHex(color.r) + toHex(color.g) + toHex(color.b);
+}
+
+export function ChromaFromHsv(hsv: Hsv): number{
+    return Chroma(HSVtoRGB(hsv));
+}
+
+export function Chroma(color: Color): number{
+    const max = Math.max(color.r, color.g, color.b);
+    const min = Math.min(color.r, color.g, color.b);
+    return (max-min)/2.55
 }
 
 function toHex(num: number): string {

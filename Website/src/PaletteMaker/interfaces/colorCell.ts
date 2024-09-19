@@ -7,4 +7,5 @@ export interface ColorCell{
     hue: number,
     sat: number,
     val: number,
+    chr: number,
 }

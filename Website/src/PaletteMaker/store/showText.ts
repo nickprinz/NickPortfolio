@@ -7,6 +7,7 @@ export enum ShowText{
     Sat = "sat",
     Val = "val",
     Adjust = "adjustments",
+    Chroma = "chroma",
 }
 
 export function GetAllShowTextOptions(){

@@ -1,6 +1,6 @@
 import { ColorCell } from "../interfaces/colorCell";
 import { Hsv } from "../interfaces/hsv";
-import { HSVtoRGBHex, LumFromHsv, RGBtoHSV } from "./colorHelpers";
+import { ChromaFromHsv, HSVtoRGBHex, LumFromHsv, RGBtoHSV } from "./colorHelpers";
 import { PaletteState } from "./palette";
 
 export const createGridFromState = (state: PaletteState): ColorCell[][] => {
@@ -13,6 +13,19 @@ export const createGridFromState = (state: PaletteState): ColorCell[][] => {
         const rowCenter: Hsv = {h: hue, s:seed.s, v:seed.v};
         grid.push(makeNewRowFromCenter(rowCenter, i, state.shadeCount, state.lowSat, state.lowValue, state.highSat, state.highValue, state.hueShift, state.cellAdjustments[i]));//need to split row across seed
     }
+
+    return grid;
+
+}
+
+export const createCellFromState = (state: PaletteState, row: number, column: number): ColorCell => {
+    const rowHueChange = 360/state.rowCount;
+    const grid: ColorCell[][] = [];
+    const seed: Hsv = RGBtoHSV(state.seed);
+    const centerHue = (seed.h + rowHueChange*row)%360;
+    const middleIndex = Math.ceil(state.shadeCount/2);
+    
+
 
     return grid;
 
@@ -41,6 +54,7 @@ const makeNewRowFromCenter = (centerColor: Hsv, rowNum: number, columns: number,
         hue: x.h,
         sat: x.s,
         val: x.v,
+        chr: ChromaFromHsv(x),
     }});
 
     return row;
@@ -53,13 +67,18 @@ const fillColors = (lowColor: Hsv, highColor: Hsv, colorCount: number): Hsv[] =>
     
     for (let i = 0; i < colorCount; i++) {
         const t = i/(colorCount-1);
-        let hue = wrap(lerp(lowColor.h, highColor.h, t),360);
-        const sat = lerp(lowColor.s, highColor.s, t);
-        const val = lerp(lowColor.v, highColor.v, t);
-        colors.push({h: hue,s: sat,v: val});
+        colors.push(lerpColor(lowColor, highColor, t));
     }
 
     return colors;
+}
+
+const lerpColor = (lowColor: Hsv, highColor: Hsv, t: number) : Hsv => {
+    let hue = wrap(lerp(lowColor.h, highColor.h, t),360);
+    const sat = lerp(lowColor.s, highColor.s, t);
+    const val = lerp(lowColor.v, highColor.v, t);
+    return {h: hue,s: sat,v: val};
+
 }
 
 const wrap = ( num: number, max: number): number => {

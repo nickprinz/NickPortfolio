@@ -1,13 +1,12 @@
 import { Action, PayloadAction, createSelector, createSlice } from '@reduxjs/toolkit';
 import { HSVtoRGB, HSVtoRGBHex, RBGtoHex, RGBtoHSV } from './colorHelpers';
-import { PaletteValue } from '../interfaces/paletteValue';
 import { Color } from '../interfaces/color';
 import { Hsv } from '../interfaces/hsv';
-import { createGridFromState } from './createGridFromState';
+import { createCellFromState } from './createGridFromState';
 import { ShowText } from './showText';
 import { fillAdjustments, fillGridColumnAdjustments, fillGridRowAdjustments, makeBlankGrid } from './gridAdjustments';
 import { makeBlanks } from './gridAdjustments';
-import ColorCell from '../components/ColorCell';
+import { ColorCell } from '../interfaces/colorCell';
 
 //need to add cell, row, and column adjustments
 export interface PaletteState{
@@ -114,10 +113,14 @@ const paletteSlice = createSlice({
         },
     },
     selectors:{
-        getColorGrid: createSelector(
-            [((state: PaletteState) => state)],
-            (state) => {
-            return createGridFromState(state);
+        getColorCell: createSelector(
+            [
+                ((state: PaletteState) => state), 
+                ((state: PaletteState, rowNumber:number) => rowNumber),
+                ((state: PaletteState, rowNumber:number, columnNumber:number) => columnNumber)
+            ],
+            (state, rowNumber, columnNumber): ColorCell => {
+                return createCellFromState(state, rowNumber, columnNumber);
         }),
         getRowCount: (state: PaletteState) => {
             return state.rowCount;
@@ -154,14 +157,14 @@ const paletteSlice = createSlice({
         },
         getActiveCellAdjustments: createSelector(
             [((state: PaletteState) => state)],
-            (state: PaletteState) => {
+            (state: PaletteState): Hsv|null => {
                 if(!state.activeCell) return null;
                 const activeIndexes = getIndexesFromId(state.activeCell);
                 return state.cellAdjustments[activeIndexes.X][activeIndexes.Y];
         }),
         getIsCellActive: createSelector(
             [((state: PaletteState) => state.activeCell), ((state: PaletteState, cellId) => cellId)],
-            (activeCell, cellId) => {
+            (activeCell, cellId): boolean => {
                 return activeCell === cellId;
             }
         ),

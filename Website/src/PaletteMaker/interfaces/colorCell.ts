@@ -1,3 +1,5 @@
+import { Hsv } from "./hsv";
+
 export interface ColorCell{
     hexColor: string,
     lum: number,
@@ -8,4 +10,5 @@ export interface ColorCell{
     sat: number,
     val: number,
     chr: number,
+    adjustments: Hsv,
 }

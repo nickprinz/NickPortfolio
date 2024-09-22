@@ -44,3 +44,19 @@ export const fillGridColumnAdjustments = (adjustments:Hsv[][], newColumnCount:nu
     }
     return adjustments.map(row => fillAdjustments(row,newColumnCount));
 }
+
+export const makeDirections = (count: number):boolean[] => {
+    const b: boolean[] = [];
+    for (let index = 0; index < count; index++) {
+        b.push(true);
+    }
+    return b;
+}
+
+export const fillDirections = (directions:boolean[], newCount:number):boolean[] => {
+    if(newCount === directions.length) return directions;
+    if(newCount < directions.length){
+        return directions.slice(0,newCount);
+    }
+    return directions.concat(makeDirections(newCount - directions.length));
+}

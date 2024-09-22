@@ -2,9 +2,9 @@ import { Action, PayloadAction, createSelector, createSlice } from '@reduxjs/too
 import { HSVtoRGB, HSVtoRGBHex, RBGtoHex, RGBtoHSV } from './colorHelpers';
 import { Color } from '../interfaces/color';
 import { Hsv } from '../interfaces/hsv';
-import { createCellFromState } from './createGridFromState';
+import { createCellFromState } from './createCellFromState';
 import { ShowText } from './showText';
-import { fillAdjustments, fillGridColumnAdjustments, fillGridRowAdjustments, makeBlankGrid } from './gridAdjustments';
+import { fillAdjustments, fillDirections, fillGridColumnAdjustments, fillGridRowAdjustments, makeBlankGrid, makeDirections } from './gridAdjustments';
 import { makeBlanks } from './gridAdjustments';
 import { ColorCell } from '../interfaces/colorCell';
 
@@ -14,6 +14,7 @@ export interface PaletteState{
     rowCount: number,
     shadeCount: number,
     hueShift: number,
+    hueShiftDirections: boolean[],
     highSat: number,
     highValue: number,
     lowSat: number,
@@ -43,6 +44,7 @@ const makeDefaultState = (): PaletteState => {
         rowCount:rowCount, 
         shadeCount:columnCount, 
         hueShift:20,
+        hueShiftDirections:makeDirections(rowCount),
         highSat:30,
         highValue:80,
         lowSat:60,
@@ -71,6 +73,7 @@ const paletteSlice = createSlice({
             state.rowCount = action.payload;
             state.rowAdjustments = fillAdjustments(state.rowAdjustments, action.payload);
             state.cellAdjustments = fillGridRowAdjustments(state.cellAdjustments, action.payload, state.shadeCount);
+            state.hueShiftDirections = fillDirections(state.hueShiftDirections, action.payload);
         },
         setColumnCount(state: PaletteState, action: PayloadAction<number>){
             if(action.payload < 0 || action.payload > 50) return;
@@ -83,6 +86,9 @@ const paletteSlice = createSlice({
         },
         setHueShift(state: PaletteState, action: PayloadAction<number>){
             state.hueShift = action.payload;//add safety checks
+        },
+        setHueShiftDirection(state: PaletteState, action: PayloadAction<number>){
+            state.hueShiftDirections[action.payload] = !state.hueShiftDirections[action.payload];//add safety checks
         },
         setLowSat(state: PaletteState, action: PayloadAction<number>){
             state.lowSat = action.payload;//add safety checks

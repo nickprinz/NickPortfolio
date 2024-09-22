@@ -5,7 +5,8 @@ import { PaletteState } from "./palette";
 
 export const createCellFromState = (state: PaletteState, row: number, column: number): ColorCell => {
     const centerColor = getRowCenterColor(RGBtoHSV(state.seed), row, state.rowCount);
-    const interpolatedColor: Hsv = getInterpolatedColor(centerColor, column, state);
+    const hueShift = state.hueShiftDirections[row] ? state.hueShift : -state.hueShift;
+    const interpolatedColor: Hsv = getInterpolatedColor(centerColor, column, hueShift, state);
     const resultColor = applyAdjustments(interpolatedColor, row, column, state);
     return makeCellFromColor(resultColor, row, column, state.cellAdjustments[row][column]);
 }
@@ -18,18 +19,21 @@ const getRowCenterColor = (seed: Hsv, row:number, rowCount: number):Hsv => {
 
 const applyAdjustments = (startColor:Hsv, row: number, column: number, state: PaletteState): Hsv => {
     //need to apply column and row adjustments later
-    return addHsv(startColor,state.cellAdjustments[row][column]);
+    let adjustedHsv = addHsv(startColor,state.cellAdjustments[row][column]);
+    adjustedHsv = addHsv(startColor,state.rowAdjustments[row]);
+    adjustedHsv = addHsv(startColor,state.columnAdjustments[column]);
+    return adjustedHsv;
 }
 
-const getInterpolatedColor = (centerColor: Hsv, column: number, state: PaletteState): Hsv => {
+const getInterpolatedColor = (centerColor: Hsv, column: number, hueShift: number ,state: PaletteState): Hsv => {
     const middleIndex = Math.floor(state.shadeCount/2);
     let resultColor: Hsv;
     if(column < middleIndex){
-        const lowColor = getEndColor(centerColor, state.lowSat, state.lowValue, state.hueShift, -middleIndex);
+        const lowColor = getEndColor(centerColor, state.lowSat, state.lowValue, hueShift, -middleIndex);
         resultColor = lerpColor(lowColor, centerColor, column/middleIndex);
     }
     else if(column > middleIndex){
-        const highColor = getEndColor(centerColor, state.highSat, state.highValue, state.hueShift, state.shadeCount-1-middleIndex);
+        const highColor = getEndColor(centerColor, state.highSat, state.highValue, hueShift, state.shadeCount-1-middleIndex);
         const t = (column - middleIndex) / (state.shadeCount-1-middleIndex);//0 is middleIndex, 1 is state.shadeCount-1
         resultColor = lerpColor(centerColor, highColor, t);
 

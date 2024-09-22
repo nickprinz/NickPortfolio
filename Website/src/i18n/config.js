@@ -89,6 +89,23 @@ i18n
           remove_black_node_black_sibling_with_red_children_left_inner_red_child: "The removed value was black, which reduces a subtree's black height by one. This unbalances the tree and creates a double-black to be resolved on the parent({{value2}}). The removed value's sibling({{value1}}) is black and has an inner red child({{value1}} is a right child and {{value4}} is a left child). {{value4}}'s color will be set to the same color as {{value1}}. Next, {{value1}} will rotate right and swap colors with {{value4}}. Finally, rotate {{value2}} left. This resolves the double-black and leaves the total black height unchanged.",
           remove_black_node_black_sibling_with_red_children_left_outer_red_child: "The removed value was black, which reduces a subtree's black height by one. This unbalances the tree and creates a double-black to be resolved on the parent({{value2}}). The removed value's sibling({{value1}}) is black and has an outer red child(both {{value1}} and {{value3}} are right children). Set the {{value3}} to have the same color as {{value2}}, then rotate {{value2}} left. This resolves the double-black and leaves the total black height unchanged.",
         },
+        palette: {
+          options: "Options",
+          start_color: "Start Color",
+          rows: "Rows",
+          columns: "Columns",
+          hue_shift: "Hue Shift",
+          add_history: "Add {{value}}",
+          reset: "Reset All",
+          sat: "Saturation",
+          val: "Value",
+          hue: "Hue",
+          info_display: "Info Display",
+          lum: "Luminosity",
+          adjustments: "Adjustments",
+          chroma: "Chroma",
+          none: "None",
+        },
       },
       // french
       fr: {

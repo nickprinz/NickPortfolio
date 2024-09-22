@@ -1,11 +1,13 @@
 import { useDispatch, useSelector } from "react-redux";
 import { paletteActions, paletteSelectors } from "../../store/palette";
 import NumberInput from "./NumberInput";
+import { useTranslation } from "react-i18next";
 
 export default function CellAdjustmentsInput(){
     const hsv = useSelector(paletteSelectors.getActiveCellAdjustments);
     //need to get adjustments
     const dispatch = useDispatch();
+    const { t: translate } = useTranslation("palette");
 
     const isSelected = !(!hsv);
 
@@ -27,9 +29,9 @@ export default function CellAdjustmentsInput(){
 
     return <>
     <div className="flex flex-row items-center">
-        <NumberInput onValueChange={handleHueChange} labelText={"hue"} value={hsv?.h || ""} min={-360} max={360} disabled={!isSelected}></NumberInput>
-        <NumberInput onValueChange={handleSatChange} labelText={"sat"} value={hsv?.s || ""} min={-100} max={100} disabled={!isSelected}></NumberInput>
-        <NumberInput onValueChange={handleValChange} labelText={"val"} value={hsv?.v || ""} min={-100} max={100} disabled={!isSelected}></NumberInput>
+        <NumberInput onValueChange={handleHueChange} labelText={translate("hue")} value={hsv?.h || ""} min={-360} max={360} disabled={!isSelected}></NumberInput>
+        <NumberInput onValueChange={handleSatChange} labelText={translate("sat")} value={hsv?.s || ""} min={-100} max={100} disabled={!isSelected}></NumberInput>
+        <NumberInput onValueChange={handleValChange} labelText={translate("val")} value={hsv?.v || ""} min={-100} max={100} disabled={!isSelected}></NumberInput>
     </div>
     </>
 }

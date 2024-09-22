@@ -33,7 +33,7 @@ export default function Dropdown({label, selectedValue, choices, onSelect}){
                 <div onClick={handleClickMain} className="px-2 py-0 h-7 bg-slate-200 hover:bg-white border-black border-2 cursor-pointer rounded-md">
                     {displayText}
                 </div>
-                {isOpen && <div className="bg-slate-200 border-black border-2 cursor-pointer rounded-md absolute w-full">
+                {isOpen && <div className="bg-slate-200 border-black border-2 cursor-pointer rounded-md absolute w-full table">
                     {choices.map(x => {
                         return <div className="hover:bg-white px-2  border-b-2 border-slate-500" key={x.value} onClick={() => {handleChoiceClick(x.value)}}>{x.text}</div>
                     })}

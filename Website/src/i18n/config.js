@@ -105,6 +105,10 @@ i18n
           adjustments: "Adjustments",
           chroma: "Chroma",
           none: "None",
+          cell: "Cell",
+          row: "Row",
+          column: "Column",
+          clickACell: "Click a cell to make adjustments"
         },
       },
       // french

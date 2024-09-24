@@ -6,7 +6,7 @@ import HueShiftInput from "./Inputs/HueShiftInput";
 import LowInput from "./Inputs/LowInput";
 import HighInput from "./Inputs/HighInput";
 import ResetButton from "./Inputs/ResetButton";
-import CellAdjustmentsInput from "./Inputs/CellAdjustmentsInput";
+import AdjustmentContainer from "./Inputs/AdjustmentContainer";
 
 export default function PaletteInputHolder(){
 
@@ -26,7 +26,7 @@ export default function PaletteInputHolder(){
             </div>
             <div className="flex flex-row justify-between gap-4" >
                 <LowInput />
-                <CellAdjustmentsInput></CellAdjustmentsInput>
+                <AdjustmentContainer/>
                 <HighInput />
             </div>
             <ResetButton/>

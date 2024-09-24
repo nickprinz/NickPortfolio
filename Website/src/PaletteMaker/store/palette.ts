@@ -117,6 +117,16 @@ const paletteSlice = createSlice({
             const activeIndexes = getIndexesFromId(state.activeCell);
             state.cellAdjustments[activeIndexes.X][activeIndexes.Y] = action.payload;
         },
+        setActiveRowAdjustments(state: PaletteState, action: PayloadAction<Hsv>){
+            if(!state.activeCell) return;
+            const activeIndexes = getIndexesFromId(state.activeCell);
+            state.rowAdjustments[activeIndexes.X] = action.payload;
+        },
+        setActiveColumnAdjustments(state: PaletteState, action: PayloadAction<Hsv>){
+            if(!state.activeCell) return;
+            const activeIndexes = getIndexesFromId(state.activeCell);
+            state.columnAdjustments[activeIndexes.Y] = action.payload;
+        },
     },
     selectors:{
         getColorCell: createSelector(
@@ -167,6 +177,20 @@ const paletteSlice = createSlice({
                 if(!state.activeCell) return null;
                 const activeIndexes = getIndexesFromId(state.activeCell);
                 return state.cellAdjustments[activeIndexes.X][activeIndexes.Y];
+        }),
+        getActiveRowAdjustments: createSelector(
+            [((state: PaletteState) => state)],
+            (state: PaletteState): Hsv|null => {
+                if(!state.activeCell) return null;
+                const activeIndexes = getIndexesFromId(state.activeCell);
+                return state.rowAdjustments[activeIndexes.X];
+        }),
+        getActiveColumnAdjustments: createSelector(
+            [((state: PaletteState) => state)],
+            (state: PaletteState): Hsv|null => {
+                if(!state.activeCell) return null;
+                const activeIndexes = getIndexesFromId(state.activeCell);
+                return state.columnAdjustments[activeIndexes.Y];
         }),
         getIsCellActive: createSelector(
             [((state: PaletteState) => state.activeCell), ((state: PaletteState, cellId) => cellId)],

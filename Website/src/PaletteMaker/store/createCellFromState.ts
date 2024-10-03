@@ -1,12 +1,18 @@
 import { ColorCell } from "../interfaces/colorCell";
 import { Hsv } from "../interfaces/hsv";
 import { ChromaFromHsv, HSVtoRGBHex, LumFromHsv, RGBtoHSV } from "./colorHelpers";
+import { fromNHue, toNHue } from "./hueShifter";
+import { lerp, wrap } from "./mathHelpers";
 import { PaletteState } from "./palette";
+import { PrimaryColors } from "./primaryColors";
 
 export const createCellFromState = (state: PaletteState, row: number, column: number): ColorCell => {
-    const centerColor = getRowCenterColor(RGBtoHSV(state.seed), row, state.rowCount);
+    const seed: Hsv = RGBtoHSV(state.seed);
+    if(state.primaryColors === PrimaryColors.RYB) seed.h = toNHue(seed.h);
+    const centerColor = getRowCenterColor(seed, row, state.rowCount);
     const hueShift = state.hueShiftDirections[row] ? state.hueShift : -state.hueShift;
     const interpolatedColor: Hsv = getInterpolatedColor(centerColor, column, hueShift, state);
+    if(state.primaryColors === PrimaryColors.RYB)  interpolatedColor.h = fromNHue(interpolatedColor.h);
     const resultColor = applyAdjustments(interpolatedColor, row, column, state);
     return makeCellFromColor(resultColor, row, column, state.cellAdjustments[row][column]);
 }
@@ -70,22 +76,6 @@ const lerpColor = (lowColor: Hsv, highColor: Hsv, t: number) : Hsv => {
     const val = lerp(lowColor.v, highColor.v, t);
     return {h: hue,s: sat,v: val};
 
-}
-
-const wrap = ( num: number, max: number): number => {
-    let result = num;
-    while(result > max){
-        result = result - max;
-    }
-    while(result < 0){
-        result = result + max;
-    }
-    
-    return result
-}
-
-const lerp = ( a: number, b: number, t: number ): number => {
-    return a + t * ( b - a );
 }
 
 const addHsv = (a:Hsv, b:Hsv): Hsv => {

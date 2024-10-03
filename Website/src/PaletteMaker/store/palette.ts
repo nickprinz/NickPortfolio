@@ -7,6 +7,7 @@ import { ShowText } from './showText';
 import { fillAdjustments, fillDirections, fillGridColumnAdjustments, fillGridRowAdjustments, makeBlankGrid, makeDirections } from './gridAdjustments';
 import { makeBlanks } from './gridAdjustments';
 import { ColorCell } from '../interfaces/colorCell';
+import { PrimaryColors } from './primaryColors';
 
 //need to add cell, row, and column adjustments
 export interface PaletteState{
@@ -20,6 +21,7 @@ export interface PaletteState{
     lowSat: number,
     lowValue: number,
     showText: ShowText,
+    primaryColors: PrimaryColors,
     columnAdjustments: Hsv[],
     rowAdjustments: Hsv[],
     cellAdjustments: Hsv[][],
@@ -37,7 +39,7 @@ const getIndexesFromId = (id: string) : Position => {
 }
 
 const makeDefaultState = (): PaletteState => {
-    const rowCount = 4;
+    const rowCount = 6;
     const columnCount = 5;
     return {
         seed:HSVtoRGB({h:0,s:60,v:55}), 
@@ -48,8 +50,9 @@ const makeDefaultState = (): PaletteState => {
         highSat:30,
         highValue:80,
         lowSat:60,
-        lowValue:30,
+        lowValue:20,
         showText: ShowText.None,
+        primaryColors: PrimaryColors.RYB,
         columnAdjustments: makeBlanks(columnCount),
         rowAdjustments: makeBlanks(rowCount),
         cellAdjustments: makeBlankGrid(rowCount,columnCount),
@@ -104,6 +107,9 @@ const paletteSlice = createSlice({
         },
         setShowText(state: PaletteState, action: PayloadAction<ShowText>){
             state.showText = action.payload;
+        },
+        setPrimaryColors(state: PaletteState, action: PayloadAction<PrimaryColors>){
+            state.primaryColors = action.payload;
         },
         setActiveCell(state: PaletteState, action: PayloadAction<string>){
             if(state.activeCell === action.payload){
@@ -167,6 +173,9 @@ const paletteSlice = createSlice({
         },
         getShowText: (state: PaletteState): ShowText => {
             return state.showText;
+        },
+        getPrimaryColors: (state: PaletteState): PrimaryColors => {
+            return state.primaryColors;
         },
         getActiveCell: (state: PaletteState) => {
             return state.activeCell;

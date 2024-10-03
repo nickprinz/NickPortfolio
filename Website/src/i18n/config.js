@@ -101,6 +101,7 @@ i18n
           val: "Value",
           hue: "Hue",
           info_display: "Info Display",
+          primary_colors: "Primary Colors",
           lum: "Luminosity",
           adjustments: "Adjustments",
           chroma: "Chroma",
@@ -108,7 +109,9 @@ i18n
           cell: "Cell",
           row: "Row",
           column: "Column",
-          clickACell: "Click a cell to make adjustments"
+          clickACell: "Click a cell to make adjustments",
+          rgb: "RGB",
+          ryb: "RYB",
         },
       },
       // french

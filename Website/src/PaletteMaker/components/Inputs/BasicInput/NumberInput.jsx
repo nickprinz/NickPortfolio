@@ -1,7 +1,7 @@
 
-import IncrementButton from "./IncrementButton";
-import InputContainer from "./InputContainer";
-import InputLabel from "./InputLabel";
+import IncrementButton from "../IncrementButton";
+import InputContainer from "../InputContainer";
+import InputLabel from "../InputLabel";
 
 export default function NumberInput({onValueChange, labelText, value, max = 100, min = 0, disabled=false}){
     

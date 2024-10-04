@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import NumberInput from "./NumberInput";
+import NumberInput from "./BasicInput/NumberInput";
 import { paletteActions, paletteSelectors } from "../../store/palette";
 import { useTranslation } from "react-i18next";
 

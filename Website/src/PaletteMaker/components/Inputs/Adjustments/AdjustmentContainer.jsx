@@ -1,5 +1,5 @@
 
-import { paletteSelectors } from "../../store/palette";
+import { paletteSelectors } from "../../../store/palette";
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import AdjustmentTabs from "./AdjustmentTabs";

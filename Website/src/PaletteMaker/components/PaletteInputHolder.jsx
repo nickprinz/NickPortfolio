@@ -1,12 +1,12 @@
 
-import ColorInput from "./Inputs/ColorInput";
+import ColorInput from "./Inputs/BasicInput/ColorInput";
 import RowCountInput from "./Inputs/RowCountInput";
 import ColumnCountInput from "./Inputs/ColumnCountInput";
 import HueShiftInput from "./Inputs/HueShiftInput";
 import LowInput from "./Inputs/LowInput";
 import HighInput from "./Inputs/HighInput";
 import ResetButton from "./Inputs/ResetButton";
-import AdjustmentContainer from "./Inputs/AdjustmentContainer";
+import AdjustmentContainer from "./Inputs/Adjustments/AdjustmentContainer";
 
 export default function PaletteInputHolder(){
 

@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import { paletteActions, paletteSelectors, } from "../../store/palette";
 import { GetAllShowTextOptions, ShowText } from "../../store/showText";
-import Dropdown from "../Inputs/Dropdown";
+import Dropdown from "../Inputs/BasicInput/Dropdown";
 import { useTranslation } from "react-i18next";
 
 export default function InfoDisplayDropdown(){

@@ -26,6 +26,8 @@ export interface PaletteState{
     rowAdjustments: Hsv[],
     cellAdjustments: Hsv[][],
     activeCell: string|null,
+    desaturatedRows: boolean,
+    desaturatedPercent: number,
 }
 
 interface Position{
@@ -38,12 +40,23 @@ const getIndexesFromId = (id: string) : Position => {
     return {X: parseInt(parts[1]), Y: parseInt(parts[2])};
 }
 
+const fixRowAdjustments = (state: PaletteState, newCount: number) => {
+
+}
+
+//need to figure out desaturated rows
+//checking the box will double the rowCount, but should not be done by changing state.rowCount
+//this will change the adjustment grids
+//desat rows will not have their own hueShiftDirections, but will look at their index-rowcount position
+//desat cells will get adjustments first from their sat counterpart and then their own, without double counting column
+//change fillAdjustments to take in row count and desat rows. ideally I would like one place to perform the doubling math
+
 const makeDefaultState = (): PaletteState => {
     const rowCount = 6;
     const columnCount = 5;
     return {
         seed:HSVtoRGB({h:0,s:60,v:55}), 
-        rowCount:rowCount, 
+        rowCount:rowCount,
         shadeCount:columnCount, 
         hueShift:20,
         hueShiftDirections:makeDirections(rowCount),
@@ -57,6 +70,8 @@ const makeDefaultState = (): PaletteState => {
         rowAdjustments: makeBlanks(rowCount),
         cellAdjustments: makeBlankGrid(rowCount,columnCount),
         activeCell: null,
+        desaturatedRows: false,
+        desaturatedPercent: .4,
     };
 }
 
@@ -85,25 +100,33 @@ const paletteSlice = createSlice({
             state.cellAdjustments = fillGridColumnAdjustments(state.cellAdjustments, action.payload);
         },
         setSeedColor(state: PaletteState, action: PayloadAction<Color>){
-            state.seed = action.payload;//add safety checks
+            if(action.payload.r < 0 || action.payload.r > 255) return;
+            if(action.payload.g < 0 || action.payload.g > 255) return;
+            if(action.payload.b < 0 || action.payload.b > 255) return;
+            state.seed = action.payload;
         },
         setHueShift(state: PaletteState, action: PayloadAction<number>){
-            state.hueShift = action.payload;//add safety checks
+            if(action.payload < -180 || action.payload > 180) return;
+            state.hueShift = action.payload;
         },
         setHueShiftDirection(state: PaletteState, action: PayloadAction<number>){
             state.hueShiftDirections[action.payload] = !state.hueShiftDirections[action.payload];//add safety checks
         },
         setLowSat(state: PaletteState, action: PayloadAction<number>){
-            state.lowSat = action.payload;//add safety checks
+            if(action.payload < 0 || action.payload > 100) return;
+            state.lowSat = action.payload;
         },
         setLowVal(state: PaletteState, action: PayloadAction<number>){
-            state.lowValue = action.payload;//add safety checks
+            if(action.payload < 0 || action.payload > 100) return;
+            state.lowValue = action.payload;
         },
         setHighSat(state: PaletteState, action: PayloadAction<number>){
-            state.highSat = action.payload;//add safety checks
+            if(action.payload < 0 || action.payload > 100) return;
+            state.highSat = action.payload;
         },
         setHighVal(state: PaletteState, action: PayloadAction<number>){
-            state.highValue = action.payload;//add safety checks
+            if(action.payload < 0 || action.payload > 100) return;
+            state.highValue = action.payload;
         },
         setShowText(state: PaletteState, action: PayloadAction<ShowText>){
             state.showText = action.payload;
@@ -117,6 +140,13 @@ const paletteSlice = createSlice({
                 return;
             }
             state.activeCell = action.payload;
+        },
+        setDesaturatedRows(state: PaletteState, action: PayloadAction<boolean>){
+            state.desaturatedRows = action.payload;
+        },
+        setDesaturatedPercent(state: PaletteState, action: PayloadAction<number>){
+            if(action.payload < 0 || action.payload > 100) return;
+            state.desaturatedPercent = action.payload/100;
         },
         setActiveCellAdjustments(state: PaletteState, action: PayloadAction<Hsv>){
             if(!state.activeCell) return;
@@ -146,6 +176,11 @@ const paletteSlice = createSlice({
         }),
         getRowCount: (state: PaletteState) => {
             return state.rowCount;
+        },
+        getGridRowCount: (state: PaletteState) => {
+            let result = state.rowCount;
+            if(state.desaturatedRows) result = result*2;
+            return result;
         },
         getColumnCount: (state: PaletteState) => {
             return state.shadeCount;
@@ -179,6 +214,12 @@ const paletteSlice = createSlice({
         },
         getActiveCell: (state: PaletteState) => {
             return state.activeCell;
+        },
+        getDesaturatedRows(state: PaletteState){
+            return state.desaturatedRows;
+        },
+        getDesaturatedPercent(state: PaletteState){
+            return state.desaturatedPercent * 100;
         },
         getActiveCellAdjustments: createSelector(
             [((state: PaletteState) => state)],

@@ -1,25 +1,25 @@
 import { useDispatch, useSelector } from "react-redux";
-import { paletteActions, paletteSelectors } from "../../store/palette";
+import { paletteActions, paletteSelectors } from "../../../store/palette";
 import { useTranslation } from "react-i18next";
 import AdjustmentsInput from "./AdjustmentsInput";
 
-export default function ColumnAdjustmentsInput(){
-    const hsv = useSelector(paletteSelectors.getActiveColumnAdjustments);
+export default function CellAdjustmentsInput(){
+    const hsv = useSelector(paletteSelectors.getActiveCellAdjustments);
     const dispatch = useDispatch();
     const { t: translate } = useTranslation("palette");
 
     const isSelected = !(!hsv);
 
     const handleHueChange = (hue) => {
-        dispatch(paletteActions.setActiveColumnAdjustments({...hsv, h:hue}));
+        dispatch(paletteActions.setActiveCellAdjustments({...hsv, h:hue}));
     }
 
     const handleSatChange = (sat) => {
-        dispatch(paletteActions.setActiveColumnAdjustments({...hsv, s:sat}));
+        dispatch(paletteActions.setActiveCellAdjustments({...hsv, s:sat}));
     }
 
     const handleValChange = (val) => {
-        dispatch(paletteActions.setActiveColumnAdjustments({...hsv, v:val}));
+        dispatch(paletteActions.setActiveCellAdjustments({...hsv, v:val}));
     }
 
     return <>

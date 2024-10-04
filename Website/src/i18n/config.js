@@ -104,7 +104,7 @@ i18n
           primary_colors: "Primary Colors",
           lum: "Luminosity",
           adjustments: "Adjustments",
-          chroma: "Chroma",
+          chroma: "Intensity",
           none: "None",
           cell: "Cell",
           row: "Row",

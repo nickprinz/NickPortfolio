@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import NumberInput from "./NumberInput";
+import NumberInput from "./BasicInput/NumberInput";
 import PointDownArrow from "./PointDownArrow";
 
 export default function SatValComboInput({sat, val, onSatChange, onValChange}){

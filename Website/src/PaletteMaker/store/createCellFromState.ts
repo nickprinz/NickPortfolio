@@ -7,6 +7,10 @@ import { PaletteState } from "./palette";
 import { PrimaryColors } from "./primaryColors";
 
 export const createCellFromState = (state: PaletteState, row: number, column: number): ColorCell => {
+    //need to handle desat rows
+    //first check if row is > state.rowcount
+    //if so, get the cell from row - state.rowcount
+    //then apply desat
     const seed: Hsv = RGBtoHSV(state.seed);
     if(state.primaryColors === PrimaryColors.RYB) seed.h = toNHue(seed.h);
     const centerColor = getRowCenterColor(seed, row, state.rowCount);

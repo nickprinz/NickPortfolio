@@ -7,7 +7,7 @@ export default function ColorCellGrid(){
     const gridWidth = 50;
     const gridHeight = 30;
 
-    const rowCount = useSelector(paletteSelectors.getRowCount);
+    const rowCount = useSelector(paletteSelectors.getGridRowCount);
     const columnCount = useSelector(paletteSelectors.getColumnCount);
     const dispatch = useDispatch();
 

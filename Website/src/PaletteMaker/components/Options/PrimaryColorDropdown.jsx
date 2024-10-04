@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import { paletteActions, paletteSelectors, } from "../../store/palette";
-import Dropdown from "../Inputs/Dropdown";
+import Dropdown from "../Inputs/BasicInput/Dropdown";
 import { useTranslation } from "react-i18next";
 import { GetAllPrimaryColorOptions, PrimaryColors } from "../../store/primaryColors";
 

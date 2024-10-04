@@ -1,5 +1,5 @@
 
-import NumberInput from "./NumberInput";
+import NumberInput from "../BasicInput/NumberInput";
 import { useTranslation } from "react-i18next";
 
 export default function AdjustmentsInput({hsv, onHueChange, onSatChange, onValChange, disabled= false}){

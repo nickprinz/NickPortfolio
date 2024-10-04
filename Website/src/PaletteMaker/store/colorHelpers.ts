@@ -129,10 +129,13 @@ export function ChromaFromHsv(hsv: Hsv): number{
     return Chroma(HSVtoRGB(hsv));
 }
 
-export function Chroma(color: Color): number{
+function Chroma(color: Color): number{
+    //still don't like this, brighter hues are not getting adjusted upward enough
+    //the entire upper half is too intense, should be above 70 is too intense and above 50 is getting close
+    const lum = goodLum(color);
     const max = Math.max(color.r, color.g, color.b);
     const min = Math.min(color.r, color.g, color.b);
-    return (max-min)/2.55
+    return ((max-min)/2.55)*Math.sqrt(lum/100);
 }
 
 function toHex(num: number): string {

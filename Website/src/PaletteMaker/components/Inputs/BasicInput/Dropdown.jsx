@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useOutsideClick } from "../../hooks/useOutsideClick";
+import { useOutsideClick } from "../../../hooks/useOutsideClick";
 
 
 export default function Dropdown({label, selectedValue, choices, onSelect}){

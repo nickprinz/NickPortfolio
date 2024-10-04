@@ -1,8 +1,8 @@
 import { useDispatch, useSelector } from "react-redux";
-import { HexToRGB } from "../../store/colorHelpers";
-import { paletteActions, paletteSelectors } from "../../store/palette";
-import InputContainer from "./InputContainer";
-import InputLabel from "./InputLabel";
+import { HexToRGB } from "../../../store/colorHelpers";
+import { paletteActions, paletteSelectors } from "../../../store/palette";
+import InputContainer from "../InputContainer";
+import InputLabel from "../InputLabel";
 import { useTranslation } from "react-i18next";
 
 export default function ColorInput(){

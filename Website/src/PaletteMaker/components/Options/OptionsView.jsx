@@ -1,4 +1,5 @@
 
+import DesaturatedRows from "./DesaturatedRows";
 import InfoDisplayDropdown from "./InfoDisplayDropdown";
 import PrimaryColorDropdown from "./PrimaryColorDropdown";
 
@@ -11,6 +12,7 @@ export default function OptionsView(){
             <div className="flex ">
                 <InfoDisplayDropdown/>
                 <PrimaryColorDropdown/>
+                <DesaturatedRows/>
             </div>
         </div>
     </>

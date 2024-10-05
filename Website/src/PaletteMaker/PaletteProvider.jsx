@@ -1,6 +1,6 @@
 
 import {Provider, } from "react-redux";
-import store, { persistor } from "./store/store";
+import store, { persistor } from "./store/store.ts";
 import { PersistGate } from 'redux-persist/integration/react'
 
 function PaletteProvider({children}) {

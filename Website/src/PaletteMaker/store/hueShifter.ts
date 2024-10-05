@@ -3,7 +3,7 @@
 
 import { inLerp, lerp, wrap } from "./mathHelpers";
 
-const hueRamp = [0, 30, 60, 120, 240, 300, 360];
+const hueRamp = [0, 26, 54, 120, 240, 310, 360];
 const nhueRamp = [0, 60, 120, 180, 240, 300, 360];
 
 export function toNHue(hue: number): number{

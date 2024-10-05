@@ -28,7 +28,6 @@ const getRowCenterColor = (seed: Hsv, row:number, rowCount: number):Hsv => {
 }
 
 const applyAdjustments = (startColor:Hsv, row: number, column: number, state: PaletteState): Hsv => {
-    //need to apply column and row adjustments later
     let adjustedHsv = addHsv(startColor,state.cellAdjustments[row][column]);
     adjustedHsv = addHsv(adjustedHsv,state.rowAdjustments[row]);
     adjustedHsv = addHsv(adjustedHsv,state.columnAdjustments[column]);

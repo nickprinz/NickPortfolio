@@ -4,8 +4,7 @@ import { Color } from '../interfaces/color';
 import { Hsv } from '../interfaces/hsv';
 import { createCellFromState } from './createCellFromState';
 import { ShowText } from './showText';
-import { fillAdjustments, fillDirections, fillGridColumnAdjustments, fillGridRowAdjustments, makeBlankGrid, makeDirections } from './gridAdjustments';
-import { makeBlanks } from './gridAdjustments';
+import { fillAdjustments, fillDirections, fillGridColumnAdjustments, fillGridRowAdjustments, } from './gridAdjustments';
 import { ColorCell } from '../interfaces/colorCell';
 import { PrimaryColors } from './primaryColors';
 
@@ -40,8 +39,12 @@ const getIndexesFromId = (id: string) : Position => {
     return {X: parseInt(parts[1]), Y: parseInt(parts[2])};
 }
 
-const fixRowAdjustments = (state: PaletteState, newCount: number) => {
-
+export const fixAdjustments = (state: PaletteState) => {
+    state.rowAdjustments = fillAdjustments(state.rowAdjustments, state.rowCount);
+    state.hueShiftDirections = fillDirections(state.hueShiftDirections, state.rowCount);
+    state.columnAdjustments = fillAdjustments(state.columnAdjustments, state.shadeCount);
+    state.cellAdjustments = fillGridColumnAdjustments(state.cellAdjustments, state.shadeCount);
+    state.cellAdjustments = fillGridRowAdjustments(state.cellAdjustments, state.rowCount, state.shadeCount);
 }
 
 //need to figure out desaturated rows
@@ -54,25 +57,27 @@ const fixRowAdjustments = (state: PaletteState, newCount: number) => {
 const makeDefaultState = (): PaletteState => {
     const rowCount = 6;
     const columnCount = 5;
-    return {
+    const defaultState = {
         seed:HSVtoRGB({h:0,s:60,v:55}), 
         rowCount:rowCount,
         shadeCount:columnCount, 
         hueShift:20,
-        hueShiftDirections:makeDirections(rowCount),
+        hueShiftDirections:[],
         highSat:30,
         highValue:80,
         lowSat:60,
         lowValue:20,
         showText: ShowText.None,
         primaryColors: PrimaryColors.RYB,
-        columnAdjustments: makeBlanks(columnCount),
-        rowAdjustments: makeBlanks(rowCount),
-        cellAdjustments: makeBlankGrid(rowCount,columnCount),
+        columnAdjustments: [],
+        rowAdjustments: [],
+        cellAdjustments: [],
         activeCell: null,
         desaturatedRows: false,
         desaturatedPercent: .4,
     };
+    fixAdjustments(defaultState);
+    return defaultState;
 }
 
 const paletteSlice = createSlice({
@@ -81,7 +86,7 @@ const paletteSlice = createSlice({
     reducers:{
         reset(state: PaletteState, action){
             const defaultState = makeDefaultState();
-            //redux does not persist assigning a new state, so instead iterate through keys
+            //redux does not persist a directly assigned state, so instead iterate through keys
             Object.keys(defaultState).forEach((key) => {
                 state[key] = defaultState[key];
             });
@@ -89,15 +94,12 @@ const paletteSlice = createSlice({
         setRowCount(state: PaletteState, action: PayloadAction<number>){
             if(action.payload < 0 || action.payload > 50) return;
             state.rowCount = action.payload;
-            state.rowAdjustments = fillAdjustments(state.rowAdjustments, action.payload);
-            state.cellAdjustments = fillGridRowAdjustments(state.cellAdjustments, action.payload, state.shadeCount);
-            state.hueShiftDirections = fillDirections(state.hueShiftDirections, action.payload);
+            fixAdjustments(state);
         },
         setColumnCount(state: PaletteState, action: PayloadAction<number>){
             if(action.payload < 0 || action.payload > 50) return;
             state.shadeCount = action.payload;
-            state.columnAdjustments = fillAdjustments(state.columnAdjustments, action.payload);
-            state.cellAdjustments = fillGridColumnAdjustments(state.cellAdjustments, action.payload);
+            fixAdjustments(state);
         },
         setSeedColor(state: PaletteState, action: PayloadAction<Color>){
             if(action.payload.r < 0 || action.payload.r > 255) return;
@@ -179,7 +181,7 @@ const paletteSlice = createSlice({
         },
         getGridRowCount: (state: PaletteState) => {
             let result = state.rowCount;
-            if(state.desaturatedRows) result = result*2;
+            //if(state.desaturatedRows) result = result*2;
             return result;
         },
         getColumnCount: (state: PaletteState) => {

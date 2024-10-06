@@ -40,11 +40,13 @@ const getIndexesFromId = (id: string) : Position => {
 }
 
 export const fixAdjustments = (state: PaletteState) => {
-    state.rowAdjustments = fillAdjustments(state.rowAdjustments, state.rowCount);
+    let fullRowCount = state.rowCount;
+    if(state.desaturatedRows) fullRowCount = state.rowCount*2;
+    state.rowAdjustments = fillAdjustments(state.rowAdjustments, fullRowCount);
     state.hueShiftDirections = fillDirections(state.hueShiftDirections, state.rowCount);
     state.columnAdjustments = fillAdjustments(state.columnAdjustments, state.shadeCount);
     state.cellAdjustments = fillGridColumnAdjustments(state.cellAdjustments, state.shadeCount);
-    state.cellAdjustments = fillGridRowAdjustments(state.cellAdjustments, state.rowCount, state.shadeCount);
+    state.cellAdjustments = fillGridRowAdjustments(state.cellAdjustments, fullRowCount, state.shadeCount);
 }
 
 //need to figure out desaturated rows
@@ -74,7 +76,7 @@ const makeDefaultState = (): PaletteState => {
         cellAdjustments: [],
         activeCell: null,
         desaturatedRows: false,
-        desaturatedPercent: .4,
+        desaturatedPercent: .35,
     };
     fixAdjustments(defaultState);
     return defaultState;
@@ -145,6 +147,7 @@ const paletteSlice = createSlice({
         },
         setDesaturatedRows(state: PaletteState, action: PayloadAction<boolean>){
             state.desaturatedRows = action.payload;
+            fixAdjustments(state);
         },
         setDesaturatedPercent(state: PaletteState, action: PayloadAction<number>){
             if(action.payload < 0 || action.payload > 100) return;
@@ -180,9 +183,7 @@ const paletteSlice = createSlice({
             return state.rowCount;
         },
         getGridRowCount: (state: PaletteState) => {
-            let result = state.rowCount;
-            //if(state.desaturatedRows) result = result*2;
-            return result;
+            return state.rowAdjustments.length;
         },
         getColumnCount: (state: PaletteState) => {
             return state.shadeCount;
@@ -226,8 +227,9 @@ const paletteSlice = createSlice({
         getActiveCellAdjustments: createSelector(
             [((state: PaletteState) => state)],
             (state: PaletteState): Hsv|null => {
-                if(!state.activeCell) return null;
+                if(!state.activeCell || state.rowCount === 0 || state.shadeCount === 0) return null;
                 const activeIndexes = getIndexesFromId(state.activeCell);
+                if(activeIndexes.X >= state.cellAdjustments.length) return null;
                 return state.cellAdjustments[activeIndexes.X][activeIndexes.Y];
         }),
         getActiveRowAdjustments: createSelector(

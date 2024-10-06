@@ -14,11 +14,18 @@ export const createCellFromState = (state: PaletteState, row: number, column: nu
     const seed: Hsv = RGBtoHSV(state.seed);
     if(state.primaryColors === PrimaryColors.RYB) seed.h = toNHue(seed.h);
     const centerColor = getRowCenterColor(seed, row, state.rowCount);
-    const hueShift = state.hueShiftDirections[row] ? state.hueShift : -state.hueShift;
+    const hueShift = getHueShift(row, state.hueShiftDirections, state.hueShift);
     const interpolatedColor: Hsv = getInterpolatedColor(centerColor, column, hueShift, state);
     if(state.primaryColors === PrimaryColors.RYB)  interpolatedColor.h = fromNHue(interpolatedColor.h);
     const resultColor = applyAdjustments(interpolatedColor, row, column, state);
     return makeCellFromColor(resultColor, row, column, state.cellAdjustments[row][column]);
+}
+
+const getHueShift = (rowIndex: number, hueShiftDirections: boolean[], hueShift: number): number => {
+    if(hueShiftDirections.length === 0) return hueShift;
+    rowIndex = rowIndex % hueShiftDirections.length;
+    const result = hueShiftDirections[rowIndex] ? hueShift : -hueShift;
+    return result;
 }
 
 const getRowCenterColor = (seed: Hsv, row:number, rowCount: number):Hsv => {
@@ -28,6 +35,20 @@ const getRowCenterColor = (seed: Hsv, row:number, rowCount: number):Hsv => {
 }
 
 const applyAdjustments = (startColor:Hsv, row: number, column: number, state: PaletteState): Hsv => {
+    let adjustedHsv = {...startColor};
+    if(row >= state.rowCount){
+        //handle desaturated rows
+        const originalRow = row % state.rowCount;
+        adjustedHsv = applyCellAdjustments(adjustedHsv, originalRow, column, state);
+        adjustedHsv.s = adjustedHsv.s * state.desaturatedPercent;
+        //doing thing makes cells brighter, may need a value adjustment to compensate
+    }
+
+    adjustedHsv = applyCellAdjustments(adjustedHsv, row, column, state);
+    return adjustedHsv;
+}
+
+const applyCellAdjustments = (startColor:Hsv, row: number, column: number, state: PaletteState): Hsv => {
     let adjustedHsv = addHsv(startColor,state.cellAdjustments[row][column]);
     adjustedHsv = addHsv(adjustedHsv,state.rowAdjustments[row]);
     adjustedHsv = addHsv(adjustedHsv,state.columnAdjustments[column]);

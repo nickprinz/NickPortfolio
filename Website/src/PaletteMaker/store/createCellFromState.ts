@@ -7,10 +7,6 @@ import { PaletteState } from "./palette";
 import { PrimaryColors } from "./primaryColors";
 
 export const createCellFromState = (state: PaletteState, row: number, column: number): ColorCell => {
-    //need to handle desat rows
-    //first check if row is > state.rowcount
-    //if so, get the cell from row - state.rowcount
-    //then apply desat
     const seed: Hsv = RGBtoHSV(state.seed);
     if(state.primaryColors === PrimaryColors.RYB) seed.h = toNHue(seed.h);
     const centerColor = getRowCenterColor(seed, row, state.rowCount);
@@ -39,7 +35,7 @@ const applyAdjustments = (startColor:Hsv, row: number, column: number, state: Pa
     if(row >= state.rowCount){
         //handle desaturated rows
         const originalRow = row % state.rowCount;
-        adjustedHsv = applyCellAdjustments(adjustedHsv, originalRow, column, state);
+        adjustedHsv.h = applyCellAdjustments(adjustedHsv, originalRow, column, state).h;
         adjustedHsv.s = adjustedHsv.s * state.desaturatedPercent;
         //doing thing makes cells brighter, may need a value adjustment to compensate
     }

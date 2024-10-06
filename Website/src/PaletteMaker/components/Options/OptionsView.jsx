@@ -1,4 +1,5 @@
 
+import ResetButton from "../Inputs/ResetButton";
 import DesaturatedRows from "./DesaturatedRows";
 import InfoDisplayDropdown from "./InfoDisplayDropdown";
 import PrimaryColorDropdown from "./PrimaryColorDropdown";
@@ -12,7 +13,7 @@ export default function OptionsView(){
             <div className="flex ">
                 <InfoDisplayDropdown/>
                 <PrimaryColorDropdown/>
-                <DesaturatedRows/>
+                <ResetButton/>
             </div>
         </div>
     </>

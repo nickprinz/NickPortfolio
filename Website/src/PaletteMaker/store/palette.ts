@@ -151,7 +151,7 @@ const paletteSlice = createSlice({
         },
         setDesaturatedPercent(state: PaletteState, action: PayloadAction<number>){
             if(action.payload < 0 || action.payload > 100) return;
-            state.desaturatedPercent = action.payload/100;
+            state.desaturatedPercent = Math.round(action.payload)/100;
         },
         setActiveCellAdjustments(state: PaletteState, action: PayloadAction<Hsv>){
             if(!state.activeCell) return;
@@ -222,7 +222,7 @@ const paletteSlice = createSlice({
             return state.desaturatedRows;
         },
         getDesaturatedPercent(state: PaletteState){
-            return state.desaturatedPercent * 100;
+            return Math.round(state.desaturatedPercent * 100);
         },
         getActiveCellAdjustments: createSelector(
             [((state: PaletteState) => state)],

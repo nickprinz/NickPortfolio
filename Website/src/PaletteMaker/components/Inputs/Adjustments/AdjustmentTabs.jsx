@@ -5,10 +5,14 @@ import CellAdjustmentsInput from "./CellAdjustmentsInput";
 import AdjustmentTypeTab from "./AdjustmentTypeTab";
 import ColumnAdjustmentsInput from "./ColumnAdjustmentsInput";
 import RowAdjustmentsInput from "./RowAdjustmentsInput";
+import AdjustmentCellData from "./AdjustmentCellData";
+import { useSelector } from "react-redux";
+import { paletteSelectors } from "../../../store/palette";
 
 export default function AdjustmentTabs({}){
     const { t: translate } = useTranslation("palette");
     const [activeTab, setActiveTab] = useState(0);
+    const activeCell = useSelector(paletteSelectors.getActiveCell);
     
     const handleClick = (num) => {
         setActiveTab(num);
@@ -29,6 +33,9 @@ export default function AdjustmentTabs({}){
         </div>
         <div className="flex flex-row items-center">
             {adjustmentsInput} 
+        </div>
+        <div className="flex flex-row items-center">
+            {activeCell && <AdjustmentCellData/>}
         </div>
     </>
 }

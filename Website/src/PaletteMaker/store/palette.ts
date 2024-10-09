@@ -34,7 +34,7 @@ interface Position{
     Y: number,
 }
 
-const getIndexesFromId = (id: string) : Position => {
+export const getIndexesFromId = (id: string) : Position => {
     const parts: string[] = id.split("#");
     return {X: parseInt(parts[1]), Y: parseInt(parts[2])};
 }
@@ -60,15 +60,15 @@ const makeDefaultState = (): PaletteState => {
     const rowCount = 6;
     const columnCount = 5;
     const defaultState = {
-        seed:HSVtoRGB({h:0,s:60,v:55}), 
+        seed:HSVtoRGB({h:0,s:72,v:75}), 
         rowCount:rowCount,
         shadeCount:columnCount, 
         hueShift:20,
         hueShiftDirections:[],
         highSat:30,
-        highValue:80,
+        highValue:90,
         lowSat:60,
-        lowValue:20,
+        lowValue:16,
         showText: ShowText.None,
         primaryColors: PrimaryColors.RYB,
         columnAdjustments: [],
